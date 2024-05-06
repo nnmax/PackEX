@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+/.pnp
+.pnp.js
 
 # testing
 /coverage
@@ -11,10 +13,8 @@
 
 # misc
 .DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+*.pem
+.env*.local
 
 /.netlify
 
@@ -23,12 +23,35 @@ yarn-debug.log*
 yarn-error.log*
 
 notes.txt
-.idea/
-
-.vscode/
 
 package-lock.json
 
 cypress/videos
 cypress/screenshots
 cypress/fixtures/example.json
+
+# typescript
+*.tsbuildinfo
+
+# yarn berry
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.docs
+
+# ESLint cache
+.eslintcache

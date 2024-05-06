@@ -105,5 +105,11 @@
       "last 1 safari version"
     ]
   },
-  "license": "GPL-3.0-or-later"
+  "license": "GPL-3.0-or-later",
+  "packageManager": "yarn@1.22.19",
+  "engines": {
+    "node": "^16.0.0",
+    "npm": "please-use-yarn",
+    "yarn": ">=1.22.0"
+  }
 }
