@@ -33,7 +33,7 @@ const ZERO_FRACTION = new Fraction(ZERO, ONE)
 function V1PairRemoval({
   exchangeContract,
   liquidityTokenAmount,
-  token
+  token,
 }: {
   exchangeContract: Contract
   liquidityTokenAmount: TokenAmount
@@ -69,17 +69,17 @@ function V1PairRemoval({
         liquidityTokenAmount.raw.toString(),
         1, // min_eth, this is safe because we're removing liquidity
         1, // min_tokens, this is safe because we're removing liquidity
-        Math.floor(new Date().getTime() / 1000) + DEFAULT_DEADLINE_FROM_NOW
+        Math.floor(new Date().getTime() / 1000) + DEFAULT_DEADLINE_FROM_NOW,
       )
       .then((response: TransactionResponse) => {
         ReactGA.event({
           category: 'Remove',
           action: 'V1',
-          label: token?.symbol
+          label: token?.symbol,
         })
 
         addTransaction(response, {
-          summary: `Remove ${chainId && token.equals(WETH[chainId]) ? 'WETH' : token.symbol}/ETH V1 liquidity`
+          summary: `Remove ${chainId && token.equals(WETH[chainId]) ? 'WETH' : token.symbol}/ETH V1 liquidity`,
         })
         setPendingRemovalHash(response.hash)
       })
@@ -128,8 +128,8 @@ function V1PairRemoval({
 
 export default function RemoveV1Exchange({
   match: {
-    params: { address }
-  }
+    params: { address },
+  },
 }: RouteComponentProps<{ address: string }>) {
   const validatedAddress = isAddress(address)
   const { chainId, account } = useActiveWeb3React()
@@ -143,7 +143,7 @@ export default function RemoveV1Exchange({
       validatedAddress && chainId && token
         ? new Token(chainId, validatedAddress, 18, `UNI-V1-${token.symbol}`, 'Uniswap V1')
         : undefined,
-    [chainId, validatedAddress, token]
+    [chainId, validatedAddress, token],
   )
   const userLiquidityBalance = useTokenBalance(account ?? undefined, liquidityToken)
 

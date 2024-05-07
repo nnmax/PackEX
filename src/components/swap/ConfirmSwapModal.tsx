@@ -2,7 +2,7 @@ import { currencyEquals, Trade } from '@uniswap/sdk'
 import React, { useCallback, useMemo } from 'react'
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
-  TransactionErrorContent
+  TransactionErrorContent,
 } from '../TransactionConfirmationModal'
 import SwapModalFooter from './SwapModalFooter'
 import SwapModalHeader from './SwapModalHeader'
@@ -33,7 +33,7 @@ export default function ConfirmSwapModal({
   swapErrorMessage,
   isOpen,
   attemptingTxn,
-  txHash
+  txHash,
 }: {
   isOpen: boolean
   trade: Trade | undefined
@@ -49,7 +49,7 @@ export default function ConfirmSwapModal({
 }) {
   const showAcceptChanges = useMemo(
     () => Boolean(trade && originalTrade && tradeMeaningfullyDiffers(trade, originalTrade)),
-    [originalTrade, trade]
+    [originalTrade, trade],
   )
 
   const modalHeader = useCallback(() => {
@@ -93,7 +93,7 @@ export default function ConfirmSwapModal({
           bottomContent={modalBottom}
         />
       ),
-    [onDismiss, modalBottom, modalHeader, swapErrorMessage]
+    [onDismiss, modalBottom, modalHeader, swapErrorMessage],
   )
 
   return (

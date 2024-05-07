@@ -1,6 +1,6 @@
 import { Currency, CurrencyAmount, currencyEquals, ETHER, Token } from '@uniswap/sdk'
 import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
-import { FixedSizeList } from 'react-window'
+import { FixedSizeList, ListChildComponentProps } from 'react-window'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import { useActiveWeb3React } from '../../hooks'
@@ -85,7 +85,7 @@ function CurrencyRow({
   onSelect,
   isSelected,
   otherSelected,
-  style
+  style,
 }: {
   currency: Currency
   onSelect: () => void
@@ -122,7 +122,7 @@ function CurrencyRow({
             <TYPE.main fontWeight={500}>
               Added by user
               <LinkStyledButton
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation()
                   if (chainId && currency instanceof Token) removeToken(chainId, currency.address)
                 }}
@@ -135,7 +135,7 @@ function CurrencyRow({
             <TYPE.main fontWeight={500}>
               Found by address
               <LinkStyledButton
-                onClick={event => {
+                onClick={(event) => {
                   event.stopPropagation()
                   if (currency instanceof Token) addToken(currency)
                 }}
@@ -161,7 +161,7 @@ export default function CurrencyList({
   onCurrencySelect,
   otherCurrency,
   fixedListRef,
-  showETH
+  showETH,
 }: {
   height: number
   currencies: Currency[]
@@ -174,7 +174,7 @@ export default function CurrencyList({
   const itemData = useMemo(() => (showETH ? [Currency.ETHER, ...currencies] : currencies), [currencies, showETH])
 
   const Row = useCallback(
-    ({ data, index, style }) => {
+    ({ data, index, style }: ListChildComponentProps) => {
       const currency: Currency = data[index]
       const isSelected = Boolean(selectedCurrency && currencyEquals(selectedCurrency, currency))
       const otherSelected = Boolean(otherCurrency && currencyEquals(otherCurrency, currency))
@@ -189,7 +189,7 @@ export default function CurrencyList({
         />
       )
     },
-    [onCurrencySelect, otherCurrency, selectedCurrency]
+    [onCurrencySelect, otherCurrency, selectedCurrency],
   )
 
   const itemKey = useCallback((index: number, data: any) => currencyKey(data[index]), [])

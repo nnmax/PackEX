@@ -50,16 +50,16 @@ export default function VersionSwitch() {
     return versionSwitchAvailable
       ? {
           ...location,
-          search: `?${stringify({ ...query, use: version === Version.v1 ? undefined : Version.v1 })}`
+          search: `?${stringify({ ...query, use: version === Version.v1 ? undefined : Version.v1 })}`,
         }
       : location
   }, [location, query, version, versionSwitchAvailable])
 
   const handleClick = useCallback(
-    e => {
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
       if (!versionSwitchAvailable) e.preventDefault()
     },
-    [versionSwitchAvailable]
+    [versionSwitchAvailable],
   )
 
   const toggle = (

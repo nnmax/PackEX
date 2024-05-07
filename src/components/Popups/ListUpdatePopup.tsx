@@ -17,7 +17,7 @@ export default function ListUpdatePopup({
   listUrl,
   oldList,
   newList,
-  auto
+  auto,
 }: {
   popKey: string
   listUrl: string
@@ -34,19 +34,23 @@ export default function ListUpdatePopup({
     ReactGA.event({
       category: 'Lists',
       action: 'Update List from Popup',
-      label: listUrl
+      label: listUrl,
     })
     dispatch(acceptListUpdate(listUrl))
     removeThisPopup()
   }, [auto, dispatch, listUrl, removeThisPopup])
 
-  const { added: tokensAdded, changed: tokensChanged, removed: tokensRemoved } = useMemo(() => {
+  const {
+    added: tokensAdded,
+    changed: tokensChanged,
+    removed: tokensRemoved,
+  } = useMemo(() => {
     return diffTokenLists(oldList.tokens, newList.tokens)
   }, [newList.tokens, oldList.tokens])
   const numTokensChanged = useMemo(
     () =>
       Object.keys(tokensChanged).reduce((memo, chainId: any) => memo + Object.keys(tokensChanged[chainId]).length, 0),
-    [tokensChanged]
+    [tokensChanged],
   )
 
   return (

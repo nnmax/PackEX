@@ -1,19 +1,18 @@
 import { TokenAmount, Pair, Currency } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
+import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { Interface } from '@ethersproject/abi'
 import { useActiveWeb3React } from '../hooks'
-
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
-const PAIR_INTERFACE = new Interface(IUniswapV2PairABI)
+const PAIR_INTERFACE = new Interface(IUniswapV2Pair.abi)
 
 export enum PairState {
   LOADING,
   NOT_EXISTS,
   EXISTS,
-  INVALID
+  INVALID,
 }
 
 export function usePairs(currencies: [Currency | undefined, Currency | undefined][]): [PairState, Pair | null][] {
@@ -23,9 +22,9 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
     () =>
       currencies.map(([currencyA, currencyB]) => [
         wrappedCurrency(currencyA, chainId),
-        wrappedCurrency(currencyB, chainId)
+        wrappedCurrency(currencyB, chainId),
       ]),
-    [chainId, currencies]
+    [chainId, currencies],
   )
 
   const pairAddresses = useMemo(
@@ -33,7 +32,7 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
       tokens.map(([tokenA, tokenB]) => {
         return tokenA && tokenB && !tokenA.equals(tokenB) ? Pair.getAddress(tokenA, tokenB) : undefined
       }),
-    [tokens]
+    [tokens],
   )
 
   const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'getReserves')
@@ -51,7 +50,7 @@ export function usePairs(currencies: [Currency | undefined, Currency | undefined
       const [token0, token1] = tokenA.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]
       return [
         PairState.EXISTS,
-        new Pair(new TokenAmount(token0, reserve0.toString()), new TokenAmount(token1, reserve1.toString()))
+        new Pair(new TokenAmount(token0, reserve0.toString()), new TokenAmount(token1, reserve1.toString())),
       ]
     })
   }, [results, tokens])

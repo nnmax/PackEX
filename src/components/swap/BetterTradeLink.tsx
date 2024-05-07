@@ -20,8 +20,8 @@ export default function BetterTradeLink({ version }: { version: Version }) {
       ...location,
       search: `?${stringify({
         ...search,
-        use: version !== DEFAULT_VERSION ? version : undefined
-      })}`
+        use: version !== DEFAULT_VERSION ? version : undefined,
+      })}`,
     }
   }, [location, search, version])
 
