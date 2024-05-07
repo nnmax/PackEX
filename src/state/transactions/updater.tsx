@@ -1,14 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useActiveWeb3React } from '../../hooks'
 import { useAddPopup, useBlockNumber } from '../application/hooks'
 import { AppDispatch, AppState } from '../index'
 import { checkedTransaction, finalizeTransaction } from './actions'
 
-export function shouldCheck(
-  lastBlockNumber: number,
-  tx: { addedTime: number; receipt?: {}; lastCheckedBlockNumber?: number }
-): boolean {
+interface TxInterface {
+  addedTime: number
+  receipt?: Record<string, any>
+  lastCheckedBlockNumber?: number
+}
+
+export function shouldCheck(lastBlockNumber: number, tx: TxInterface): boolean {
   if (tx.receipt) return false
   if (!tx.lastCheckedBlockNumber) return true
   const blocksSinceCheck = lastBlockNumber - tx.lastCheckedBlockNumber
@@ -34,7 +37,9 @@ export default function Updater(): null {
   const dispatch = useDispatch<AppDispatch>()
   const state = useSelector<AppState, AppState['transactions']>(state => state.transactions)
 
-  const transactions = chainId ? state[chainId] ?? {} : {}
+  const transactions = useMemo(() => {
+    return chainId ? state[chainId] ?? {} : {}
+  }, [chainId, state])
 
   // show popup on confirm
   const addPopup = useAddPopup()
