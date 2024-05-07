@@ -1,14 +1,11 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { ArrowLeft } from 'react-feather'
 import ReactGA from 'react-ga'
-import { usePopper } from 'react-popper'
 import { useDispatch, useSelector } from 'react-redux'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useFetchListCallback } from '../../hooks/useFetchListCallback'
-import { useOnClickOutside } from '../../hooks/useOnClickOutside'
-
 import useToggle from '../../hooks/useToggle'
 import { AppDispatch, AppState } from '../../state'
 import { acceptListUpdate, removeList, selectList } from '../../state/lists/actions'
@@ -18,12 +15,19 @@ import listVersionLabel from '../../utils/listVersionLabel'
 import { parseENSAddress } from '../../utils/parseENSAddress'
 import uriToHttp from '../../utils/uriToHttp'
 import { ButtonOutlined, ButtonPrimary, ButtonSecondary } from '../Button'
-
 import Column from '../Column'
 import ListLogo from '../ListLogo'
 import QuestionHelper from '../QuestionHelper'
 import Row, { RowBetween } from '../Row'
 import { PaddedColumn, SearchInput, Separator, SeparatorDark } from './styleds'
+import {
+  FloatingPortal,
+  offset,
+  useClick,
+  useFloating,
+  useInteractions,
+  useRole,
+} from '@floating-ui/react'
 
 const UnpaddedLinkStyledButton = styled(LinkStyledButton)`
   padding: 0;
@@ -31,13 +35,8 @@ const UnpaddedLinkStyledButton = styled(LinkStyledButton)`
   opacity: ${({ disabled }) => (disabled ? '0.4' : '1')};
 `
 
-const PopoverContainer = styled.div<{ show: boolean }>`
+const PopoverContainer = styled.div`
   z-index: 100;
-  visibility: ${(props) => (props.show ? 'visible' : 'hidden')};
-  opacity: ${(props) => (props.show ? 1 : 0)};
-  transition:
-    visibility 150ms linear,
-    opacity 150ms linear;
   background: ${({ theme }) => theme.bg2};
   border: 1px solid ${({ theme }) => theme.bg3};
   box-shadow:
@@ -103,17 +102,17 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
   const isSelected = listUrl === selectedListUrl
 
   const [open, toggle] = useToggle(false)
-  const node = useRef<HTMLDivElement>()
-  const [referenceElement, setReferenceElement] = useState<HTMLDivElement>()
-  const [popperElement, setPopperElement] = useState<HTMLDivElement>()
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'auto',
+  const { refs, floatingStyles, context } = useFloating({
     strategy: 'fixed',
-    modifiers: [{ name: 'offset', options: { offset: [8, 8] } }],
+    placement: 'bottom',
+    middleware: [offset(8)],
+    open,
+    onOpenChange: toggle,
   })
-
-  useOnClickOutside(node, open ? toggle : undefined)
+  const click = useClick(context)
+  const role = useRole(context)
+  const { getReferenceProps, getFloatingProps } = useInteractions([click, role])
+  const floatingProps = getFloatingProps()
 
   const selectThisList = useCallback(() => {
     if (isSelected) return
@@ -182,33 +181,42 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
           </StyledListUrlText>
         </Row>
       </Column>
-      <StyledMenu ref={node as any}>
+      <StyledMenu>
         <ButtonOutlined
-          style={{
-            width: '2rem',
-            padding: '.8rem .35rem',
-            borderRadius: '12px',
-            fontSize: '14px',
-            marginRight: '0.5rem',
-          }}
-          onClick={toggle}
-          ref={setReferenceElement}
+          {...getReferenceProps({
+            style: {
+              width: '2rem',
+              padding: '.8rem .35rem',
+              borderRadius: '12px',
+              fontSize: '14px',
+              marginRight: '0.5rem',
+            },
+          })}
+          ref={refs.setReference}
         >
           <DropDown />
         </ButtonOutlined>
 
         {open && (
-          <PopoverContainer show={true} ref={setPopperElement as any} style={styles.popper} {...attributes.popper}>
-            <div>{list && listVersionLabel(list.version)}</div>
-            <SeparatorDark />
-            <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
-            <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
-              Remove list
-            </UnpaddedLinkStyledButton>
-            {pending && (
-              <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
-            )}
-          </PopoverContainer>
+          <FloatingPortal>
+            <PopoverContainer
+              ref={refs.setFloating}
+              {...floatingProps}
+              style={{
+                ...floatingStyles,
+              }}
+            >
+                <div>{list && listVersionLabel(list.version)}</div>
+                <SeparatorDark />
+                <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
+                <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
+                  Remove list
+                </UnpaddedLinkStyledButton>
+                {pending && (
+                  <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
+                )}
+            </PopoverContainer>
+          </FloatingPortal>
         )}
       </StyledMenu>
       {isSelected ? (

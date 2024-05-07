@@ -12,7 +12,7 @@ import { useIsUserAddedToken } from '../../hooks/Tokens'
 import Column from '../Column'
 import { RowFixed } from '../Row'
 import CurrencyLogo from '../CurrencyLogo'
-import { MouseoverTooltip } from '../Tooltip'
+import Tooltip from '../Tooltip'
 import { FadedSpan, MenuItem } from './styleds'
 import Loader from '../Loader'
 import { isTokenOnList } from '../../utils'
@@ -63,18 +63,18 @@ function TokenTags({ currency }: { currency: Currency }) {
 
   return (
     <TagContainer>
-      <MouseoverTooltip text={tag.description}>
+      <Tooltip title={tag.description}>
         <Tag key={tag.id}>{tag.name}</Tag>
-      </MouseoverTooltip>
+      </Tooltip>
       {tags.length > 1 ? (
-        <MouseoverTooltip
-          text={tags
+        <Tooltip
+          title={tags
             .slice(1)
             .map(({ name, description }) => `${name}: ${description}`)
             .join('; \n')}
         >
           <Tag>...</Tag>
-        </MouseoverTooltip>
+        </Tooltip>
       ) : null}
     </TagContainer>
   )
