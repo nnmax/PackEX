@@ -120,8 +120,10 @@
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.13",
+    "@headlessui/react": "^2.0.2",
     "clsx": "^2.1.1",
     "lodash-es": "^4.17.21",
-    "react-aria-components": "^1.2.0"
+    "react-aria-components": "^1.2.0",
+    "react-toastify": "^10.0.5"
   }
 }

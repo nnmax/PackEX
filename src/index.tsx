@@ -19,6 +19,7 @@ import getLibrary from './utils/getLibrary'
 import './index.css'
 import { useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
+import { Bounce, ToastContainer } from 'react-toastify'
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 
@@ -82,6 +83,7 @@ ReactDOM.render(
       <ThemeProvider>
         <ThemedGlobalStyle />
         <App />
+        <ToastContainer draggable transition={Bounce} />
       </ThemeProvider>
     </Providers>
   </StrictMode>,
