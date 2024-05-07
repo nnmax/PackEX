@@ -17,6 +17,8 @@ import UserUpdater from './state/user/updater'
 import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
 import getLibrary from './utils/getLibrary'
 import './index.css'
+import { useHistory } from 'react-router-dom'
+import { I18nProvider, RouterProvider } from 'react-aria-components'
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 
@@ -57,20 +59,31 @@ function Updaters() {
   )
 }
 
+function Providers({ children }: { children: React.ReactNode }) {
+  const history = useHistory()
+  return (
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3ProviderNetwork getLibrary={getLibrary}>
+        <I18nProvider locale={'en-US'}>
+          <RouterProvider navigate={history.push}>
+            <Provider store={store}>{children}</Provider>
+          </RouterProvider>
+        </I18nProvider>
+      </Web3ProviderNetwork>
+    </Web3ReactProvider>
+  )
+}
+
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3ProviderNetwork getLibrary={getLibrary}>
-        <Provider store={store}>
-          <Updaters />
-          <ThemeProvider>
-            <ThemedGlobalStyle />
-            <App />
-          </ThemeProvider>
-        </Provider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
+    <Providers>
+      <Updaters />
+      <ThemeProvider>
+        <ThemedGlobalStyle />
+        <App />
+      </ThemeProvider>
+    </Providers>
   </StrictMode>,
   document.getElementById('root'),
 )
