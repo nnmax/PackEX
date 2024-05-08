@@ -17,7 +17,7 @@ import UserUpdater from './state/user/updater'
 import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
 import getLibrary from './utils/getLibrary'
 import './index.css'
-import { useHistory } from 'react-router-dom'
+import { HashRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 
@@ -78,14 +78,16 @@ function Providers({ children }: { children: React.ReactNode }) {
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <Providers>
-      <Updaters />
-      <ThemeProvider>
-        <ThemedGlobalStyle />
-        <App />
-        <ToastContainer draggable transition={Bounce} />
-      </ThemeProvider>
-    </Providers>
+    <HashRouter>
+      <Providers>
+        <Updaters />
+        <ThemeProvider>
+          <ThemedGlobalStyle />
+          <App />
+          <ToastContainer draggable transition={Bounce} />
+        </ThemeProvider>
+      </Providers>
+    </HashRouter>
   </StrictMode>,
   document.getElementById('root'),
 )

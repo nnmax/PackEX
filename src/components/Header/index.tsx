@@ -20,6 +20,7 @@ import Menu from '../Menu'
 import Row, { RowBetween } from '../Row'
 import Web3Status from '../Web3Status'
 import VersionSwitch from './VersionSwitch'
+import { ToggleButton } from 'react-aria-components'
 
 const HeaderFrame = styled.div`
   display: flex;
@@ -144,6 +145,7 @@ export default function Header() {
     <HeaderFrame>
       <RowBetween style={{ alignItems: 'flex-start' }} padding="1rem 1rem 0 1rem">
         <HeaderElement>
+          <ToggleButton>Pin</ToggleButton>
           <Title href=".">
             <UniIcon>
               <img src={isDark ? LogoDark : Logo} alt="logo" />

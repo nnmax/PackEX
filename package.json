@@ -112,11 +112,9 @@
     ]
   },
   "license": "GPL-3.0-or-later",
-  "packageManager": "yarn@1.22.19",
   "engines": {
     "node": ">=18.18.0",
-    "npm": "please-use-yarn",
-    "yarn": ">=1.22.0"
+    "npm": "please-use-yarn"
   },
   "dependencies": {
     "@floating-ui/react": "^0.26.13",
@@ -125,5 +123,6 @@
     "lodash-es": "^4.17.21",
     "react-aria-components": "^1.2.0",
     "react-toastify": "^10.0.5"
-  }
+  },
+  "packageManager": "yarn@4.2.1"
 }
