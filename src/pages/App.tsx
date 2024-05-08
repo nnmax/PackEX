@@ -13,6 +13,8 @@ import MigrateV1 from './MigrateV1'
 import MigrateV1Exchange from './MigrateV1/MigrateV1Exchange'
 import RemoveV1Exchange from './MigrateV1/RemoveV1Exchange'
 import Pool from './Pool'
+import PoolAll from './Pool/all'
+import PoolMy from './Pool/my'
 import Asset from './Asset'
 import Withdraw from './Asset/withdraw'
 import Deposit from './Asset/deposit'
@@ -38,6 +40,8 @@ export default function App() {
               <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
               <Route exact strict path="/find" component={PoolFinder} />
               <Route exact strict path="/pool" component={Pool} />
+              <Route exact strict path="/pool/all" component={PoolAll} />
+              <Route exact strict path="/pool/my" component={PoolMy} />
               <Route exact strict path="/asset" component={Asset} />
               <Route exact strict path="/asset/withdraw" component={Withdraw} />
               <Route exact strict path="/asset/deposit" component={Deposit} />
