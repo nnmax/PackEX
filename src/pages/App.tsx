@@ -1,11 +1,8 @@
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import styled from 'styled-components'
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
-import Header from '../components/Header'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
-import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import AddLiquidity from './AddLiquidity'
 import {
   RedirectDuplicateTokenIds,
@@ -21,52 +18,15 @@ import RemoveLiquidity from './RemoveLiquidity'
 import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
 import Swap from './Swap'
 import { RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
-
-const AppWrapper = styled.div`
-  display: flex;
-  flex-flow: column;
-  align-items: flex-start;
-  overflow-x: hidden;
-`
-
-const HeaderWrapper = styled.div`
-  ${({ theme }) => theme.flexRowNoWrap}
-  width: 100%;
-  justify-content: space-between;
-`
-
-const BodyWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding-top: 160px;
-  align-items: center;
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 10;
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      padding: 16px;
-  `};
-
-  z-index: 1;
-`
-
-const Marginer = styled.div`
-  margin-top: 5rem;
-`
+import AppBar from '../components/AppBar'
 
 export default function App() {
   return (
     <Suspense fallback={null}>
       <Route component={GoogleAnalyticsReporter} />
-      <Route component={DarkModeQueryParamReader} />
-      <AppWrapper>
-        <HeaderWrapper>
-          <Header />
-        </HeaderWrapper>
-        <BodyWrapper>
+      <AppBar />
+      <main className={'flex min-h-[calc(100vh-80px)] justify-center px-14 pb-6'}>
+        <div className={'flex w-full max-w-[1684px] flex-col'}>
           <Popups />
           <Web3ReactManager>
             <Switch>
@@ -87,9 +47,8 @@ export default function App() {
               <Route component={RedirectPathToSwapOnly} />
             </Switch>
           </Web3ReactManager>
-          <Marginer />
-        </BodyWrapper>
-      </AppWrapper>
+        </div>
+      </main>
     </Suspense>
   )
 }

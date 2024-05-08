@@ -93,7 +93,9 @@
       "prettier"
     ],
     "rules": {
-      "react/jsx-pascal-case": "off"
+      "react/jsx-pascal-case": "off",
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off"
     }
   },
   "browserslist": {

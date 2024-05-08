@@ -1,11 +1,5 @@
-import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
-import styled, {
-  ThemeProvider as StyledComponentsThemeProvider,
-  createGlobalStyle,
-  css,
-  DefaultTheme,
-} from 'styled-components'
+import styled, { ThemeProvider as StyledComponentsThemeProvider, css, DefaultTheme } from 'styled-components'
 import { useIsDarkMode } from '../state/user/hooks'
 import { Text, TextProps } from 'rebass'
 import { Colors } from './styled'
@@ -167,56 +161,3 @@ export const TYPE = {
     return <TextWrapper fontWeight={500} color={error ? 'red1' : 'text2'} {...props} />
   },
 }
-
-export const FixedGlobalStyle = createGlobalStyle`
-html, input, textarea, button {
-  font-family: 'Inter', sans-serif;
-  letter-spacing: -0.018em;
-  font-display: fallback;
-}
-@supports (font-variation-settings: normal) {
-  html, input, textarea, button {
-    font-family: 'Inter var', sans-serif;
-  }
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-button {
-  user-select: none;
-}
-
-html {
-  font-size: 16px;
-  font-variant: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-}
-`
-
-export const ThemedGlobalStyle = createGlobalStyle`
-html {
-  color: ${({ theme }) => theme.text1};
-  background-color: ${({ theme }) => theme.bg2};
-}
-
-body {
-  min-height: 100vh;
-  background-position: 0 -30vh;
-  background-repeat: no-repeat;
-  background-image: ${({ theme }) =>
-    `radial-gradient(50% 50% at 50% 50%, ${transparentize(0.9, theme.primary1)} 0%, ${transparentize(
-      1,
-      theme.bg1,
-    )} 100%)`};
-}
-`

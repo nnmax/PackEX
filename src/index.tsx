@@ -13,11 +13,10 @@ import ApplicationUpdater from './state/application/updater'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
 import TransactionUpdater from './state/transactions/updater'
-import UserUpdater from './state/user/updater'
-import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
+import ThemeProvider from './theme'
 import getLibrary from './utils/getLibrary'
 import './index.css'
-import { HashRouter, useHistory } from 'react-router-dom'
+import { BrowserRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 
@@ -52,7 +51,6 @@ function Updaters() {
   return (
     <>
       <ListsUpdater />
-      <UserUpdater />
       <ApplicationUpdater />
       <TransactionUpdater />
       <MulticallUpdater />
@@ -77,17 +75,15 @@ function Providers({ children }: { children: React.ReactNode }) {
 
 ReactDOM.render(
   <StrictMode>
-    <FixedGlobalStyle />
-    <HashRouter>
+    <BrowserRouter>
       <Providers>
         <Updaters />
         <ThemeProvider>
-          <ThemedGlobalStyle />
           <App />
           <ToastContainer draggable transition={Bounce} />
         </ThemeProvider>
       </Providers>
-    </HashRouter>
+    </BrowserRouter>
   </StrictMode>,
   document.getElementById('root'),
 )
