@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, currencyEquals, ETHER, Token } from '@uniswap/sdk'
-import React, { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
+import { CSSProperties, MutableRefObject, useCallback, useMemo } from 'react'
 import { FixedSizeList, ListChildComponentProps } from 'react-window'
 import { Text } from 'rebass'
 import styled from 'styled-components'

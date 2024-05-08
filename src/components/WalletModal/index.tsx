@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import ReactGA from 'react-ga'
 import styled from 'styled-components'
 import { isMobile } from 'react-device-detect'

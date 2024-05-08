@@ -1,5 +1,4 @@
 import clsx from 'clsx'
-import React from 'react'
 
 export default function NavTabs(props: { children: React.ReactNode; tabListClassName?: string }) {
   const { children, tabListClassName } = props

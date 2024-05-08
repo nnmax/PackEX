@@ -1,4 +1,5 @@
-import React, { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
+
 import { ArrowLeft } from 'react-feather'
 import ReactGA from 'react-ga'
 import { useDispatch, useSelector } from 'react-redux'

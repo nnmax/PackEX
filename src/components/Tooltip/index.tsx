@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import React from 'react'
+import { cloneElement, isValidElement, useState } from 'react'
+
 import clsx from 'clsx'
 import {
   FloatingPortal,
@@ -53,7 +53,7 @@ export default function Tooltip(props: TooltipProps) {
     style,
   } = props
 
-  const children = React.isValidElement(childrenProp) ? childrenProp : <span>{childrenProp}</span>
+  const children = isValidElement(childrenProp) ? childrenProp : <span>{childrenProp}</span>
 
   const [isOpen, setIsOpen] = useState(defaultOpen)
 
@@ -113,7 +113,7 @@ export default function Tooltip(props: TooltipProps) {
 
   return (
     <>
-      {React.cloneElement(
+      {cloneElement(
         children,
         getReferenceProps({
           ...children.props,

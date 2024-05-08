@@ -1,4 +1,3 @@
-import React from 'react'
 import { HelpCircle as Question } from 'react-feather'
 import Tooltip from '../Tooltip'
 
