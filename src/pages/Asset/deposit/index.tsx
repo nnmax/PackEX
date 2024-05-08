@@ -16,14 +16,14 @@ function getDeformityThree(width: number, height: number, radius: number) {
   return `path('M ${radius},0 L ${width - radius},0 A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width} ${height - radius} A ${radius} ${radius} 0 0 1 ${width - radius} ${height} L ${(width / 4) * 3},${height} L ${(width / 4) * 3 - 7},${height - 9} L ${width / 4 + 7},${height - 9} L ${width / 4},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`
 }
 
-export default function Withdraw() {
+export default function Deposit() {
   const inputId = useId()
 
   return (
     <div className={'py-4'}>
       <Link to={'/assets'} className={'inline-flex h-8 items-center gap-2 text-sm'}>
         <PixelarticonsChevronLeft aria-hidden className={'text-xl'} />
-        {'Withdraw'}
+        {'Deposit'}
       </Link>
 
       <div className={'mt-[60px] flex flex-col items-center'}>

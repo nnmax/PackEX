@@ -1,4 +1,3 @@
-import React from 'react'
 import clsx from 'clsx'
 
 export default function PnL(props: { positive?: boolean; negative?: boolean; value: number }) {

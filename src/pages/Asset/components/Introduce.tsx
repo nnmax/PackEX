@@ -1,9 +1,8 @@
-import React from 'react'
 import PnL from './PnL'
 
 export default function Introduce() {
   return (
-    <div className={'mb-6 mt-20 flex items-center gap-[60px]'}>
+    <div className={'mb-6 mt-6 flex items-center gap-[60px]'}>
       <dl
         className={
           'relative w-full max-w-80 rounded-md border border-[#9E9E9E] px-8 pb-6 pt-8 text-xs text-[#9E9E9E] before:rhombus-bg-[#9E9E9E] before:top-rhombus'

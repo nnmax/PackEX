@@ -1,7 +1,6 @@
 'use client'
-import React from 'react'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
-// import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import CryptocurrencyColorBtc from '../../../components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '../../../components/Icons/TokenBlast'
 import PnL from './PnL'
@@ -62,10 +61,13 @@ export default function DataTable() {
             <Cell>
               <div className={'flex items-center justify-center gap-10'}>
                 <Button className={'text-lemonYellow underline'}>{'Swap'}</Button>
-                <Button className={'text-lemonYellow underline'}>{'Deposit'}</Button>
-                <a className={'text-lemonYellow underline'} href={'#/withdraw'}>
+                {/* <Button className={'text-lemonYellow underline'}>{'Deposit'}</Button> */}
+                <Link className={'text-lemonYellow underline'} to={'/asset/deposit'}>
+                  {'Deposit'}
+                </Link>
+                <Link className={'text-lemonYellow underline'} to={'/asset/withdraw'}>
                   {'Withdraw'}
-                </a>
+                </Link>
               </div>
             </Cell>
           </Row>
