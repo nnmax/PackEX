@@ -20,14 +20,7 @@ import ListLogo from '../ListLogo'
 import QuestionHelper from '../QuestionHelper'
 import Row, { RowBetween } from '../Row'
 import { PaddedColumn, SearchInput, Separator, SeparatorDark } from './styleds'
-import {
-  FloatingPortal,
-  offset,
-  useClick,
-  useFloating,
-  useInteractions,
-  useRole,
-} from '@floating-ui/react'
+import { FloatingPortal, offset, useClick, useFloating, useInteractions, useRole } from '@floating-ui/react'
 
 const UnpaddedLinkStyledButton = styled(LinkStyledButton)`
   padding: 0;
@@ -206,15 +199,15 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
                 ...floatingStyles,
               }}
             >
-                <div>{list && listVersionLabel(list.version)}</div>
-                <SeparatorDark />
-                <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
-                <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
-                  Remove list
-                </UnpaddedLinkStyledButton>
-                {pending && (
-                  <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
-                )}
+              <div>{list && listVersionLabel(list.version)}</div>
+              <SeparatorDark />
+              <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
+              <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
+                Remove list
+              </UnpaddedLinkStyledButton>
+              {pending && (
+                <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
+              )}
             </PopoverContainer>
           </FloatingPortal>
         )}
