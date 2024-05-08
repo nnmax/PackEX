@@ -21,7 +21,7 @@ export default function Withdraw() {
 
   return (
     <div className={'py-4'}>
-      <Link to={'/assets'} className={'inline-flex h-8 items-center gap-2 text-sm'}>
+      <Link to={'/asset'} className={'inline-flex h-8 items-center gap-2 text-sm'}>
         <PixelarticonsChevronLeft aria-hidden className={'text-xl'} />
         {'Withdraw'}
       </Link>

@@ -1,8 +1,8 @@
 'use client'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
-import CryptocurrencyColorBtc from '../../../components/Icons/CryptocurrencyColorBtc'
-import TokenBlast from '../../../components/Icons/TokenBlast'
+import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
+import TokenBlast from '@/components/Icons/TokenBlast'
 import PnL from './PnL'
 
 const data = Array.from({ length: 10 }, (_, i) => ({
@@ -61,7 +61,6 @@ export default function DataTable() {
             <Cell>
               <div className={'flex items-center justify-center gap-10'}>
                 <Button className={'text-lemonYellow underline'}>{'Swap'}</Button>
-                {/* <Button className={'text-lemonYellow underline'}>{'Deposit'}</Button> */}
                 <Link className={'text-lemonYellow underline'} to={'/asset/deposit'}>
                   {'Deposit'}
                 </Link>
