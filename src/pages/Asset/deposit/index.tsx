@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useId } from 'react'
 import clsx from 'clsx'
-import PixelarticonsChevronLeft from '../../../components/Icons/PixelarticonsChevronLeft'
-import TokenBlast from '../../../components/Icons/TokenBlast'
+import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
+import TokenBlast from '@/components/Icons/TokenBlast'
 
 function getDeformityOne(width: number, height: number, radius: number) {
   return `path('M ${radius},0 L ${width / 2},0 L ${width / 2 + 9},7 L ${width},7 L ${width},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`
