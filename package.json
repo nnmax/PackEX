@@ -45,11 +45,13 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "ethers": "^5.0.7",
+    "husky": "^9.0.11",
     "i18next": "^15.0.9",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-xhr-backend": "^2.0.1",
     "inter-ui": "^3.13.1",
     "jazzicon": "^1.5.0",
+    "lint-staged": "^15.2.2",
     "multicodec": "^2.0.0",
     "multihashes": "^3.0.1",
     "polished": "^3.3.2",
@@ -89,7 +91,8 @@
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'",
     "tsc": "tsc --noEmit",
     "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
-    "prettier:ci": "prettier --check 'src/**/*.{js,jsx,ts,tsx}'"
+    "prettier:ci": "prettier --check 'src/**/*.{js,jsx,ts,tsx}'",
+    "postinstall": "husky install"
   },
   "eslintConfig": {
     "extends": [
@@ -125,5 +128,9 @@
     "react-aria-components": "^1.2.0",
     "react-toastify": "^10.0.5"
   },
-  "packageManager": "yarn@4.2.1"
+  "packageManager": "yarn@4.2.1",
+  "lint-staged": {
+    "*.{js,ts,tsx,cjs,mjs}": "eslint --fix",
+    "**/*": "prettier --write --ignore-unknown"
+  }
 }
