@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom'
 import { useId } from 'react'
+import { Link } from 'react-router-dom'
+import WalletSvg from '@/assets/svg/wallet.svg'
 import clsx from 'clsx'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import TokenBlast from '@/components/Icons/TokenBlast'
@@ -90,6 +91,16 @@ export default function Withdraw() {
           }
         >
           {'Confirm'}
+        </button>
+
+        <button
+          type={'button'}
+          className={
+            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+          }
+        >
+          <img src={WalletSvg} alt="icon" />
+          <span className={'ml-6'}>{'Connect Wallet'}</span>
         </button>
       </div>
     </div>
