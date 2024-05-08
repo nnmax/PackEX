@@ -18,7 +18,7 @@ import RemoveLiquidity from './RemoveLiquidity'
 import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
 import Swap from './Swap'
 import { RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
-import AppBar from '../components/AppBar'
+import AppBar from '@/components/AppBar'
 
 export default function App() {
   return (
