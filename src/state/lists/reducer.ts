@@ -24,7 +24,7 @@ const NEW_LIST_STATE: ListsState['byUrl'][string] = {
   error: null,
   current: null,
   loadingRequestId: null,
-  pendingUpdate: null
+  pendingUpdate: null,
 }
 
 type Mutable<T> = { -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer U> ? U[] : T[P] }
@@ -40,21 +40,23 @@ const initialState: ListsState = {
       error: null,
       current: UNISWAP_DEFAULT_LIST,
       loadingRequestId: null,
-      pendingUpdate: null
-    }
+      pendingUpdate: null,
+    },
   },
-  selectedListUrl: undefined
+  selectedListUrl: undefined,
 }
 
-export default createReducer(initialState, builder =>
+export default createReducer(initialState, (builder) =>
   builder
     .addCase(fetchTokenList.pending, (state, { payload: { requestId, url } }) => {
       state.byUrl[url] = {
+        // @ts-ignore
         current: null,
+        // @ts-ignore
         pendingUpdate: null,
         ...state.byUrl[url],
         loadingRequestId: requestId,
-        error: null
+        error: null,
       }
     })
     .addCase(fetchTokenList.fulfilled, (state, { payload: { requestId, tokenList, url } }) => {
@@ -71,7 +73,7 @@ export default createReducer(initialState, builder =>
             loadingRequestId: null,
             error: null,
             current: current,
-            pendingUpdate: tokenList
+            pendingUpdate: tokenList,
           }
         }
       } else {
@@ -80,7 +82,7 @@ export default createReducer(initialState, builder =>
           loadingRequestId: null,
           error: null,
           current: tokenList,
-          pendingUpdate: null
+          pendingUpdate: null,
         }
       }
     })
@@ -95,7 +97,7 @@ export default createReducer(initialState, builder =>
         loadingRequestId: null,
         error: errorMessage,
         current: null,
-        pendingUpdate: null
+        pendingUpdate: null,
       }
     })
     .addCase(selectList, (state, { payload: url }) => {
@@ -125,10 +127,10 @@ export default createReducer(initialState, builder =>
       state.byUrl[url] = {
         ...state.byUrl[url],
         pendingUpdate: null,
-        current: state.byUrl[url].pendingUpdate
+        current: state.byUrl[url].pendingUpdate,
       }
     })
-    .addCase(updateVersion, state => {
+    .addCase(updateVersion, (state) => {
       // state loaded from localStorage, but new lists have never been initialized
       if (!state.lastInitializedDefaultListOfLists) {
         state.byUrl = initialState.byUrl
@@ -136,17 +138,17 @@ export default createReducer(initialState, builder =>
       } else if (state.lastInitializedDefaultListOfLists) {
         const lastInitializedSet = state.lastInitializedDefaultListOfLists.reduce<Set<string>>(
           (s, l) => s.add(l),
-          new Set()
+          new Set(),
         )
         const newListOfListsSet = DEFAULT_LIST_OF_LISTS.reduce<Set<string>>((s, l) => s.add(l), new Set())
 
-        DEFAULT_LIST_OF_LISTS.forEach(listUrl => {
+        DEFAULT_LIST_OF_LISTS.forEach((listUrl) => {
           if (!lastInitializedSet.has(listUrl)) {
             state.byUrl[listUrl] = NEW_LIST_STATE
           }
         })
 
-        state.lastInitializedDefaultListOfLists.forEach(listUrl => {
+        state.lastInitializedDefaultListOfLists.forEach((listUrl) => {
           if (!newListOfListsSet.has(listUrl)) {
             delete state.byUrl[listUrl]
           }
@@ -154,5 +156,5 @@ export default createReducer(initialState, builder =>
       }
 
       state.lastInitializedDefaultListOfLists = DEFAULT_LIST_OF_LISTS
-    })
+    }),
 )

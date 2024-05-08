@@ -1,14 +1,11 @@
-import React, { memo, useCallback, useMemo, useRef, useState } from 'react'
+import React, { memo, useCallback, useMemo, useState } from 'react'
 import { ArrowLeft } from 'react-feather'
 import ReactGA from 'react-ga'
-import { usePopper } from 'react-popper'
 import { useDispatch, useSelector } from 'react-redux'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useFetchListCallback } from '../../hooks/useFetchListCallback'
-import { useOnClickOutside } from '../../hooks/useOnClickOutside'
-
 import useToggle from '../../hooks/useToggle'
 import { AppDispatch, AppState } from '../../state'
 import { acceptListUpdate, removeList, selectList } from '../../state/lists/actions'
@@ -18,12 +15,12 @@ import listVersionLabel from '../../utils/listVersionLabel'
 import { parseENSAddress } from '../../utils/parseENSAddress'
 import uriToHttp from '../../utils/uriToHttp'
 import { ButtonOutlined, ButtonPrimary, ButtonSecondary } from '../Button'
-
 import Column from '../Column'
 import ListLogo from '../ListLogo'
 import QuestionHelper from '../QuestionHelper'
 import Row, { RowBetween } from '../Row'
 import { PaddedColumn, SearchInput, Separator, SeparatorDark } from './styleds'
+import { FloatingPortal, offset, useClick, useFloating, useInteractions, useRole } from '@floating-ui/react'
 
 const UnpaddedLinkStyledButton = styled(LinkStyledButton)`
   padding: 0;
@@ -31,14 +28,14 @@ const UnpaddedLinkStyledButton = styled(LinkStyledButton)`
   opacity: ${({ disabled }) => (disabled ? '0.4' : '1')};
 `
 
-const PopoverContainer = styled.div<{ show: boolean }>`
+const PopoverContainer = styled.div`
   z-index: 100;
-  visibility: ${props => (props.show ? 'visible' : 'hidden')};
-  opacity: ${props => (props.show ? 1 : 0)};
-  transition: visibility 150ms linear, opacity 150ms linear;
   background: ${({ theme }) => theme.bg2};
   border: 1px solid ${({ theme }) => theme.bg3};
-  box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
+  box-shadow:
+    0px 0px 1px rgba(0, 0, 0, 0.01),
+    0px 4px 8px rgba(0, 0, 0, 0.04),
+    0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
   color: ${({ theme }) => theme.text2};
   border-radius: 0.5rem;
@@ -90,7 +87,7 @@ function listUrlRowHTMLId(listUrl: string) {
 }
 
 const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; onBack: () => void }) {
-  const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>(state => state.lists.byUrl)
+  const listsByUrl = useSelector<AppState, AppState['lists']['byUrl']>((state) => state.lists.byUrl)
   const selectedListUrl = useSelectedListUrl()
   const dispatch = useDispatch<AppDispatch>()
   const { current: list, pendingUpdate: pending } = listsByUrl[listUrl]
@@ -98,24 +95,24 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
   const isSelected = listUrl === selectedListUrl
 
   const [open, toggle] = useToggle(false)
-  const node = useRef<HTMLDivElement>()
-  const [referenceElement, setReferenceElement] = useState<HTMLDivElement>()
-  const [popperElement, setPopperElement] = useState<HTMLDivElement>()
-
-  const { styles, attributes } = usePopper(referenceElement, popperElement, {
-    placement: 'auto',
+  const { refs, floatingStyles, context } = useFloating({
     strategy: 'fixed',
-    modifiers: [{ name: 'offset', options: { offset: [8, 8] } }]
+    placement: 'bottom',
+    middleware: [offset(8)],
+    open,
+    onOpenChange: toggle,
   })
-
-  useOnClickOutside(node, open ? toggle : undefined)
+  const click = useClick(context)
+  const role = useRole(context)
+  const { getReferenceProps, getFloatingProps } = useInteractions([click, role])
+  const floatingProps = getFloatingProps()
 
   const selectThisList = useCallback(() => {
     if (isSelected) return
     ReactGA.event({
       category: 'Lists',
       action: 'Select List',
-      label: listUrl
+      label: listUrl,
     })
 
     dispatch(selectList(listUrl))
@@ -127,7 +124,7 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
     ReactGA.event({
       category: 'Lists',
       action: 'Update List from List Select',
-      label: listUrl
+      label: listUrl,
     })
     dispatch(acceptListUpdate(listUrl))
   }, [dispatch, listUrl, pending])
@@ -136,13 +133,13 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
     ReactGA.event({
       category: 'Lists',
       action: 'Start Remove List',
-      label: listUrl
+      label: listUrl,
     })
     if (window.prompt(`Please confirm you would like to remove this list by typing REMOVE`) === `REMOVE`) {
       ReactGA.event({
         category: 'Lists',
         action: 'Confirm Remove List',
-        label: listUrl
+        label: listUrl,
       })
       dispatch(removeList(listUrl))
     }
@@ -169,7 +166,7 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
         </Row>
         <Row
           style={{
-            marginTop: '4px'
+            marginTop: '4px',
           }}
         >
           <StyledListUrlText title={listUrl}>
@@ -177,33 +174,42 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
           </StyledListUrlText>
         </Row>
       </Column>
-      <StyledMenu ref={node as any}>
+      <StyledMenu>
         <ButtonOutlined
-          style={{
-            width: '2rem',
-            padding: '.8rem .35rem',
-            borderRadius: '12px',
-            fontSize: '14px',
-            marginRight: '0.5rem'
-          }}
-          onClick={toggle}
-          ref={setReferenceElement}
+          {...getReferenceProps({
+            style: {
+              width: '2rem',
+              padding: '.8rem .35rem',
+              borderRadius: '12px',
+              fontSize: '14px',
+              marginRight: '0.5rem',
+            },
+          })}
+          ref={refs.setReference}
         >
           <DropDown />
         </ButtonOutlined>
 
         {open && (
-          <PopoverContainer show={true} ref={setPopperElement as any} style={styles.popper} {...attributes.popper}>
-            <div>{list && listVersionLabel(list.version)}</div>
-            <SeparatorDark />
-            <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
-            <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
-              Remove list
-            </UnpaddedLinkStyledButton>
-            {pending && (
-              <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
-            )}
-          </PopoverContainer>
+          <FloatingPortal>
+            <PopoverContainer
+              ref={refs.setFloating}
+              {...floatingProps}
+              style={{
+                ...floatingStyles,
+              }}
+            >
+              <div>{list && listVersionLabel(list.version)}</div>
+              <SeparatorDark />
+              <ExternalLink href={`https://tokenlists.org/token-list?url=${listUrl}`}>View list</ExternalLink>
+              <UnpaddedLinkStyledButton onClick={handleRemoveList} disabled={Object.keys(listsByUrl).length === 1}>
+                Remove list
+              </UnpaddedLinkStyledButton>
+              {pending && (
+                <UnpaddedLinkStyledButton onClick={handleAcceptListUpdate}>Update list</UnpaddedLinkStyledButton>
+              )}
+            </PopoverContainer>
+          </FloatingPortal>
         )}
       </StyledMenu>
       {isSelected ? (
@@ -223,7 +229,7 @@ const ListRow = memo(function ListRow({ listUrl, onBack }: { listUrl: string; on
               minWidth: '4.5rem',
               padding: '0.5rem .35rem',
               borderRadius: '12px',
-              fontSize: '14px'
+              fontSize: '14px',
             }}
             onClick={selectThisList}
           >
@@ -252,11 +258,11 @@ export function ListSelect({ onDismiss, onBack }: { onDismiss: () => void; onBac
   const [listUrlInput, setListUrlInput] = useState<string>('')
 
   const dispatch = useDispatch<AppDispatch>()
-  const lists = useSelector<AppState, AppState['lists']['byUrl']>(state => state.lists.byUrl)
+  const lists = useSelector<AppState, AppState['lists']['byUrl']>((state) => state.lists.byUrl)
   const adding = Boolean(lists[listUrlInput]?.loadingRequestId)
   const [addError, setAddError] = useState<string | null>(null)
 
-  const handleInput = useCallback(e => {
+  const handleInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setListUrlInput(e.target.value)
     setAddError(null)
   }, [])
@@ -271,14 +277,14 @@ export function ListSelect({ onDismiss, onBack }: { onDismiss: () => void; onBac
         ReactGA.event({
           category: 'Lists',
           action: 'Add List',
-          label: listUrlInput
+          label: listUrlInput,
         })
       })
-      .catch(error => {
+      .catch((error) => {
         ReactGA.event({
           category: 'Lists',
           action: 'Add List Failed',
-          label: listUrlInput
+          label: listUrlInput,
         })
         setAddError(error.message)
         dispatch(removeList(listUrlInput))
@@ -290,18 +296,18 @@ export function ListSelect({ onDismiss, onBack }: { onDismiss: () => void; onBac
   }, [listUrlInput])
 
   const handleEnterKey = useCallback(
-    e => {
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (validUrl && e.key === 'Enter') {
         handleAddList()
       }
     },
-    [handleAddList, validUrl]
+    [handleAddList, validUrl],
   )
 
   const sortedLists = useMemo(() => {
     const listUrls = Object.keys(lists)
     return listUrls
-      .filter(listUrl => {
+      .filter((listUrl) => {
         return Boolean(lists[listUrl].current)
       })
       .sort((u1, u2) => {
@@ -311,8 +317,8 @@ export function ListSelect({ onDismiss, onBack }: { onDismiss: () => void; onBac
           return l1.name.toLowerCase() < l2.name.toLowerCase()
             ? -1
             : l1.name.toLowerCase() === l2.name.toLowerCase()
-            ? 0
-            : 1
+              ? 0
+              : 1
         }
         if (l1) return -1
         if (l2) return 1
@@ -365,7 +371,7 @@ export function ListSelect({ onDismiss, onBack }: { onDismiss: () => void; onBac
       <Separator />
 
       <ListContainer>
-        {sortedLists.map(listUrl => (
+        {sortedLists.map((listUrl) => (
           <ListRow key={listUrl} listUrl={listUrl} onBack={onBack} />
         ))}
       </ListContainer>

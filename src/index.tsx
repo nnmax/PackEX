@@ -16,6 +16,10 @@ import TransactionUpdater from './state/transactions/updater'
 import UserUpdater from './state/user/updater'
 import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
 import getLibrary from './utils/getLibrary'
+import './index.css'
+import { HashRouter, useHistory } from 'react-router-dom'
+import { I18nProvider, RouterProvider } from 'react-aria-components'
+import { Bounce, ToastContainer } from 'react-toastify'
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 
@@ -27,16 +31,20 @@ const GOOGLE_ANALYTICS_ID: string | undefined = process.env.REACT_APP_GOOGLE_ANA
 if (typeof GOOGLE_ANALYTICS_ID === 'string') {
   ReactGA.initialize(GOOGLE_ANALYTICS_ID)
   ReactGA.set({
-    customBrowserType: !isMobile ? 'desktop' : 'web3' in window || 'ethereum' in window ? 'mobileWeb3' : 'mobileRegular'
+    customBrowserType: !isMobile
+      ? 'desktop'
+      : 'web3' in window || 'ethereum' in window
+        ? 'mobileWeb3'
+        : 'mobileRegular',
   })
 } else {
   ReactGA.initialize('test', { testMode: true, debug: true })
 }
 
-window.addEventListener('error', error => {
+window.addEventListener('error', (error) => {
   ReactGA.exception({
     description: `${error.message} @ ${error.filename}:${error.lineno}:${error.colno}`,
-    fatal: true
+    fatal: true,
   })
 })
 
@@ -52,20 +60,34 @@ function Updaters() {
   )
 }
 
+function Providers({ children }: { children: React.ReactNode }) {
+  const history = useHistory()
+  return (
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3ProviderNetwork getLibrary={getLibrary}>
+        <I18nProvider locale={'en-US'}>
+          <RouterProvider navigate={history.push}>
+            <Provider store={store}>{children}</Provider>
+          </RouterProvider>
+        </I18nProvider>
+      </Web3ProviderNetwork>
+    </Web3ReactProvider>
+  )
+}
+
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3ProviderNetwork getLibrary={getLibrary}>
-        <Provider store={store}>
-          <Updaters />
-          <ThemeProvider>
-            <ThemedGlobalStyle />
-            <App />
-          </ThemeProvider>
-        </Provider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
+    <HashRouter>
+      <Providers>
+        <Updaters />
+        <ThemeProvider>
+          <ThemedGlobalStyle />
+          <App />
+          <ToastContainer draggable transition={Bounce} />
+        </ThemeProvider>
+      </Providers>
+    </HashRouter>
   </StrictMode>,
-  document.getElementById('root')
+  document.getElementById('root'),
 )
