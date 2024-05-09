@@ -64,7 +64,7 @@ const PoolAll = () => {
             <Cell>
               <div className={'flex items-center justify-center gap-10'}>
                 <Link className={'text-lemonYellow underline'} to={'/pool/add'}>
-                  {'Add liquidity'}
+                  {'ADD LIQUIDIRY'}
                 </Link>
               </div>
             </Cell>

@@ -67,23 +67,15 @@ const PoolMy = () => {
               <Cell>{item.apy}</Cell>
               <Cell>
                 <div className={'flex items-center justify-center gap-6'}>
-                  <Button className={'text-lemonYellow w-[60px] h-6 border border-lemonYellow'}>{'+ADD'}</Button>
-                  <Button className={'text-lemonYellow w-[88px] h-6 border border-lemonYellow'}>{'—REMOVE'}</Button>
+                  <Button className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}>
+                    {'+ADD'}
+                  </Button>
+                  <Button className={'text-lemonYellow w-[88px] h-6 border rounded-sm border-lemonYellow'}>
+                    {'—REMOVE'}
+                  </Button>
                 </div>
               </Cell>
             </Row>
-            {/* {
-              item.id === 1 && (
-                <Row className={'[&>td]:px-3'}>
-                  <Cell>
-                    <div className="w-full">
-                      <div className='text-lemonYellow'>Convert all profits earned from PackEX to $PAX automatically</div>
-                      <div className='text-lemonYellow'>Some text 2</div>
-                    </div>
-                  </Cell>
-                </Row>
-              )
-            } */}
           </Fragment>
         )}
       </TableBody>
