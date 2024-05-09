@@ -1,4 +1,5 @@
 'use client'
+import { Fragment } from 'react'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
@@ -43,34 +44,47 @@ const PoolMy = () => {
       </TableHeader>
       <TableBody items={data} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
         {(item) => (
-          <Row id={item.id} className={'[&>td]:px-3'}>
-            <Cell>
-              <div className={'flex items-center justify-center gap-4'}>
-                <div className={'flex'}>
-                  <span className={'text-xs'}>{item.tokenOne}</span>/<span className={'text-xs'}>{item.tokenTwo}</span>
+          <Fragment key={item.id}>
+            <Row id={item.id} className={'[&>td]:px-3'}>
+              <Cell>
+                <div className={'flex items-center justify-center gap-4'}>
+                  <div className={'flex'}>
+                    <span className={'text-xs'}>{item.tokenOne}</span>/
+                    <span className={'text-xs'}>{item.tokenTwo}</span>
+                  </div>
                 </div>
-              </div>
-            </Cell>
-            <Cell>
-              <div className={'flex items-center justify-center gap-4'}>
-                <div className={'flex items-center'}>
-                  <TokenLogo /> <span className={'text-xs'}>{item.tokenOne}</span> /
-                  <TokenLogoTwo /> <span className={'text-xs'}>{item.tokenTwo}</span>
+              </Cell>
+              <Cell>
+                <div className={'flex items-center justify-center gap-4'}>
+                  <div className={'flex items-center'}>
+                    <TokenLogo /> <span className={'text-xs'}>{item.tokenOne}</span> /
+                    <TokenLogoTwo /> <span className={'text-xs'}>{item.tokenTwo}</span>
+                  </div>
                 </div>
-              </div>
-            </Cell>
-            <Cell>{item.share}</Cell>
-            <Cell>{item.earn}</Cell>
-            <Cell>{item.apy}</Cell>
-            <Cell>
-              <div className={'flex items-center justify-center gap-6'}>
-                <Button className={'text-xs text-lemonYellow w-[60px] h-6 border border-lemonYellow'}>{'+ADD'}</Button>
-                <Button className={'text-xs text-lemonYellow w-[88px] h-6 border border-lemonYellow'}>
-                  {'—REMOVE'}
-                </Button>
-              </div>
-            </Cell>
-          </Row>
+              </Cell>
+              <Cell>{item.share}</Cell>
+              <Cell>{item.earn}</Cell>
+              <Cell>{item.apy}</Cell>
+              <Cell>
+                <div className={'flex items-center justify-center gap-6'}>
+                  <Button className={'text-lemonYellow w-[60px] h-6 border border-lemonYellow'}>{'+ADD'}</Button>
+                  <Button className={'text-lemonYellow w-[88px] h-6 border border-lemonYellow'}>{'—REMOVE'}</Button>
+                </div>
+              </Cell>
+            </Row>
+            {/* {
+              item.id === 1 && (
+                <Row className={'[&>td]:px-3'}>
+                  <Cell>
+                    <div className="w-full">
+                      <div className='text-lemonYellow'>Convert all profits earned from PackEX to $PAX automatically</div>
+                      <div className='text-lemonYellow'>Some text 2</div>
+                    </div>
+                  </Cell>
+                </Row>
+              )
+            } */}
+          </Fragment>
         )}
       </TableBody>
     </Table>
