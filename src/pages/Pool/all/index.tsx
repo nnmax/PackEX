@@ -1,9 +1,9 @@
 'use client'
-import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
-import { Link } from 'react-router-dom'
+import { Cell, Button, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
+// import { Link } from 'react-router-dom'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
-// import PnL from '../../Asset/components/PnL'
+import GearIcon from '@/components/Icons/GearIcon'
 
 const data = Array.from({ length: 15 }, (_, i) => ({
   id: i + 1,
@@ -18,7 +18,7 @@ const data = Array.from({ length: 15 }, (_, i) => ({
 
 function TokenLogo() {
   return (
-    <div className={'relative h-6 w-6 rounded-full bg-black'}>
+    <div className={'relative h-6 w-6 rounded-full'}>
       <CryptocurrencyColorBtc className={'h-full w-full rounded-full'} />
     </div>
   )
@@ -26,8 +26,16 @@ function TokenLogo() {
 
 function TokenLogoTwo() {
   return (
-    <div className={'relative h-6 w-6 rounded-full bg-black'}>
+    <div className={'relative h-6 w-6 rounded-full mr-4'}>
       <TokenBlast className={'h-full w-full rounded-full'} />
+    </div>
+  )
+}
+
+function GearIconLogo() {
+  return (
+    <div className={'relative h-5 w-5 rounded-full  mr-3'}>
+      <GearIcon className={'h-full w-full rounded-full'} />
     </div>
   )
 }
@@ -49,11 +57,13 @@ const PoolAll = () => {
         {(item) => (
           <Row id={item.id} className={'[&>td]:px-3'}>
             <Cell>
-              <div className={'flex items-center justify-center gap-4'}>
+              <div className={'flex items-center justify-center'}>
+                <GearIconLogo />
                 <TokenLogo />
                 <TokenLogoTwo />
                 <div className={'flex'}>
-                  <span className={'text-xs'}>{item.tokenOne}</span>/<span className={'text-xs'}>{item.tokenTwo}</span>
+                  <span className={'text-xs mr-2'}>{item.tokenOne}</span> /
+                  <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
                 </div>
               </div>
             </Cell>
@@ -63,9 +73,9 @@ const PoolAll = () => {
             <Cell>{item.apy}</Cell>
             <Cell>
               <div className={'flex items-center justify-center gap-10'}>
-                <Link className={'text-lemonYellow underline'} to={'/pool/add'}>
-                  {'ADD LIQUIDIRY'}
-                </Link>
+                <Button className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}>
+                  {'+ADD'}
+                </Button>
               </div>
             </Cell>
           </Row>

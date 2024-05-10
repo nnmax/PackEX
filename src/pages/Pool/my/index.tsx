@@ -3,12 +3,15 @@ import { Fragment } from 'react'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
+import GearIcon from '@/components/Icons/GearIcon'
 
 const data = Array.from({ length: 15 }, (_, i) => ({
   id: i + 1,
   tokenOne: `EZETH`,
   tokenTwo: 'WETH',
   tvl: `5${i} M`,
+  amount1: `22.${i}`,
+  amount2: `${3.1 + i}%`,
   share: `${3.1 + i}%`,
   earn: `22.${i}`,
   value: `Value ${i}`,
@@ -31,6 +34,14 @@ function TokenLogoTwo() {
   )
 }
 
+function GearIconLogo() {
+  return (
+    <div className={'relative h-5 w-5 rounded-full  mr-3'}>
+      <GearIcon className={'h-full w-full rounded-full'} />
+    </div>
+  )
+}
+
 const PoolMy = () => {
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
@@ -47,18 +58,19 @@ const PoolMy = () => {
           <Fragment key={item.id}>
             <Row id={item.id} className={'[&>td]:px-3'}>
               <Cell>
-                <div className={'flex items-center justify-center gap-4'}>
+                <div className={'flex items-center justify-center'}>
+                  {item.id === 1 && <GearIconLogo />}
                   <div className={'flex'}>
-                    <span className={'text-xs'}>{item.tokenOne}</span>/
-                    <span className={'text-xs'}>{item.tokenTwo}</span>
+                    <span className={'text-xs mr-2'}>{item.tokenOne}</span>/
+                    <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
                   </div>
                 </div>
               </Cell>
               <Cell>
                 <div className={'flex items-center justify-center gap-4'}>
                   <div className={'flex items-center'}>
-                    <TokenLogo /> <span className={'text-xs'}>{item.tokenOne}</span> /
-                    <TokenLogoTwo /> <span className={'text-xs'}>{item.tokenTwo}</span>
+                    <TokenLogo /> <span className={'text-xs mr-2'}>{item.amount1}</span> /
+                    <TokenLogoTwo /> <span className={'text-xs'}>{item.amount2}</span>
                   </div>
                 </div>
               </Cell>
