@@ -47,7 +47,7 @@ export default function Withdraw() {
             >
               <span className={'mr-2 text-[#9E9E9E]'}>{'Token'}</span>
               <TokenBlast className={'mr-1 text-xl'} />
-              <span>{'BLAST'}</span>
+              <span>{'DOG'}</span>
             </div>
           </div>
           <div className={'relative rounded-md bg-[#242424] p-6'}>
@@ -96,7 +96,7 @@ export default function Withdraw() {
                 /> */}
                 <textarea
                   className={
-                    'text-xs focus:outline-none h-[64px] w-full px-[12px] py-[8px] bg-transparent border border-solid rounded border-[#9E9E9E]'
+                    'text-[12px] leading-[20px] focus:outline-none h-[64px] w-full px-[12px] py-[8px] bg-transparent border border-solid rounded border-[#9E9E9E]'
                   }
                   autoFocus
                   id={inputId}
