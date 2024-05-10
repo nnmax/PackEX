@@ -1,4 +1,4 @@
-import { ChainId } from '@uniswap/sdk'
+import { ChainId } from '@nnmax/uniswap-sdk-v2'
 import { useContext } from 'react'
 
 import styled, { ThemeContext } from 'styled-components'

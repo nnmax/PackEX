@@ -1,7 +1,7 @@
 import useENS from '../../hooks/useENS'
 import { Version } from '../../hooks/useToggledVersion'
 import { parseUnits } from '@ethersproject/units'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@uniswap/sdk'
+import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@nnmax/uniswap-sdk-v2'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -108,7 +108,7 @@ function involvesAddress(trade: Trade, checksummedAddress: string): boolean {
 
 // from the current swap inputs, compute the best trade and return it.
 export function useDerivedSwapInfo(): {
-  currencies: { [field in Field]?: Currency }
+  currencies: { [field in Field]?: Token }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
   v2Trade: Trade | undefined
@@ -150,7 +150,7 @@ export function useDerivedSwapInfo(): {
     [Field.OUTPUT]: relevantTokenBalances[1],
   }
 
-  const currencies: { [field in Field]?: Currency } = {
+  const currencies: { [field in Field]?: Token } = {
     [Field.INPUT]: inputCurrency ?? undefined,
     [Field.OUTPUT]: outputCurrency ?? undefined,
   }

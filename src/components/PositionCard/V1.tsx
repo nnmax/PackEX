@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom'
-import { Token, TokenAmount, WETH } from '@uniswap/sdk'
+import { Token, TokenAmount, WETH } from '@nnmax/uniswap-sdk-v2'
 
 import { Text } from 'rebass'
 import { AutoColumn } from '../Column'

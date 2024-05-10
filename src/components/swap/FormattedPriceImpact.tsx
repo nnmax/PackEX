@@ -1,4 +1,4 @@
-import { Percent } from '@uniswap/sdk'
+import { Percent } from '@nnmax/uniswap-sdk-v2'
 import { ONE_BIPS } from '../../constants'
 import { warningSeverity } from '../../utils/prices'
 import { ErrorText } from './styleds'

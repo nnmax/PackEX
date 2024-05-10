@@ -43,7 +43,8 @@ const initialState: ListsState = {
       pendingUpdate: null,
     },
   },
-  selectedListUrl: undefined,
+  // TODO: 我们不需要选择默认的列表，因为我们只有一个
+  selectedListUrl: DEFAULT_TOKEN_LIST_URL,
 }
 
 export default createReducer(initialState, (builder) =>

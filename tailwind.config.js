@@ -1,11 +1,11 @@
+// @ts-check
 const animate = require('tailwindcss-animate')
 const plugin = require('tailwindcss/plugin')
+const { addDynamicIconSelectors } = require('@iconify/tailwind')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    './src/**/*.{ts,tsx}',
-  ],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -16,6 +16,7 @@ module.exports = {
   },
   plugins: [
     animate,
+    addDynamicIconSelectors(),
     plugin(({ addUtilities, matchUtilities, theme }) => {
       matchUtilities(
         {
@@ -92,5 +93,5 @@ module.exports = {
         },
       })
     }),
-  ]
+  ],
 }

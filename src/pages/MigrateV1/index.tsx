@@ -1,4 +1,4 @@
-import { JSBI, Token } from '@uniswap/sdk'
+import { JSBI, Token } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useContext, useMemo, useState, useEffect } from 'react'
 
 import { ThemeContext } from 'styled-components'

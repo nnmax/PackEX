@@ -1,4 +1,4 @@
-import { ChainId, Token } from '@uniswap/sdk'
+import { ChainId, Token } from '@nnmax/uniswap-sdk-v2'
 import { Tags, TokenInfo, TokenList } from '@uniswap/token-lists'
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
@@ -36,6 +36,7 @@ const EMPTY_LIST: TokenAddressMap = {
   [ChainId.ROPSTEN]: {},
   [ChainId.GÖRLI]: {},
   [ChainId.MAINNET]: {},
+  [ChainId.BLAST_TESTNET]: {},
 }
 
 const listCache: WeakMap<TokenList, TokenAddressMap> | null =
@@ -82,6 +83,32 @@ export function useTokenList(url: string | undefined): TokenAddressMap {
       console.error('Could not show token list due to error', error)
       return EMPTY_LIST
     }
+    // return listToTokenMap({
+    //   name: 'Blast Token List',
+    //   timestamp: new Date().toISOString(),
+    //   version: { major: 1, minor: 0, patch: 0 },
+    //   tags: {},
+    //   tokens: [
+    //     {
+    //       chainId: ChainId.BLAST_TESTNET,
+    //       address: '0x4200000000000000000000000000000000000022',
+    //       name: 'USDB',
+    //       symbol: 'USDB',
+    //       decimals: 18,
+    //       logoURI: 'https://raw.githubusercontent.com/nnmax/blast-token/main/logo.png',
+    //       tags: ['blast'],
+    //     },
+    //     {
+    //       chainId: ChainId.BLAST_TESTNET,
+    //       address: '0x4200000000000000000000000000000000000023',
+    //       name: 'WETH',
+    //       symbol: 'WETH',
+    //       decimals: 18,
+    //       logoURI: 'https://raw.githubusercontent.com/nnmax/blast-token/main/logo.png',
+    //       tags: ['blast'],
+    //     },
+    //   ],
+    // })
   }, [lists, url])
 }
 

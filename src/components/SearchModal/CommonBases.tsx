@@ -1,5 +1,5 @@
 import { Text } from 'rebass'
-import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk'
+import { ChainId, Currency, currencyEquals, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 import styled from 'styled-components'
 
 import { SUGGESTED_BASES } from '../../constants'

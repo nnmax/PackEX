@@ -19,5 +19,5 @@ body {
   font-family: 'pixelmix';
   src:
     local('pixelmix'),
-    url(./fonts/pixelmix.ttf) format('truetype');
+    url(./assets/fonts/pixelmix.ttf) format('truetype');
 }

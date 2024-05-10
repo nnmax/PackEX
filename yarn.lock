@@ -2689,6 +2689,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@iconify/json@npm:^2.2.207":
+  version: 2.2.207
+  resolution: "@iconify/json@npm:2.2.207"
+  dependencies:
+    "@iconify/types": "npm:*"
+    pathe: "npm:^1.1.2"
+  checksum: 10c0/cd97bcc88f9933418c8d562be9bdc9c9305126d06622542a43c132aad1ed041b3141c81203430e029c97c7250779c8fee3ecddc981097247d481b00c5f3e898d
+  languageName: node
+  linkType: hard
+
+"@iconify/tailwind@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@iconify/tailwind@npm:1.0.1"
+  dependencies:
+    "@iconify/types": "npm:^2.0.0"
+  checksum: 10c0/ae5840a9f3d9f15d07ef12bab76747e6818e2bff5d9fad77cffa4fdc033cb358bde0bde508d62381df567ee653a16299e874ec66601bbdac44b4bfcadecb73d5
+  languageName: node
+  linkType: hard
+
+"@iconify/types@npm:*, @iconify/types@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@iconify/types@npm:2.0.0"
+  checksum: 10c0/65a3be43500c7ccacf360e136d00e1717f050b7b91da644e94370256ac66f582d59212bdb30d00788aab4fc078262e91c95b805d1808d654b72f6d2072a7e4b2
+  languageName: node
+  linkType: hard
+
 "@internationalized/date@npm:^3.5.3":
   version: 3.5.3
   resolution: "@internationalized/date@npm:3.5.3"
@@ -3199,6 +3225,27 @@ __metadata:
   dependencies:
     eslint-scope: "npm:5.1.1"
   checksum: 10c0/75dda3e623b8ad7369ca22552d6beee337a814b2d0e8a32d23edd13fcb65c8082b32c5d86e436f3860dd7ade30d91d5db55d4ef9a08fb5a976c718ecc0d88a74
+  languageName: node
+  linkType: hard
+
+"@nnmax/uniswap-sdk-v2@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "@nnmax/uniswap-sdk-v2@npm:1.0.2"
+  dependencies:
+    "@uniswap/v2-core": "npm:^1.0.0"
+    big.js: "npm:^5.2.2"
+    decimal.js-light: "npm:^2.5.0"
+    jsbi: "npm:^3.1.1"
+    tiny-invariant: "npm:^1.1.0"
+    tiny-warning: "npm:^1.0.3"
+    toformat: "npm:^2.0.0"
+  peerDependencies:
+    "@ethersproject/address": ^5.0.0-beta
+    "@ethersproject/contracts": ^5.0.0-beta
+    "@ethersproject/networks": ^5.0.0-beta
+    "@ethersproject/providers": ^5.0.0-beta
+    "@ethersproject/solidity": ^5.0.0-beta
+  checksum: 10c0/a81bcfc276a0e8636da0dbef0c5fab821f5281fa8026ca4ea81bd8c21c5c6fea02b979255582da3742848eb67bd76eb40ef04aad7fd254f316e6240aa3ee40c3
   languageName: node
   linkType: hard
 
@@ -6236,6 +6283,9 @@ __metadata:
     "@ethersproject/experimental": "npm:^5.0.1"
     "@floating-ui/react": "npm:^0.26.13"
     "@headlessui/react": "npm:^2.0.2"
+    "@iconify/json": "npm:^2.2.207"
+    "@iconify/tailwind": "npm:^1.0.1"
+    "@nnmax/uniswap-sdk-v2": "npm:^1.0.2"
     "@reach/dialog": "npm:^0.10.3"
     "@reach/portal": "npm:^0.10.3"
     "@reduxjs/toolkit": "npm:^1.3.5"
@@ -6254,9 +6304,8 @@ __metadata:
     "@typescript-eslint/eslint-plugin": "npm:^7.8.0"
     "@typescript-eslint/parser": "npm:^7.8.0"
     "@uniswap/default-token-list": "npm:^1.3.1"
-    "@uniswap/sdk": "npm:3.0.3-beta.1"
     "@uniswap/token-lists": "npm:^1.0.0-beta.15"
-    "@uniswap/v2-core": "npm:1.0.0"
+    "@uniswap/v2-core": "npm:^1.0.0"
     "@uniswap/v2-periphery": "npm:^1.1.0-beta.0"
     "@web3-react/core": "npm:^6.0.9"
     "@web3-react/fortmatic-connector": "npm:^6.0.9"
@@ -6317,27 +6366,6 @@ __metadata:
   version: 1.1.1
   resolution: "@uniswap/lib@npm:1.1.1"
   checksum: 10c0/a70c14e6d9fb1f63f6d66d5190772f7069eccf12984f67e903224e0ad874472c5d96db2842558a12c170489125b2a7dad333bccf9ac3278d2de4492201f33de0
-  languageName: node
-  linkType: hard
-
-"@uniswap/sdk@npm:3.0.3-beta.1":
-  version: 3.0.3-beta.1
-  resolution: "@uniswap/sdk@npm:3.0.3-beta.1"
-  dependencies:
-    "@uniswap/v2-core": "npm:^1.0.0"
-    big.js: "npm:^5.2.2"
-    decimal.js-light: "npm:^2.5.0"
-    jsbi: "npm:^3.1.1"
-    tiny-invariant: "npm:^1.1.0"
-    tiny-warning: "npm:^1.0.3"
-    toformat: "npm:^2.0.0"
-  peerDependencies:
-    "@ethersproject/address": ^5.0.0-beta
-    "@ethersproject/contracts": ^5.0.0-beta
-    "@ethersproject/networks": ^5.0.0-beta
-    "@ethersproject/providers": ^5.0.0-beta
-    "@ethersproject/solidity": ^5.0.0-beta
-  checksum: 10c0/450ad5139bbf6b81d4aaadef0357682bb80468aaaa8134b4ed0166ddf650c391c262ddccd8edc3e6c6f7baa2d4f98bd96772ac6a082fc1b843a9776ee230a187
   languageName: node
   linkType: hard
 
@@ -15603,6 +15631,13 @@ __metadata:
   version: 4.0.0
   resolution: "path-type@npm:4.0.0"
   checksum: 10c0/666f6973f332f27581371efaf303fd6c272cc43c2057b37aa99e3643158c7e4b2626549555d88626e99ea9e046f82f32e41bbde5f1508547e9a11b149b52387c
+  languageName: node
+  linkType: hard
+
+"pathe@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "pathe@npm:1.1.2"
+  checksum: 10c0/64ee0a4e587fb0f208d9777a6c56e4f9050039268faaaaecd50e959ef01bf847b7872785c36483fa5cdcdbdfdb31fef2ff222684d4fc21c330ab60395c681897
   languageName: node
   linkType: hard
 

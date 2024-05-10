@@ -94,7 +94,7 @@ export default function Modal({
     from: { opacity: 0 },
     enter: { opacity: 1 },
     leave: { opacity: 0 },
-  })
+  } as any)
 
   const [{ y }, set] = useSpring(() => ({ y: 0, config: { mass: 1, tension: 210, friction: 20 } }))
   const bind = useGesture({
