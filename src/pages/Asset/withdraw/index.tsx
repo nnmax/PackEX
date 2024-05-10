@@ -1,6 +1,5 @@
 import { useId } from 'react'
 import { Link } from 'react-router-dom'
-import WalletSvg from '@/assets/svg/wallet.svg'
 import clsx from 'clsx'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import TokenBlast from '@/components/Icons/TokenBlast'
@@ -51,12 +50,7 @@ export default function Withdraw() {
               <span>{'BLAST'}</span>
             </div>
           </div>
-          <div
-            className={'relative rounded-md bg-[#242424] p-6'}
-            style={{
-              clipPath: getDeformityThree(404, 184, 6),
-            }}
-          >
+          <div className={'relative rounded-md bg-[#242424] p-6'}>
             <form className={'flex flex-col gap-4'}>
               <label htmlFor={inputId} className={'text-[#9E9E9E]'}>
                 {'Amount'}
@@ -83,6 +77,35 @@ export default function Withdraw() {
               </p>
             </form>
           </div>
+          <div
+            className={'relative rounded-md bg-[#242424] p-6'}
+            style={{
+              clipPath: getDeformityThree(404, 184, 6),
+            }}
+          >
+            <form className={'flex flex-col gap-4'}>
+              <label htmlFor={inputId} className={'text-[#9E9E9E]'}>
+                {'BITCOIN ADDRESS：'}
+              </label>
+              <div className={'flex items-center'}>
+                {/* <input
+                  type={'textarea'}
+                  id={inputId}
+                  className={'flex-1 bg-transparent reset-input-number focus:outline-none'}
+                  defaultValue={200}
+                /> */}
+                <textarea
+                  className={
+                    'text-xs focus:outline-none h-[64px] w-full px-[12px] py-[8px] bg-transparent border border-solid rounded border-[#9E9E9E]'
+                  }
+                  autoFocus
+                  id={inputId}
+                  rows={2}
+                />
+              </div>
+              <p className={'text-xs text-[#FF2323]'}>{'INVALID ADDRESS'}</p>
+            </form>
+          </div>
         </div>
         <button
           type={'button'}
@@ -96,11 +119,10 @@ export default function Withdraw() {
         <button
           type={'button'}
           className={
-            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
           }
         >
-          <img src={WalletSvg} alt="icon" />
-          <span className={'ml-6'}>{'Connect Wallet'}</span>
+          {'Confirm'}
         </button>
       </div>
     </div>
