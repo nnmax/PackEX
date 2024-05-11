@@ -1,4 +1,5 @@
 'use client'
+import { useHistory } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
@@ -36,13 +37,14 @@ function TokenLogoTwo() {
 
 function GearIconLogo() {
   return (
-    <div className={'relative h-5 w-5 rounded-full  mr-3'}>
+    <div className={'relative h-5 w-5 rounded-full cursor-pointer mr-3'}>
       <GearIcon className={'h-full w-full rounded-full'} />
     </div>
   )
 }
 
 const PoolMy = () => {
+  const history = useHistory()
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
       <TableHeader className={'h-12 text-[#9E9E9E] [&_th]:font-normal'}>
@@ -79,10 +81,20 @@ const PoolMy = () => {
               <Cell>{item.apy}</Cell>
               <Cell>
                 <div className={'flex items-center justify-center gap-6'}>
-                  <Button className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}>
+                  <Button
+                    onPress={() => {
+                      history.push('/pool/my/add')
+                    }}
+                    className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
+                  >
                     {'+ADD'}
                   </Button>
-                  <Button className={'text-lemonYellow w-[88px] h-6 border rounded-sm border-lemonYellow'}>
+                  <Button
+                    onPress={() => {
+                      history.push('/pool/my/remove')
+                    }}
+                    className={'text-lemonYellow w-[88px] h-6 border rounded-sm border-lemonYellow'}
+                  >
                     {'—REMOVE'}
                   </Button>
                 </div>

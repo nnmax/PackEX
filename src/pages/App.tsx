@@ -43,9 +43,10 @@ export default function App() {
               <Route exact strict path="/find" component={PoolFinder} />
               <Route exact strict path="/pool" component={Pool} />
               <Route exact strict path="/pool/all" component={PoolAll} />
+              <Route exact strict path="/pool/all/add" component={PoolAdd} />
               <Route exact strict path="/pool/my" component={PoolMy} />
-              <Route exact strict path="/pool/add" component={PoolAdd} />
-              <Route exact strict path="/pool/remove" component={PoolRemove} />
+              <Route exact strict path="/pool/my/add" component={PoolAdd} />
+              <Route exact strict path="/pool/my/remove" component={PoolRemove} />
               <Route exact strict path="/asset" component={Asset} />
               <Route exact strict path="/asset/withdraw" component={Withdraw} />
               <Route exact strict path="/asset/deposit" component={Deposit} />
