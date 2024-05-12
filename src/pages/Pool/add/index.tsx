@@ -4,6 +4,7 @@ import Settings from './_components/Settings'
 import BottomDetail from './_components/BottomDetail'
 import { CurrencyInputPanel } from './_components/ChoosePanel'
 import { Button } from 'react-aria-components'
+import AddIcon from '@/assets/images/add.png'
 // import ConfirmButton from './_components/ConfirmButton'
 
 export default function PoolAdd() {
@@ -56,7 +57,7 @@ export default function PoolAdd() {
                   'absolute top-[148px] left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-md border-4 border-[#0f0f0f] bg-[#242424]'
                 }
               >
-                <span className="icon-[pixelarticons--arrow-down] text-2xl text-white" aria-hidden />
+                <img src={AddIcon} alt="" />
               </Button>
               <CurrencyInputPanel
                 label={'ADD'}

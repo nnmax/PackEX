@@ -2,8 +2,10 @@ import { useId } from 'react'
 import { useHistory } from 'react-router-dom'
 import { Button } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
-// import { Link } from 'react-router-dom'
 import WalletSvg from '@/assets/svg/wallet.svg'
+import Settings from '../add/_components/Settings'
+import TokenBlast from '@/components/Icons/TokenBlast'
+
 // import clsx from 'clsx'
 // import TokenBlast from '@/components/Icons/TokenBlast'
 
@@ -14,6 +16,14 @@ import WalletSvg from '@/assets/svg/wallet.svg'
 // function getDeformityTwo(width: number, height: number, radius: number) {
 //   return `path('M 0,7 L ${width / 2 - 9},7 L ${width / 2},0 L ${width - radius},0 A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width},${height - radius} A ${radius} ${radius} 0 0 1 ${width - radius} ${height} L 0,${height} Z')`
 // }
+
+function TokenLogoTwo() {
+  return (
+    <div className={'relative h-6 w-6 rounded-ful'}>
+      <TokenBlast className={'h-full w-full rounded-full'} />
+    </div>
+  )
+}
 
 function getDeformityThree(width: number, height: number, radius: number) {
   return `path('M ${radius},0 L ${width - radius},0 A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width} ${height - radius} A ${radius} ${radius} 0 0 1 ${width - radius} ${height} L ${(width / 4) * 3},${height} L ${(width / 4) * 3 - 7},${height - 9} L ${width / 4 + 7},${height - 9} L ${width / 4},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`
@@ -63,6 +73,7 @@ export default function PoolRemove() {
               <span>{'BLAST'}</span>
             </div>
           </div> */}
+          <Settings />
           <div
             className={'relative rounded-md bg-[#242424] p-6'}
             // style={{
@@ -112,16 +123,18 @@ export default function PoolRemove() {
           >
             <form className={'flex flex-col gap-4'}>
               <div className={'flex items-center text-xs'}>
-                <span className={'ml-1 inline-block rounded px-2 py-1'}>{'Dog'}</span>
-                <span className={'ml-auto text-[#9E9E9E]'}>{'600'}</span>
+                <span className={'ml-1 inline-block rounded px-2 py-1'}>{'REMOVING'}</span>
+                <TokenLogoTwo />
+                <span className={'ml-auto text-[#9E9E9E]'}>{'600'} USDB</span>
               </div>
               <div className={'flex items-center text-xs'}>
-                <span className={'ml-1 inline-block rounded px-2 py-1'}>{'Dog'}</span>
-                <span className={'ml-auto text-[#9E9E9E]'}>{'600'}</span>
+                <span className={'ml-1 inline-block rounded px-2 py-1'}>{'REMOVING'}</span>
+                <TokenLogoTwo />
+                <span className={'ml-auto text-[#9E9E9E]'}>{'0'} WETH</span>
               </div>
               <div className={'flex items-center text-xs'}>
-                <span className={'ml-1 inline-block rounded px-2 py-1'}>{'Dog'}</span>
-                <span className={'ml-auto text-[#9E9E9E]'}>{'600'}</span>
+                <span className={'ml-1 inline-block rounded px-2 py-1'}>{'RATE'}</span>
+                <span className={'ml-auto text-[#9E9E9E]'}>{'1 USDB = 0.000321 WETH'}</span>
               </div>
             </form>
           </div>
