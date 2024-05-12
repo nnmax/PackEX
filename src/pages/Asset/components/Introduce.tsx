@@ -1,6 +1,17 @@
 import PnL from './PnL'
 
-export default function Introduce() {
+interface IntroduceProsp {
+  pnlVal: string | number
+  totalVal: string | number
+}
+
+/**
+ * @description assets card information
+ * @param props
+ * @returns JSX Element
+ */
+const Introduce: React.FC<IntroduceProsp> = (props: IntroduceProsp): JSX.Element => {
+  const { pnlVal, totalVal } = props
   return (
     <div className={'mb-6 mt-6 flex items-center gap-[60px]'}>
       <dl
@@ -11,12 +22,12 @@ export default function Introduce() {
         <div aria-hidden className={'rhombus-bg-[--body-bg] -rhombus-top-px rhombus-w-[calc(50%-2px)] top-rhombus'} />
         <div>
           <dt>{'Total Value'}</dt>
-          <dd className={'mt-4 text-base text-white'}>{'$ 1233.21'}</dd>
+          <dd className={'mt-4 text-base text-white'}>{`$ ${totalVal}`}</dd>
         </div>
         <div className={'mt-4'}>
           <dt>{"Today's PnL"}</dt>
           <dd className={'mt-4'}>
-            <PnL value={23.11} positive />
+            <PnL value={Number(pnlVal)} positive />
           </dd>
         </div>
       </dl>
@@ -32,3 +43,5 @@ export default function Introduce() {
     </div>
   )
 }
+
+export default Introduce

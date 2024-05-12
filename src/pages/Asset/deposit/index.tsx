@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useId } from 'react'
 import clsx from 'clsx'
+import WalletSvg from '@/assets/svg/wallet.svg'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import TokenBlast from '@/components/Icons/TokenBlast'
 
@@ -46,8 +47,9 @@ export default function Deposit() {
               }}
             >
               <span className={'mr-2 text-[#9E9E9E]'}>{'Token'}</span>
+              {/* TODO 动态匹配 */}
               <TokenBlast className={'mr-1 text-xl'} />
-              <span>{'BLAST'}</span>
+              <span>{'DOG'}</span>
             </div>
           </div>
           <div
@@ -77,7 +79,7 @@ export default function Deposit() {
               <p className={'text-xs text-[#FF2323]'}>{'INSUFFICIENT FUNDS'}</p>
               <p className={'flex items-center text-xs'}>
                 <span>{'AVAILABLE'}</span>
-                <span className={'ml-1 inline-block rounded bg-[#0F0F0F] px-2 py-1'}>{'Dog'}</span>
+                <span className={'ml-1 inline-block rounded bg-[#0F0F0F] px-2 py-1'}>{'DOG'}</span>
                 <span className={'ml-auto text-[#9E9E9E]'}>{'600'}</span>
               </p>
             </form>
@@ -87,6 +89,24 @@ export default function Deposit() {
           type={'button'}
           className={
             'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+          }
+        >
+          {'Confirm'}
+        </button>
+        <button
+          type={'button'}
+          className={
+            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+          }
+        >
+          <img src={WalletSvg} alt="icon" />
+          <span className={'ml-6'}>{'Connect Wallet'}</span>
+        </button>
+
+        <button
+          type={'button'}
+          className={
+            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border text-xs text-[#020202] border-lemonYellow bg-[#FFC300]'
           }
         >
           {'Confirm'}

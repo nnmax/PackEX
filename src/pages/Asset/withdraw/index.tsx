@@ -1,7 +1,8 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
-import WalletSvg from '@/assets/svg/wallet.svg'
 import clsx from 'clsx'
+import ConfirmImg from '@/assets/images/confirm.png'
+import { Modal, Dialog, ModalOverlay, Button } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import TokenBlast from '@/components/Icons/TokenBlast'
 
@@ -19,6 +20,7 @@ function getDeformityThree(width: number, height: number, radius: number) {
 
 export default function Withdraw() {
   const inputId = useId()
+  let [isOpen, setOpen] = useState(false)
 
   return (
     <div className={'py-4'}>
@@ -48,15 +50,10 @@ export default function Withdraw() {
             >
               <span className={'mr-2 text-[#9E9E9E]'}>{'Token'}</span>
               <TokenBlast className={'mr-1 text-xl'} />
-              <span>{'BLAST'}</span>
+              <span>{'DOG'}</span>
             </div>
           </div>
-          <div
-            className={'relative rounded-md bg-[#242424] p-6'}
-            style={{
-              clipPath: getDeformityThree(404, 184, 6),
-            }}
-          >
+          <div className={'relative rounded-md bg-[#242424] p-6'}>
             <form className={'flex flex-col gap-4'}>
               <label htmlFor={inputId} className={'text-[#9E9E9E]'}>
                 {'Amount'}
@@ -83,26 +80,105 @@ export default function Withdraw() {
               </p>
             </form>
           </div>
+          <div
+            className={'relative rounded-md bg-[#242424] p-6'}
+            style={{
+              clipPath: getDeformityThree(404, 184, 6),
+            }}
+          >
+            <form className={'flex flex-col gap-4'}>
+              <label htmlFor={inputId} className={'text-[#9E9E9E]'}>
+                {'BITCOIN ADDRESS：'}
+              </label>
+              <div className={'flex items-center'}>
+                {/* <input
+                  type={'textarea'}
+                  id={inputId}
+                  className={'flex-1 bg-transparent reset-input-number focus:outline-none'}
+                  defaultValue={200}
+                /> */}
+                <textarea
+                  className={
+                    'text-[12px] leading-[20px] focus:outline-none h-[64px] w-full px-[12px] py-[8px] bg-transparent resize-none border border-solid rounded border-[#9E9E9E]'
+                  }
+                  autoFocus
+                  id={inputId}
+                  rows={2}
+                />
+              </div>
+              <p className={'text-xs text-[#FF2323]'}>{'INVALID ADDRESS'}</p>
+            </form>
+          </div>
         </div>
-        <button
+        <Button
           type={'button'}
           className={
             'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
           }
         >
           {'Confirm'}
-        </button>
+        </Button>
 
-        <button
+        <Button
           type={'button'}
           className={
-            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
           }
         >
-          <img src={WalletSvg} alt="icon" />
-          <span className={'ml-6'}>{'Connect Wallet'}</span>
-        </button>
+          {'Confirm'}
+        </Button>
+
+        <Button
+          type={'button'}
+          onPress={() => {
+            setOpen(true)
+          }}
+          className={
+            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
+          }
+        >
+          {'open modal'}
+        </Button>
       </div>
+
+      <ModalOverlay
+        className={
+          'fixed left-0 top-0 z-20 flex h-[--visual-viewport-height] w-screen items-start justify-center bg-black/80 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in data-[exiting]:fade-out'
+        }
+        isOpen={isOpen}
+      >
+        <Modal
+          className={
+            'relative top-[192px] w-full max-w-[480px] h-[376px] rounded-md bg-[#1D252E] p-14 outline-none data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:zoom-in-75 data-[exiting]:zoom-out-75'
+          }
+        >
+          <Dialog className={'focus-visible:outline-none'}>
+            <div className="w-full">
+              <div className={'flex justify-center mb-6'}>
+                <img className={'w-[36px] h-[36px]'} src={ConfirmImg} alt="confirm" />
+              </div>
+              <div className={'text-[18px] text-center'}>{'Request Submitted'}</div>
+              <p className={'pt-6 text-[12px] leading-5'}>
+                Your withdrawal request has been received, you will receive the equivalent amount of the original tokens
+                in 24 hours, please be patient.
+              </p>
+              <div className={'flex justify-center mt-10'}>
+                <Button
+                  type={'button'}
+                  onPress={() => {
+                    setOpen(false)
+                  }}
+                  className={
+                    'flex h-9 w-[160px] items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
+                  }
+                >
+                  {'OK'}
+                </Button>
+              </div>
+            </div>
+          </Dialog>
+        </Modal>
+      </ModalOverlay>
     </div>
   )
 }
