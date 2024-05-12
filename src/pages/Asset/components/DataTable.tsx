@@ -12,7 +12,7 @@ const data = Array.from({ length: 10 }, (_, i) => ({
   amount: `File folder ${i}`,
   available: `6/7/2020 ${i}`,
   value: `Value ${i}`,
-  pnl: 123.31 + i + 1,
+  pnl: `${23.31 + i + 1}%`,
 }))
 
 function TokenLogo() {
@@ -34,7 +34,7 @@ export default function DataTable() {
         <Column>{'AMOUNT'}</Column>
         <Column>{'AVAILABLE'}</Column>
         <Column>{'VALUE'}</Column>
-        <Column>{'TODAY‘S PnL'}</Column>
+        <Column>{'CHANGE（TODAY）'}</Column>
         <Column> </Column>
       </TableHeader>
       <TableBody items={data} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>

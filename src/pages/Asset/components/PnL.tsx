@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-export default function PnL(props: { positive?: boolean; negative?: boolean; value: number }) {
+export default function PnL(props: { positive?: boolean; negative?: boolean; value: number | string }) {
   const { positive, negative, value } = props
 
   return (
