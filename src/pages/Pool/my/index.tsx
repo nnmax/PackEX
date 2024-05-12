@@ -37,7 +37,7 @@ function TokenLogoTwo() {
 
 function GearIconLogo() {
   return (
-    <div className={'relative h-5 w-5 rounded-full cursor-pointer mr-3'}>
+    <div className={'absolute left-[18px] h-5 w-5 rounded-full cursor-pointer mr-3'}>
       <GearIcon className={'h-full w-full rounded-full'} />
     </div>
   )
@@ -60,7 +60,7 @@ const PoolMy = () => {
           <Fragment key={item.id}>
             <Row id={item.id} className={'[&>td]:px-3'}>
               <Cell>
-                <div className={'flex items-center justify-center'}>
+                <div className={'relative flex items-center justify-center'}>
                   {item.id === 1 && <GearIconLogo />}
                   <div className={'flex'}>
                     <span className={'text-xs mr-2'}>{item.tokenOne}</span>/

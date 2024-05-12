@@ -1,6 +1,7 @@
-import { useHistory } from 'react-router-dom'
-import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import { useId } from 'react'
+import { useHistory } from 'react-router-dom'
+import { Button } from 'react-aria-components'
+import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 // import { Link } from 'react-router-dom'
 import WalletSvg from '@/assets/svg/wallet.svg'
 // import clsx from 'clsx'
@@ -16,6 +17,10 @@ import WalletSvg from '@/assets/svg/wallet.svg'
 
 function getDeformityThree(width: number, height: number, radius: number) {
   return `path('M ${radius},0 L ${width - radius},0 A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width} ${height - radius} A ${radius} ${radius} 0 0 1 ${width - radius} ${height} L ${(width / 4) * 3},${height} L ${(width / 4) * 3 - 7},${height - 9} L ${width / 4 + 7},${height - 9} L ${width / 4},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`
+}
+
+const commonSpanStyles = {
+  className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
 }
 
 export default function PoolRemove() {
@@ -91,12 +96,12 @@ export default function PoolRemove() {
                   />
                 </div>
               </div>
-              <p className={'flex items-center justify-start text-xs gap-4'}>
-                <span className={'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]'}>{'25%'}</span>
-                <span className={'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]'}>{'50%'}</span>
-                <span className={'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]'}>{'75%'}</span>
-                <span className={'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]'}>{'MAX'}</span>
-              </p>
+              <div className={'flex items-center justify-start text-xs gap-4'}>
+                <Button {...commonSpanStyles}>{'25%'}</Button>
+                <Button {...commonSpanStyles}>{'50%'}</Button>
+                <Button {...commonSpanStyles}>{'75%'}</Button>
+                <Button {...commonSpanStyles}>{'MAX'}</Button>
+              </div>
             </form>
           </div>
           <div
