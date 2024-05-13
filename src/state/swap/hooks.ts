@@ -106,13 +106,23 @@ function involvesAddress(trade: Trade, checksummedAddress: string): boolean {
   )
 }
 
+export enum InputErrorType {
+  NotConnected,
+  NotInput,
+  NotSelectToken,
+  NotRecipient,
+  InvalidRecipient,
+  InsufficientBalance,
+}
+
 // from the current swap inputs, compute the best trade and return it.
 export function useDerivedSwapInfo(): {
-  currencies: { [field in Field]?: Currency }
+  currencies: { [field in Field]?: Token }
   currencyBalances: { [field in Field]?: CurrencyAmount }
   parsedAmount: CurrencyAmount | undefined
   v2Trade: Trade | undefined
   inputError?: string
+  inputErrorType?: InputErrorType
   v1Trade: Trade | undefined
 } {
   const { account } = useActiveWeb3React()
@@ -150,7 +160,7 @@ export function useDerivedSwapInfo(): {
     [Field.OUTPUT]: relevantTokenBalances[1],
   }
 
-  const currencies: { [field in Field]?: Currency } = {
+  const currencies: { [field in Field]?: Token } = {
     [Field.INPUT]: inputCurrency ?? undefined,
     [Field.OUTPUT]: outputCurrency ?? undefined,
   }
@@ -159,21 +169,26 @@ export function useDerivedSwapInfo(): {
   const v1Trade = useV1Trade(isExactIn, currencies[Field.INPUT], currencies[Field.OUTPUT], parsedAmount)
 
   let inputError: string | undefined
+  let inputErrorType: InputErrorType | undefined
   if (!account) {
     inputError = 'Connect Wallet'
+    inputErrorType = InputErrorType.NotConnected
   }
 
   if (!parsedAmount) {
     inputError = inputError ?? 'Enter an amount'
+    inputErrorType = inputErrorType ?? InputErrorType.NotInput
   }
 
   if (!currencies[Field.INPUT] || !currencies[Field.OUTPUT]) {
     inputError = inputError ?? 'Select a token'
+    inputErrorType = inputErrorType ?? InputErrorType.NotSelectToken
   }
 
   const formattedTo = isAddress(to)
   if (!to || !formattedTo) {
     inputError = inputError ?? 'Enter a recipient'
+    inputErrorType = inputErrorType ?? InputErrorType.NotRecipient
   } else {
     if (
       BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
@@ -181,6 +196,7 @@ export function useDerivedSwapInfo(): {
       (bestTradeExactOut && involvesAddress(bestTradeExactOut, formattedTo))
     ) {
       inputError = inputError ?? 'Invalid recipient'
+      inputErrorType = inputErrorType ?? InputErrorType.InvalidRecipient
     }
   }
 
@@ -205,6 +221,7 @@ export function useDerivedSwapInfo(): {
 
   if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
     inputError = 'Insufficient ' + amountIn.currency.symbol + ' balance'
+    inputErrorType = InputErrorType.InsufficientBalance
   }
 
   return {
@@ -213,6 +230,7 @@ export function useDerivedSwapInfo(): {
     parsedAmount,
     v2Trade: v2Trade ?? undefined,
     inputError,
+    inputErrorType,
     v1Trade,
   }
 }

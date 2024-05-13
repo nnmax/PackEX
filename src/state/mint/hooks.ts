@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, ETHER, JSBI, Pair, Percent, Price, TokenAmount } from '@uniswap/sdk'
+import { CurrencyAmount, ETHER, JSBI, Pair, Percent, Price, Token, TokenAmount } from '@uniswap/sdk'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { PairState, usePair } from '../../data/Reserves'
@@ -18,11 +18,11 @@ export function useMintState(): AppState['mint'] {
 }
 
 export function useDerivedMintInfo(
-  currencyA: Currency | undefined,
-  currencyB: Currency | undefined,
+  currencyA: Token | undefined,
+  currencyB: Token | undefined,
 ): {
   dependentField: Field
-  currencies: { [field in Field]?: Currency }
+  currencies: { [field in Field]?: Token }
   pair?: Pair | null
   pairState: PairState
   currencyBalances: { [field in Field]?: CurrencyAmount }
@@ -40,7 +40,7 @@ export function useDerivedMintInfo(
   const dependentField = independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A
 
   // tokens
-  const currencies: { [field in Field]?: Currency } = useMemo(
+  const currencies: { [field in Field]?: Token } = useMemo(
     () => ({
       [Field.CURRENCY_A]: currencyA ?? undefined,
       [Field.CURRENCY_B]: currencyB ?? undefined,
