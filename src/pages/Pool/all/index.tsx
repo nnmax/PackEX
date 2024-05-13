@@ -43,7 +43,7 @@ const PoolAll = () => {
         onClick={() => {
           setOpen(true)
         }}
-        className={'h-5 w-5 absolute left-[98px] rounded-full cursor-pointer mr-3'}
+        className={'h-5 w-5 rounded-full cursor-pointer mr-3'}
       >
         <GearIcon className={'h-full w-full rounded-full'} />
       </div>
