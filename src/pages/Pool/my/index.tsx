@@ -124,12 +124,23 @@ const PoolMy = () => {
             'relative top-[192px] w-full max-w-[800px] h-[200px] rounded-md bg-[#1D252E] outline-none data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:zoom-in-75 data-[exiting]:zoom-out-75'
           }
         >
-          <div className={'h-full flex flex-col justify-center'}>
-            <div>
-              <span className={'text-sm'}>Convert all profits earned from PackEX to $PAX automatically</span>
+          <div className={'h-full flex pl-[32px] pt-[20px] pb-[20px] flex-col justify-around'}>
+            <div className={'flex cursor-pointer'}>
+              <div className={'w-[34px] h-[20px] rounded border border-[#FFC300] flex items-center justify-end'}>
+                <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#FFC300] inline-block mr-[3px]'}></span>
+              </div>
+              <span className={'text-sm pl-[32px] text-[#FFC300]'}>
+                Convert all profits earned from PackEX to $PAX automatically
+              </span>
             </div>
-            <div>
-              <span className={'text-sm'}> Add your $PAX and USDB balances to the liquidity pool automatically</span>
+            <div className={'flex cursor-pointer'}>
+              <div className={'w-[34px] h-[20px] rounded border border-[#AAAAAA] flex items-center justify-start'}>
+                <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#AAAAAA] inline-block ml-[3px]'}></span>
+              </div>
+              <span className={'text-sm pl-[32px]'}>
+                {' '}
+                Add your $PAX and USDB balances to the liquidity pool automatically
+              </span>
             </div>
           </div>
         </Modal>

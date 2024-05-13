@@ -27,11 +27,9 @@ export default function BottomDetail(props: { price?: Price; showInverted: boole
 
   return (
     <div
-      style={
-        {
-          '--rhombus-height': '4px',
-        } as any
-      }
+      style={{
+        '--rhombus-height': '4px',
+      }}
       className={'after:bottom-rhombus relative mt-1 rounded-md bg-[#242424] px-6 py-4 text-xs'}
     >
       <div className={'flex items-center justify-between'}>

@@ -103,7 +103,7 @@ export default function PoolRemove() {
                     min={0}
                     max={100}
                     step={0.1}
-                    style={{ '--range-color': 'var(--lemon-yellow)' } as any}
+                    style={{ '--range-color': 'var(--lemon-yellow)' }}
                   />
                 </div>
               </div>

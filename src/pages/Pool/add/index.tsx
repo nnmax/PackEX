@@ -25,11 +25,9 @@ export default function PoolAdd() {
           <div className={'flex flex-col items-center'}>
             <div
               className={'relative flex w-full max-w-[400px] flex-col text-[#9E9E9E]'}
-              style={
-                {
-                  '--rhombus-bg-color': 'var(--body-bg)',
-                } as any
-              }
+              style={{
+                '--rhombus-bg-color': 'var(--body-bg)',
+              }}
             >
               <Settings />
 
