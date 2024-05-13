@@ -595,6 +595,7 @@ export default function RemoveLiquidity({
                   currency={pair?.liquidityToken}
                   pair={pair}
                   id="liquidity-amount"
+                  onCurrencySelect={() => {}}
                 />
                 <ColumnCenter>
                   <ArrowDown size="16" color={theme.text2} />

@@ -1,9 +1,11 @@
 import styled from 'styled-components'
 import { darken, lighten } from 'polished'
-
+import { Button as AriaButton, ButtonProps as AriaButtonProps } from 'react-aria-components'
 import { RowBetween } from '../Row'
 import { ChevronDown } from 'react-feather'
 import { Button as RebassButton, ButtonProps } from 'rebass/styled-components'
+import clsx from 'clsx'
+import { forwardRef } from 'react'
 
 const Base = styled(RebassButton)<{
   padding?: string
@@ -302,3 +304,36 @@ export function ButtonRadio({ active, ...rest }: { active?: boolean } & ButtonPr
     return <ButtonPrimary {...rest} />
   }
 }
+
+const BaseButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function BaseButtonYellow(props, ref) {
+  const { className, ...restProps } = props
+
+  return (
+    <AriaButton
+      {...restProps}
+      ref={ref}
+      className={clsx(
+        className,
+        'flex h-9 w-full max-w-[240px] items-center justify-center self-center rounded-md text-xs',
+      )}
+    />
+  )
+})
+
+export const ButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
+  const { className, ...restProps } = props
+
+  return <BaseButtonYellow {...restProps} ref={ref} className={clsx(className, 'bg-lemonYellow text-[#020202]')} />
+})
+
+export const ButtonYellowLight = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
+  const { className, ...restProps } = props
+
+  return (
+    <BaseButtonYellow
+      {...restProps}
+      ref={ref}
+      className={clsx(className, 'text-lemonYellow border border-lemonYellow')}
+    />
+  )
+})
