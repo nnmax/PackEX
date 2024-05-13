@@ -43,12 +43,13 @@ const PoolAll = () => {
         onClick={() => {
           setOpen(true)
         }}
-        className={'h-5 w-5 rounded-full cursor-pointer mr-3'}
+        className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer'}
       >
         <GearIcon className={'h-full w-full rounded-full'} />
       </div>
     )
   }
+
   return (
     <>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
@@ -66,14 +67,14 @@ const PoolAll = () => {
           {(item) => (
             <Row id={item.id} className={'[&>td]:px-3'}>
               <Cell>
-                <div className={'flex items-center justify-center relative'}>
-                  {item.id === 1 && <GearIconLogo />}
-                  <TokenLogo />
-                  <TokenLogoTwo />
-                  <div className={'flex'}>
-                    <span className={'text-xs mr-2'}>{item.tokenOne}</span> /
-                    <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
+                <div className={'flex items-center justify-center'}>
+                  <div className={'flex items-center relative'}>
+                    {item.id === 1 && <GearIconLogo />}
+                    <TokenLogo />
+                    <TokenLogoTwo />
                   </div>
+                  <span className={'text-xs mr-2'}>{item.tokenOne}</span> /
+                  <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
                 </div>
               </Cell>
               <Cell>{item.tvl}</Cell>

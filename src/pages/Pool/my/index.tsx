@@ -46,7 +46,7 @@ const PoolMy = () => {
         onClick={() => {
           setOpen(true)
         }}
-        className={'h-5 w-5 rounded-full cursor-pointer mr-3'}
+        className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer mr-3'}
       >
         <GearIcon className={'h-full w-full rounded-full'} />
       </div>
@@ -69,9 +69,9 @@ const PoolMy = () => {
             <Fragment key={item.id}>
               <Row id={item.id} className={'[&>td]:px-3'}>
                 <Cell>
-                  <div className={'relative flex items-center justify-center'}>
-                    {item.id === 1 && <GearIconLogo />}
-                    <div className={'flex'}>
+                  <div className={'flex justify-center'}>
+                    <div className={'relative flex items-center'}>
+                      {item.id === 1 && <GearIconLogo />}
                       <span className={'text-xs mr-2'}>{item.tokenOne}</span>/
                       <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
                     </div>
@@ -80,8 +80,8 @@ const PoolMy = () => {
                 <Cell>
                   <div className={'flex items-center justify-center gap-4'}>
                     <div className={'flex items-center'}>
-                      <TokenLogo /> <span className={'text-xs mr-2'}>{item.amount1}</span> /
-                      <TokenLogoTwo /> <span className={'text-xs'}>{item.amount2}</span>
+                      <TokenLogo /> <span className={'text-xs ml-2 mr-2'}>{item.amount1}</span> /
+                      <TokenLogoTwo /> <span className={'text-xs ml-2'}>{item.amount2}</span>
                     </div>
                   </div>
                 </Cell>
