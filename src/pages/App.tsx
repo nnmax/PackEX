@@ -12,9 +12,10 @@ import {
 import MigrateV1 from './MigrateV1'
 import MigrateV1Exchange from './MigrateV1/MigrateV1Exchange'
 import RemoveV1Exchange from './MigrateV1/RemoveV1Exchange'
-import Pool from './Pool'
-import PoolAll from './Pool/all'
-import PoolMy from './Pool/my'
+// import Pool from './Pool'
+import PoolTest from './Pool/page'
+// import PoolAll from './Pool/all'
+// import PoolMy from './Pool/my'
 import PoolAdd from './Pool/add'
 import PoolRemove from './Pool/remove'
 import Asset from './Asset'
@@ -41,10 +42,12 @@ export default function App() {
               <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
               <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
               <Route exact strict path="/find" component={PoolFinder} />
-              <Route exact strict path="/pool" component={Pool} />
-              <Route exact strict path="/pool/all" component={PoolAll} />
+              {/* <Route exact strict path="/pool" component={Pool} /> */}
+              <Route exact strict path="/pool/all" component={PoolTest} />
+              <Route exact strict path="/pool/my" component={PoolTest} />
+              {/* <Route exact strict path="/pool/all" component={PoolAll} /> */}
               <Route exact strict path="/pool/all/add" component={PoolAdd} />
-              <Route exact strict path="/pool/my" component={PoolMy} />
+              {/* <Route exact strict path="/pool/my" component={PoolMy} /> */}
               <Route exact strict path="/pool/my/add" component={PoolAdd} />
               <Route exact strict path="/pool/my/remove" component={PoolRemove} />
               <Route exact strict path="/asset" component={Asset} />

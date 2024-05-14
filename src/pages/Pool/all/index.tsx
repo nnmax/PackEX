@@ -5,6 +5,7 @@ import { Cell, Button, Column, Row, Table, TableBody, TableHeader, ModalOverlay,
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
+// import LinkTab from '@/components/LinkTab'
 
 const data = Array.from({ length: 15 }, (_, i) => ({
   id: i + 1,
@@ -91,6 +92,7 @@ const PoolAll = () => {
                   >
                     {'+ADD'}
                   </Button>
+                  {/* <LinkTab to="/pool/add"> {'+ADD'}</LinkTab> */}
                 </div>
               </Cell>
             </Row>
