@@ -8,7 +8,6 @@ ENV HUSKY 0
 ENV YARN_ENABLE_GLOBAL_CACHE=false
 ENV YARN_ENABLE_MIRROR=false
 ENV YARN_NM_MODE=hardlinks-local
-ENV NEXT_TELEMETRY_DISABLED 1
 
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
@@ -28,7 +27,7 @@ FROM nginx:alpine
 
 COPY ngnix.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app/build /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
 
 EXPOSE 80
 
