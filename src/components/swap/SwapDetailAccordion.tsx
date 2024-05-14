@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 import ArrowDown from '@/components/Icons/ArrowDown'
-import { Price, Trade } from '@uniswap/sdk'
+import { Price, Trade } from '@nnmax/uniswap-sdk-v2'
 import { computeTradePriceBreakdown } from '@/utils/prices'
 import { useLastTruthy } from '@/hooks/useLast'
 import { ONE_BIPS } from '@/constants'

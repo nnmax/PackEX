@@ -14,7 +14,7 @@ import {
   Trade,
   TradeType,
   WETH,
-} from '@uniswap/sdk'
+} from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import { useActiveWeb3React } from '../hooks'
 import { useAllTokens } from '../hooks/Tokens'

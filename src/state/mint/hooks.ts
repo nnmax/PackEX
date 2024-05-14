@@ -1,4 +1,4 @@
-import { CurrencyAmount, ETHER, JSBI, Pair, Percent, Price, Token, TokenAmount } from '@uniswap/sdk'
+import { CurrencyAmount, ETHER, JSBI, Pair, Percent, Price, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { PairState, usePair } from '../../data/Reserves'

@@ -71,13 +71,36 @@ export default function WalletModal() {
     }
 
     if (connector) {
-      await activate(connector, undefined, true).catch((error) => {
+      try {
+        await activate(connector, undefined, true)
+      } catch (error) {
         if (error instanceof UnsupportedChainIdError) {
-          activate(connector) // a little janky...can't use setError because the connector isn't set
+          const provider = await connector.getProvider()
+          const chainId = '0x' + Number.parseInt(process.env.REACT_APP_CHAIN_ID!, 10).toString(16)
+          try {
+            await provider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId }],
+            })
+          } catch (err) {
+            // This error code indicates that the chain has not been added to MetaMask
+            if ((err as any).code === 4902) {
+              const config = JSON.parse(process.env.REACT_APP_CHAIN_CONFIRM!)
+              await provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId,
+                    ...config,
+                  },
+                ],
+              })
+            }
+          }
         } else {
           setWalletView(WALLET_VIEWS.ACCOUNT)
         }
-      })
+      }
 
       const _account = await connector.getAccount()
       if (_account) {
@@ -114,11 +137,11 @@ export default function WalletModal() {
   }
 
   // close wallet modal if fortmatic modal is active
-  useEffect(() => {
-    fortmatic.on(OVERLAY_READY, () => {
-      toggleWalletModal()
-    })
-  }, [toggleWalletModal])
+  // useEffect(() => {
+  //   fortmatic.on(OVERLAY_READY, () => {
+  //     toggleWalletModal()
+  //   })
+  // }, [toggleWalletModal])
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {

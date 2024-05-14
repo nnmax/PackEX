@@ -1,4 +1,4 @@
-import { Currency, ETHER, Token } from '@uniswap/sdk'
+import { Currency, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 
 export function currencyId(currency: Currency): string {
   if (currency === ETHER) return 'ETH'

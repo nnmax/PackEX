@@ -1,4 +1,4 @@
-import { Currency, ETHER, JSBI, TokenAmount } from '@uniswap/sdk'
+import { Currency, ETHER, JSBI, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useState } from 'react'
 import { Plus } from 'react-feather'
 import { Text } from 'rebass'

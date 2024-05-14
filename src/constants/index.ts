@@ -1,4 +1,4 @@
-import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
+import { ChainId, JSBI, Percent, Token, WETH } from '@nnmax/uniswap-sdk-v2'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { injected, walletconnect, walletlink } from '../connectors'
 import type { HexColor } from '../utils/color'
@@ -23,6 +23,7 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.RINKEBY]: [WETH[ChainId.RINKEBY]],
   [ChainId.GÖRLI]: [WETH[ChainId.GÖRLI]],
   [ChainId.KOVAN]: [WETH[ChainId.KOVAN]],
+  [ChainId.BLAST_TESTNET]: [WETH[ChainId.BLAST_TESTNET]],
 }
 
 // used to construct intermediary pairs for trading

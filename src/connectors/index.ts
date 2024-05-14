@@ -10,10 +10,14 @@ const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
 
-export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
+export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID!)
 
 if (typeof NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_NETWORK_URL must be a defined environment variable`)
+}
+
+if (typeof NETWORK_CHAIN_ID === 'undefined') {
+  throw new Error(`REACT_APP_CHAIN_ID must be a defined environment variable`)
 }
 
 export const network = new NetworkConnector({
@@ -26,12 +30,12 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [1, 3, 4, 5, 42],
+  supportedChainIds: [NETWORK_CHAIN_ID],
 })
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
-  rpc: { 1: NETWORK_URL },
+  rpc: { [NETWORK_CHAIN_ID]: NETWORK_URL },
   bridge: 'https://bridge.walletconnect.org',
   qrcode: true,
   // @ts-ignore

@@ -1,4 +1,4 @@
-import { Price } from '@uniswap/sdk'
+import { Price } from '@nnmax/uniswap-sdk-v2'
 import { useContext } from 'react'
 import { Repeat } from 'react-feather'
 import { Text } from 'rebass'

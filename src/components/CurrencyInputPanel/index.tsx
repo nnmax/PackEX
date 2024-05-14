@@ -1,4 +1,4 @@
-import { ChainId, Currency, ETHER, Pair, Token } from '@uniswap/sdk'
+import { ChainId, Currency, ETHER, Pair, Token } from '@nnmax/uniswap-sdk-v2'
 import { useState, useRef, useMemo } from 'react'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencyLogo from '../CurrencyLogo'

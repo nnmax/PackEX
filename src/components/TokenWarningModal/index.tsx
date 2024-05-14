@@ -1,4 +1,4 @@
-import { Token } from '@uniswap/sdk'
+import { Token } from '@nnmax/uniswap-sdk-v2'
 import { transparentize } from 'polished'
 import { useCallback, useMemo, useState } from 'react'
 import styled from 'styled-components'

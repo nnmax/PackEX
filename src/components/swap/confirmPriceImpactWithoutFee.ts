@@ -1,4 +1,4 @@
-import { Percent } from '@uniswap/sdk'
+import { Percent } from '@nnmax/uniswap-sdk-v2'
 import { ALLOWED_PRICE_IMPACT_HIGH, PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN } from '../../constants'
 
 /**

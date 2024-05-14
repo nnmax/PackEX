@@ -1,4 +1,4 @@
-import { Currency } from '@uniswap/sdk'
+import { Currency } from '@nnmax/uniswap-sdk-v2'
 import styled from 'styled-components'
 import CurrencyLogo from '../CurrencyLogo'
 

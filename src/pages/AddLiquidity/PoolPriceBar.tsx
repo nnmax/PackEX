@@ -1,4 +1,4 @@
-import { Currency, Percent, Price } from '@uniswap/sdk'
+import { Currency, Percent, Price } from '@nnmax/uniswap-sdk-v2'
 import { useContext } from 'react'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
