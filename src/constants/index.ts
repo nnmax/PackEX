@@ -128,3 +128,7 @@ export const MIN_ETH: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(16))
 export const BETTER_TRADE_LINK_THRESHOLD = new Percent(JSBI.BigInt(75), JSBI.BigInt(10000))
 
 export const BODY_BG_COLOR: HexColor = '#0f0f0f'
+
+export const SIGNATURE_KEY = 'packex.signature'
+export const MESSAGE_KEY = 'packex.message'
+export const USER_KEY = 'packex.user'

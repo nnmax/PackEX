@@ -7,11 +7,17 @@ import { Button, Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-compone
 import ArrowDown from '@/components/Icons/ArrowDown'
 import Wallet from '@/components/Icons/Wallet'
 import MaterialSymbolsLogout from '@/components/Icons/MaterialSymbolsLogout'
+import { disconnectWallet } from '@/api'
 
 function Web3StatusInner() {
   const { account, deactivate } = useWeb3React()
 
   const toggleWalletModal = useWalletModalToggle()
+
+  const handleDisconnect = () => {
+    deactivate()
+    disconnectWallet()
+  }
 
   if (account) {
     return (
@@ -24,7 +30,7 @@ function Web3StatusInner() {
         <Popover className={'outline-none'}>
           <Menu className={'rounded bg-[#192129] px-2 outline-none'}>
             <MenuItem
-              onAction={deactivate}
+              onAction={handleDisconnect}
               className={'flex items-center gap-1 text-xs h-9 text-[#A5A5A5] cursor-pointer outline-none'}
             >
               <span className={'mr-2 text-2xl'}>

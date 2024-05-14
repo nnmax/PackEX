@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
-import ReactGA from 'react-ga'
 import { isMobile } from 'react-device-detect'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import usePrevious from '../../hooks/usePrevious'
 import { useWalletModalOpen, useWalletModalToggle } from '../../state/application/hooks'
-import { SUPPORTED_WALLETS } from '../../constants'
+import { MESSAGE_KEY, SIGNATURE_KEY, SUPPORTED_WALLETS, USER_KEY } from '../../constants'
 import { fortmatic } from '../../connectors'
 import { OVERLAY_READY } from '../../connectors/Fortmatic'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import Dialog from '@/components/Dialog'
+import { connectWallet } from '@/api'
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -55,19 +55,6 @@ export default function WalletModal() {
   }, [setWalletView, active, error, connector, walletModalOpen, activePrevious, connectorPrevious])
 
   const tryActivation = async (connector: AbstractConnector | undefined) => {
-    let name = ''
-    Object.keys(SUPPORTED_WALLETS).map((key) => {
-      if (connector === SUPPORTED_WALLETS[key].connector) {
-        return (name = SUPPORTED_WALLETS[key].name)
-      }
-      return true
-    })
-    // log selected wallet
-    ReactGA.event({
-      category: 'Wallet',
-      action: 'Change Wallet',
-      label: name,
-    })
     setPendingWallet(connector) // set wallet for pending view
     setWalletView(WALLET_VIEWS.PENDING)
 
@@ -83,14 +70,47 @@ export default function WalletModal() {
       connector.walletConnectProvider = undefined
     }
 
-    connector &&
-      activate(connector, undefined, true).catch((error) => {
+    if (connector) {
+      await activate(connector, undefined, true).catch((error) => {
         if (error instanceof UnsupportedChainIdError) {
           activate(connector) // a little janky...can't use setError because the connector isn't set
         } else {
           setWalletView(WALLET_VIEWS.ACCOUNT)
         }
       })
+
+      const _account = await connector.getAccount()
+      if (_account) {
+        const s = window.localStorage.getItem(SIGNATURE_KEY)
+        const m = window.localStorage.getItem(MESSAGE_KEY)
+        const connectWalletResponse = await connectWallet({
+          address: _account,
+          signature: s,
+          message: m,
+        })
+
+        if (typeof connectWalletResponse === 'string') {
+          const provider = await connector.getProvider()
+          if (provider && typeof provider.request === 'function') {
+            const signatureawait = (await provider.request({
+              method: 'personal_sign',
+              params: [connectWalletResponse, _account],
+            })) as string
+            const connectWalletResponse2 = await connectWallet({
+              address: _account,
+              signature: signatureawait,
+              message: connectWalletResponse,
+            })
+            if (typeof connectWalletResponse2 === 'string') return
+            window.localStorage.setItem(SIGNATURE_KEY, signatureawait)
+            window.localStorage.setItem(MESSAGE_KEY, connectWalletResponse)
+            window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse2))
+          }
+        } else {
+          window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse))
+        }
+      }
+    }
   }
 
   // close wallet modal if fortmatic modal is active
@@ -112,10 +132,12 @@ export default function WalletModal() {
           <ListItem
             name={option.name}
             loading={walletView === WALLET_VIEWS.PENDING && option.connector === pendingWallet}
-            onClick={() => {
-              option.connector === connector
-                ? setWalletView(WALLET_VIEWS.ACCOUNT)
-                : !option.href && tryActivation(option.connector)
+            onClick={async () => {
+              if (option.connector === connector) {
+                setWalletView(WALLET_VIEWS.ACCOUNT)
+              } else if (!option.href) {
+                await tryActivation(option.connector)
+              }
             }}
             key={key}
             icon={require('../../assets/images/' + option.iconName)}
