@@ -353,8 +353,8 @@ export default function Swap() {
 
         <div className={'flex justify-center mt-8'}>
           {!account ? (
-            <ButtonYellowLight onPress={toggleWalletModal}>
-              <Wallet className={'text-xl'} />
+            <ButtonYellowLight onPress={toggleWalletModal} className={'text-xs'}>
+              <Wallet className={'text-xl mr-6'} />
               <span>Connect Wallet</span>
             </ButtonYellowLight>
           ) : showWrap ? (
