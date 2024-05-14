@@ -102,6 +102,10 @@ const PoolAll = () => {
           'fixed left-0 top-0 z-20 flex h-[--visual-viewport-height] w-screen items-start justify-center bg-black/50 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in data-[exiting]:fade-out'
         }
         isOpen={isOpen}
+        isDismissable
+        onOpenChange={(open) => {
+          setOpen(open)
+        }}
       >
         <Modal
           className={
