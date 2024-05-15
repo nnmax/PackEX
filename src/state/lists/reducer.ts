@@ -43,8 +43,7 @@ const initialState: ListsState = {
       pendingUpdate: null,
     },
   },
-  // TODO: 后面替换成我们自己的 token list
-  selectedListUrl: 'https://raw.githubusercontent.com/compound-finance/token-list/master/compound.tokenlist.json',
+  selectedListUrl: DEFAULT_TOKEN_LIST_URL,
 }
 
 export default createReducer(initialState, (builder) =>
