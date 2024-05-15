@@ -4,8 +4,6 @@ import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import usePrevious from '../../hooks/usePrevious'
 import { useWalletModalOpen, useWalletModalToggle } from '../../state/application/hooks'
 import { MESSAGE_KEY, SIGNATURE_KEY, SUPPORTED_WALLETS, USER_KEY } from '../../constants'
-import { fortmatic } from '../../connectors'
-import { OVERLAY_READY } from '../../connectors/Fortmatic'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import Dialog from '@/components/Dialog'
@@ -135,13 +133,6 @@ export default function WalletModal() {
       }
     }
   }
-
-  // close wallet modal if fortmatic modal is active
-  // useEffect(() => {
-  //   fortmatic.on(OVERLAY_READY, () => {
-  //     toggleWalletModal()
-  //   })
-  // }, [toggleWalletModal])
 
   // get wallets user can switch too, depending on device/browser
   function getOptions() {
