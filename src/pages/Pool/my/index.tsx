@@ -6,6 +6,7 @@ import { Button, Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay,
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
+import PoolLayout from '@/pages/Pool/Layout'
 
 const data = Array.from({ length: 15 }, (_, i) => ({
   id: i + 1,
@@ -54,7 +55,7 @@ const PoolMy = () => {
   }
 
   return (
-    <>
+    <PoolLayout activeTab={'my'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
         <TableHeader className={'h-12 text-[#9E9E9E] [&_th]:font-normal'}>
           <Column isRowHeader>{'POOL NAME'}</Column>
@@ -149,7 +150,7 @@ const PoolMy = () => {
           </div>
         </Modal>
       </ModalOverlay>
-    </>
+    </PoolLayout>
   )
 }
 

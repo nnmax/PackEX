@@ -18,7 +18,7 @@ export default function AppBar() {
 
         <NavTabs>
           <LinkTab to={'/swap'}>{'Dex'}</LinkTab>
-          <LinkTab to={'/pool/all'}>{'Pools'}</LinkTab>
+          <LinkTab to={'/pool'}>{'Pools'}</LinkTab>
           <LinkTab to={'/asset'}>{'Assets'}</LinkTab>
           <LinkTab to={'/pex'}>{'$PEX'}</LinkTab>
         </NavTabs>
