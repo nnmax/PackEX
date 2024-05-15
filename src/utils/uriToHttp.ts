@@ -8,6 +8,13 @@ export default function uriToHttp(uri: string): string[] {
     case 'https':
       return [uri]
     case 'http':
+      const localhost = ['localhost', '127.0.0.1', '[::1]']
+      try {
+        const u = new URL(uri)
+        if (localhost.includes(u.hostname)) {
+          return [uri]
+        }
+      } catch (error) {}
       return ['https' + uri.substr(4), uri]
     case 'ipfs':
       const hash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2]

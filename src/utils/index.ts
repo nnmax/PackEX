@@ -17,31 +17,23 @@ export function isAddress(value: any): string | false {
   }
 }
 
-const ETHERSCAN_PREFIXES: { [chainId in ChainId]: string } = {
-  1: '',
-  3: 'ropsten.',
-  4: 'rinkeby.',
-  5: 'goerli.',
-  42: 'kovan.',
-  [ChainId.BLAST_TESTNET]: 'blast-testnet.',
+const ETHERSCAN_URL: { [chainId in ChainId]: string } = {
+  [ChainId.BLAST]: 'https://blastscan.io',
+  [ChainId.BLAST_TESTNET]: 'https://testnet.blastscan.io',
 }
 
 export function getEtherscanLink(chainId: ChainId, data: string, type: 'transaction' | 'token' | 'address'): string {
-  const prefix =
-    chainId === ChainId.BLAST_TESTNET
-      ? 'https://testnet.blastscan.io'
-      : `https://${ETHERSCAN_PREFIXES[chainId] || ETHERSCAN_PREFIXES[1]}etherscan.io`
-
+  const url = ETHERSCAN_URL[chainId]
   switch (type) {
     case 'transaction': {
-      return `${prefix}/tx/${data}`
+      return `${url}/tx/${data}`
     }
     case 'token': {
-      return `${prefix}/token/${data}`
+      return `${url}/token/${data}`
     }
     case 'address':
     default: {
-      return `${prefix}/address/${data}`
+      return `${url}/address/${data}`
     }
   }
 }
