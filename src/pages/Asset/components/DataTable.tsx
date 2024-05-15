@@ -2,26 +2,26 @@
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
-import TokenBlast from '@/components/Icons/TokenBlast'
+// import TokenBlast from '@/components/Icons/TokenBlast'
 import PnL from './PnL'
 
 const data = Array.from({ length: 10 }, (_, i) => ({
   id: i + 1,
   token: `Bitcoin`,
   chain: 'BTC',
-  amount: `File folder ${i}`,
-  available: `6/7/2020 ${i}`,
-  value: `Value ${i}`,
+  amount: `242 35${i}`,
+  available: `234 43${i}`,
+  value: `234 56${i}`,
   pnl: `${23.31 + i + 1}%`,
 }))
 
 function TokenLogo() {
   return (
-    <div className={'relative h-6 w-6 rounded-full bg-black'}>
+    <div className={'h-6 w-6 rounded-full bg-black'}>
       <CryptocurrencyColorBtc className={'h-full w-full rounded-full'} />
-      <div className={'absolute right-0 top-0 h-4 w-4 -translate-y-1.5 translate-x-1.5 rounded-full bg-black'}>
+      {/* <div className={'absolute right-0 top-0 h-4 w-4 -translate-y-1.5 translate-x-1.5 rounded-full bg-black'}>
         <TokenBlast className={'h-full w-full'} />
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import PnL from './PnL'
+// import PnL from './PnL'
 
 interface IntroduceProsp {
   pnlVal: string | number
@@ -11,7 +11,10 @@ interface IntroduceProsp {
  * @returns JSX Element
  */
 const Introduce: React.FC<IntroduceProsp> = (props: IntroduceProsp): JSX.Element => {
-  const { pnlVal, totalVal } = props
+  const {
+    // pnlVal,
+    totalVal,
+  } = props
   return (
     <div className={'mb-6 mt-6 flex items-center gap-[60px]'}>
       <dl
@@ -22,14 +25,14 @@ const Introduce: React.FC<IntroduceProsp> = (props: IntroduceProsp): JSX.Element
         <div aria-hidden className={'rhombus-bg-[--body-bg] -rhombus-top-px rhombus-w-[calc(50%-2px)] top-rhombus'} />
         <div>
           <dt>{'Total Value'}</dt>
-          <dd className={'mt-4 text-base text-white'}>{`$ ${totalVal}`}</dd>
+          <dd className={'mt-4 text-base text-lemonYellow'}>{`$ ${totalVal}`}</dd>
         </div>
-        <div className={'mt-4'}>
-          <dt>{"Today's PnL"}</dt>
+        {/* <div className={'mt-4'}>
+          <dt>{"Change（Today）"}</dt>
           <dd className={'mt-4'}>
             <PnL value={Number(pnlVal)} positive />
           </dd>
-        </div>
+        </div> */}
       </dl>
 
       <p className={'text-sm leading-7 [&>span]:text-lemonYellow'}>
