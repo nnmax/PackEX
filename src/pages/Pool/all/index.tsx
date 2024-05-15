@@ -1,6 +1,17 @@
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Cell, Button, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal } from 'react-aria-components'
+import {
+  Cell,
+  Button,
+  Column,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+  ModalOverlay,
+  Modal,
+  Checkbox,
+} from 'react-aria-components'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
@@ -119,21 +130,68 @@ const PoolAll = () => {
         >
           <div className={'h-full flex pl-[32px] pt-[20px] pb-[20px] flex-col justify-around'}>
             <div className={'flex cursor-pointer'}>
-              <div className={'w-[34px] h-[20px] rounded border border-[#FFC300] flex items-center justify-end'}>
-                <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#FFC300] inline-block mr-[3px]'}></span>
-              </div>
-              <span className={'text-sm pl-[32px] text-[#FFC300]'}>
-                Convert all profits earned from PackEX to $PAX automatically
-              </span>
+              <Checkbox className={'flex cursor-pointer'}>
+                {({ isSelected }) => {
+                  if (isSelected) {
+                    return (
+                      <>
+                        <div
+                          className={'w-[34px] h-[20px] rounded border border-[#FFC300] flex items-center justify-end'}
+                        >
+                          <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#FFC300] inline-block mr-[3px]'}></span>
+                        </div>
+                        <span className={'text-sm pl-[32px] text-[#FFC300]'}>
+                          Convert all profits earned from PackEX to $PAX automatically
+                        </span>
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      <div
+                        className={'w-[34px] h-[20px] rounded border border-[#AAAAAA] flex items-center justify-start'}
+                      >
+                        <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#AAAAAA] inline-block ml-[3px]'}></span>
+                      </div>
+                      <span className={'text-sm pl-[32px]'}>
+                        Convert all profits earned from PackEX to $PAX automatically
+                      </span>
+                    </>
+                  )
+                }}
+              </Checkbox>
             </div>
             <div className={'flex cursor-pointer'}>
-              <div className={'w-[34px] h-[20px] rounded border border-[#AAAAAA] flex items-center justify-start'}>
-                <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#AAAAAA] inline-block ml-[3px]'}></span>
-              </div>
-              <span className={'text-sm pl-[32px]'}>
-                {' '}
-                Add your $PAX and USDB balances to the liquidity pool automatically
-              </span>
+              <Checkbox className={'flex cursor-pointer'}>
+                {({ isSelected }) => {
+                  if (isSelected) {
+                    return (
+                      <>
+                        <div
+                          className={'w-[34px] h-[20px] rounded border border-[#FFC300] flex items-center justify-end'}
+                        >
+                          <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#FFC300] inline-block mr-[3px]'}></span>
+                        </div>
+                        <span className={'text-sm pl-[32px] text-[#FFC300]'}>
+                          Add your $PAX and USDB balances to the liquidity pool automatically
+                        </span>
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      <div
+                        className={'w-[34px] h-[20px] rounded border border-[#AAAAAA] flex items-center justify-start'}
+                      >
+                        <span className={'w-[12px] h-[12px] rounded-[2px] bg-[#AAAAAA] inline-block ml-[3px]'}></span>
+                      </div>
+                      <span className={'text-sm pl-[32px]'}>
+                        Add your $PAX and USDB balances to the liquidity pool automatically
+                      </span>
+                    </>
+                  )
+                }}
+              </Checkbox>
             </div>
           </div>
         </Modal>

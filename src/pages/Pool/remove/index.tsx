@@ -1,21 +1,11 @@
 import { useId } from 'react'
 import { useHistory } from 'react-router-dom'
+import clsx from 'clsx'
 import { Button } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import WalletSvg from '@/assets/svg/wallet.svg'
-import Settings from '../add/_components/Settings'
+import SlippageSetting from '@/components/swap/SlippageSetting'
 import TokenBlast from '@/components/Icons/TokenBlast'
-
-// import clsx from 'clsx'
-// import TokenBlast from '@/components/Icons/TokenBlast'
-
-// function getDeformityOne(width: number, height: number, radius: number) {
-//   return `path('M ${radius},0 L ${width / 2},0 L ${width / 2 + 9},7 L ${width},7 L ${width},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`
-// }
-
-// function getDeformityTwo(width: number, height: number, radius: number) {
-//   return `path('M 0,7 L ${width / 2 - 9},7 L ${width / 2},0 L ${width - radius},0 A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width},${height - radius} A ${radius} ${radius} 0 0 1 ${width - radius} ${height} L 0,${height} Z')`
-// }
 
 function TokenLogoTwo() {
   return (
@@ -23,10 +13,6 @@ function TokenLogoTwo() {
       <TokenBlast className={'h-full w-full rounded-full'} />
     </div>
   )
-}
-
-function getDeformityThree(width: number, height: number, radius: number) {
-  return `path('M ${radius},0 L ${width - radius},0 A ${radius} ${radius} 0 0 1 ${width} ${radius} L ${width} ${height - radius} A ${radius} ${radius} 0 0 1 ${width - radius} ${height} L ${(width / 4) * 3},${height} L ${(width / 4) * 3 - 7},${height - 9} L ${width / 4 + 7},${height - 9} L ${width / 4},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`
 }
 
 const commonSpanStyles = {
@@ -49,36 +35,20 @@ export default function PoolRemove() {
           {'Remove'}
         </span>
       </div>
-      <div className={'mt-[60px] flex flex-col items-center'}>
-        <div className={'flex w-[404px] flex-col gap-1'}>
-          {/* <div className={'flex gap-1 text-sm'}>
-            <div
-              className={clsx('flex h-[60px] flex-1 items-center rounded-l-md bg-[#242424] px-6 py-5')}
-              style={{
-                clipPath: getDeformityOne(200, 60, 6),
-              }}
-            >
-              <span className={'mr-2 text-[#9E9E9E]'}>{'Chain'}</span>
-              <TokenBlast className={'mr-1 text-xl'} />
-              <span>{'BLAST'}</span>
-            </div>
-            <div
-              className={clsx('flex flex-1 items-center rounded-r-md bg-[#242424] px-6 py-5')}
-              style={{
-                clipPath: getDeformityTwo(200, 60, 6),
-              }}
-            >
-              <span className={'mr-2 text-[#9E9E9E]'}>{'Token'}</span>
-              <TokenBlast className={'mr-1 text-xl'} />
-              <span>{'BLAST'}</span>
-            </div>
-          </div> */}
-          <Settings />
+
+      <div className={'flex justify-center'}>
+        <div
+          className={'flex w-full justify-center relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
+          style={{
+            '--rhombus-bg-color': 'var(--body-bg)',
+          }}
+        >
+          <SlippageSetting className={'self-end mb-6'} />
           <div
-            className={'relative rounded-md bg-[#242424] p-6'}
-            // style={{
-            //   clipPath: getDeformityOne(404, 184, 6),
-            // }}
+            className={clsx('relative flex flex-col rounded-md bg-[#242424] p-6', {
+              'border border-[#FF2323] rhombus-bg-[#FF2323]': false,
+              'before:top-rhombus': true,
+            })}
           >
             <form className={'flex flex-col gap-4'}>
               <label htmlFor={inputId} className={'text-[#9E9E9E] text-xs'}>
@@ -116,10 +86,10 @@ export default function PoolRemove() {
             </form>
           </div>
           <div
-            className={'relative rounded-md bg-[#242424] p-6'}
-            style={{
-              clipPath: getDeformityThree(404, 184, 6),
-            }}
+            className={clsx('relative flex flex-col rounded-md bg-[#242424] p-6', 'mt-1', {
+              'border border-[#FF2323] rhombus-bg-[#FF2323]': false,
+              'after:bottom-rhombus': true,
+            })}
           >
             <form className={'flex flex-col gap-4'}>
               <div className={'flex items-center text-xs'}>
@@ -138,25 +108,26 @@ export default function PoolRemove() {
               </div>
             </form>
           </div>
+          <div className={'flex flex-col items-center justify-center'}>
+            <button
+              type={'button'}
+              className={
+                'mt-14 flex h-9 w-[240px] items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+              }
+            >
+              {'Confirm'}
+            </button>
+            <button
+              type={'button'}
+              className={
+                'mt-14 flex h-9 w-[240px] items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
+              }
+            >
+              <img src={WalletSvg} alt="icon" />
+              <span className={'ml-6'}>{'Connect Wallet'}</span>
+            </button>
+          </div>
         </div>
-        <button
-          type={'button'}
-          className={
-            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
-          }
-        >
-          {'Confirm'}
-        </button>
-
-        <button
-          type={'button'}
-          className={
-            'mt-14 flex h-9 w-full max-w-60 items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
-          }
-        >
-          <img src={WalletSvg} alt="icon" />
-          <span className={'ml-6'}>{'Connect Wallet'}</span>
-        </button>
       </div>
     </div>
   )
