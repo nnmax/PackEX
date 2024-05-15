@@ -11,7 +11,7 @@ export default function PoolLayout(props: { activeTab?: 'all' | 'my'; children: 
           {'ALL POOLS'}
         </LinkTab>
         <LinkTab to={'/pool/my'} isSelected={activeTab === 'my'}>
-          {'My Pools'}
+          {'MY POOLS'}
         </LinkTab>
       </NavTabs>
       {children}
