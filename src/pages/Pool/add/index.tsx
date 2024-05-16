@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import Settings from './_components/Settings'
-import BottomDetail from './_components/BottomDetail'
+import BottomDetailAdd from './_components/BottomDetailAdd'
 import { CurrencyInputPanel } from './_components/ChoosePanel'
 import { Button } from 'react-aria-components'
 import AddIcon from '@/assets/images/add.png'
@@ -69,7 +69,7 @@ export default function PoolAdd() {
                 className={'mt-1'}
               />
 
-              <BottomDetail trade={undefined} price={undefined} showInverted={true} />
+              <BottomDetailAdd trade={undefined} price={undefined} showInverted={true} />
             </div>
           </div>
         </div>
