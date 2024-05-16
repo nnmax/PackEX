@@ -111,6 +111,12 @@ export default function Deposit() {
         >
           {'Confirm'}
         </button>
+
+        <p style={{ fontFamily: 'Prompt' }} className={'w-[390px] text-[#6F6F6F] text-[12px] leading-5'}>
+          Please note that any assets may be granted any rights and interests by anyone. We cannot support the claims
+          for all of them. To avoid disputes, please be aware that after the assets have been migrated, all the rights
+          and interests of the native assets belongs to PACKEX.
+        </p>
       </div>
     </div>
   )
