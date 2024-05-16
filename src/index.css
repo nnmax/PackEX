@@ -13,6 +13,7 @@ body {
   color: white;
   --lemon-yellow: #ffc300;
   --body-bg: #0f0f0f;
+  --main-max-width: 1328px;
 }
 
 @font-face {

@@ -22,6 +22,7 @@ import { RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
 import AppBar from '@/components/AppBar'
 import PoolAll from './Pool/all'
 import PoolMy from './Pool/my'
+import Pex from './Pex'
 
 export default function App() {
   return (
@@ -29,7 +30,7 @@ export default function App() {
       <Route component={GoogleAnalyticsReporter} />
       <AppBar />
       <main className={'flex min-h-[calc(100vh-80px)] justify-center px-14 pb-6'}>
-        <div className={'flex w-full max-w-[1684px] flex-col'}>
+        <div className={'flex w-full max-w-[--main-max-width] flex-col'}>
           <Popups />
           <Web3ReactManager>
             <Switch>
@@ -52,6 +53,7 @@ export default function App() {
               <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
               <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
+              <Route exact strict path="/pex" component={Pex} />
               <Route component={RedirectPathToSwapOnly} />
             </Switch>
           </Web3ReactManager>

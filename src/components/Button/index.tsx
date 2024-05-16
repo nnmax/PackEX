@@ -312,10 +312,7 @@ const BaseButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function
     <AriaButton
       {...restProps}
       ref={ref}
-      className={clsx(
-        className,
-        'flex h-9 w-full max-w-[240px] items-center justify-center self-center rounded-md text-xs',
-      )}
+      className={clsx(className, 'flex h-9 px-2 items-center justify-center self-center rounded-md text-xs')}
     />
   )
 })
