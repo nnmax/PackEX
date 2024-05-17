@@ -1,19 +1,33 @@
-import { useId } from 'react'
-import { useHistory } from 'react-router-dom'
+import { BigNumber } from '@ethersproject/bignumber'
+import { splitSignature } from '@ethersproject/bytes'
+import { Contract } from '@ethersproject/contracts'
+import { TransactionResponse } from '@ethersproject/providers'
+import { useCallback, useId, useMemo, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
 import clsx from 'clsx'
-import { Button } from 'react-aria-components'
+import { Button, Heading } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
-import WalletSvg from '@/assets/svg/wallet.svg'
-import SlippageSetting from '@/components/swap/SlippageSetting'
-import TokenBlast from '@/components/Icons/TokenBlast'
-
-function TokenLogoTwo() {
-  return (
-    <div className={'relative h-6 w-6 rounded-ful'}>
-      <TokenBlast className={'h-full w-full rounded-full'} />
-    </div>
-  )
-}
+import SlippageSetting from '@/components/SlippageSetting'
+import { Field } from '@/state/burn/actions'
+import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
+import { ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
+import { usePairContract } from '@/hooks/useContract'
+import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
+import { useCurrency } from '@/hooks/Tokens'
+import { useActiveWeb3React } from '@/hooks'
+import { wrappedCurrency } from '@/utils/wrappedCurrency'
+import { useWalletModalToggle } from '@/state/application/hooks'
+import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from '@/state/burn/hooks'
+import { ROUTER_ADDRESS } from '@/constants'
+import { useTransactionAdder } from '@/state/transactions/hooks'
+import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
+import useDebouncedChangeHandler from '@/utils/useDebouncedChangeHandler'
+import CurrencyLogo from '@/components/CurrencyLogo'
+import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
+import Wallet from '@/components/Icons/Wallet'
+import AriaModal from '@/components/AriaModal'
+import { toast } from 'react-toastify'
+import { isString } from 'lodash-es'
 
 const commonSpanStyles = {
   className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
@@ -21,20 +35,345 @@ const commonSpanStyles = {
 
 export default function PoolRemove() {
   const history = useHistory()
-
-  const goBack = () => {
-    history.goBack()
-  }
   const inputId = useId()
+  const { currencyIdA, currencyIdB } = useParams<{
+    currencyIdA: string
+    currencyIdB: string
+  }>()
+  const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
+  const { account, chainId, library } = useActiveWeb3React()
+  const [tokenA, tokenB] = useMemo(
+    () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
+    [currencyA, currencyB, chainId],
+  )
+
+  // toggle wallet when disconnected
+  const toggleWalletModal = useWalletModalToggle()
+
+  // burn state
+  const { independentField, typedValue } = useBurnState()
+  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
+  const { onUserInput: _onUserInput } = useBurnActionHandlers()
+  const isValid = !error
+
+  const [loadingModalOpen, setLoadingModalOpen] = useState(false)
+
+  // txn values
+  const [txHash, setTxHash] = useState<string>('')
+  const [deadline] = useUserDeadline()
+  const [allowedSlippage] = useUserSlippageTolerance()
+
+  const formattedAmounts = {
+    [Field.LIQUIDITY_PERCENT]: parsedAmounts[Field.LIQUIDITY_PERCENT].equalTo('0')
+      ? '0'
+      : parsedAmounts[Field.LIQUIDITY_PERCENT].lessThan(new Percent('1', '100'))
+        ? '<1'
+        : parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0),
+    [Field.LIQUIDITY]:
+      independentField === Field.LIQUIDITY ? typedValue : parsedAmounts[Field.LIQUIDITY]?.toSignificant(6) ?? '',
+    [Field.CURRENCY_A]:
+      independentField === Field.CURRENCY_A ? typedValue : parsedAmounts[Field.CURRENCY_A]?.toSignificant(6) ?? '',
+    [Field.CURRENCY_B]:
+      independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
+  }
+
+  // pair contract
+  const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
+
+  // allowance handling
+  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
+  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+
+  const onAttemptToApprove = useCallback(async () => {
+    if (!pairContract || !pair || !library) throw new Error('missing dependencies')
+    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
+    if (!liquidityAmount) throw new Error('missing liquidity amount')
+    // try to gather a signature for permission
+    const nonce = await pairContract.nonces(account)
+
+    const deadlineForSignature: number = Math.ceil(Date.now() / 1000) + deadline
+
+    const EIP712Domain = [
+      { name: 'name', type: 'string' },
+      { name: 'version', type: 'string' },
+      { name: 'chainId', type: 'uint256' },
+      { name: 'verifyingContract', type: 'address' },
+    ]
+    const domain = {
+      name: 'Uniswap V2',
+      version: '1',
+      chainId: chainId,
+      verifyingContract: pair.liquidityToken.address,
+    }
+    const Permit = [
+      { name: 'owner', type: 'address' },
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+      { name: 'nonce', type: 'uint256' },
+      { name: 'deadline', type: 'uint256' },
+    ]
+    const message = {
+      owner: account,
+      spender: ROUTER_ADDRESS,
+      value: liquidityAmount.raw.toString(),
+      nonce: nonce.toHexString(),
+      deadline: deadlineForSignature,
+    }
+    const data = JSON.stringify({
+      types: {
+        EIP712Domain,
+        Permit,
+      },
+      domain,
+      primaryType: 'Permit',
+      message,
+    })
+
+    await library
+      .send('eth_signTypedData_v4', [account, data])
+      .then(splitSignature)
+      .then((signature) => {
+        setSignatureData({
+          v: signature.v,
+          r: signature.r,
+          s: signature.s,
+          deadline: deadlineForSignature,
+        })
+        return signature
+      })
+      .catch((error) => {
+        // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
+        if (error?.code !== 4001) {
+          return approveCallback()
+        }
+        return
+      })
+  }, [account, approveCallback, chainId, deadline, library, pair, pairContract, parsedAmounts])
+
+  // wrapped onUserInput to clear signatures
+  const onUserInput = useCallback(
+    (field: Field, typedValue: string) => {
+      setSignatureData(null)
+      return _onUserInput(field, typedValue)
+    },
+    [_onUserInput],
+  )
+
+  // tx sending
+  const addTransaction = useTransactionAdder()
+
+  const onRemove = useCallback(async () => {
+    if (!chainId || !library || !account) throw new Error('missing dependencies')
+    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
+    if (!currencyAmountA || !currencyAmountB) {
+      throw new Error('missing currency amounts')
+    }
+    const router = getRouterContract(chainId, library, account)
+
+    const amountsMin = {
+      [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
+      [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
+    }
+
+    if (!currencyA || !currencyB) throw new Error('missing tokens')
+    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
+    if (!liquidityAmount) throw new Error('missing liquidity amount')
+
+    const currencyBIsETH = currencyB === ETHER
+    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
+    const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline
+
+    if (!tokenA || !tokenB) throw new Error('could not wrap')
+
+    let methodNames: string[], args: Array<string | string[] | number | boolean>
+    // we have approval, use normal remove liquidity
+    if (approval === ApprovalState.APPROVED) {
+      // removeLiquidityETH
+      if (oneCurrencyIsETH) {
+        methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
+        args = [
+          currencyBIsETH ? tokenA.address : tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+          account,
+          deadlineFromNow,
+        ]
+      }
+      // removeLiquidity
+      else {
+        methodNames = ['removeLiquidity']
+        args = [
+          tokenA.address,
+          tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[Field.CURRENCY_A].toString(),
+          amountsMin[Field.CURRENCY_B].toString(),
+          account,
+          deadlineFromNow,
+        ]
+      }
+    }
+    // we have a signataure, use permit versions of remove liquidity
+    else if (signatureData !== null) {
+      // removeLiquidityETHWithPermit
+      if (oneCurrencyIsETH) {
+        methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
+        args = [
+          currencyBIsETH ? tokenA.address : tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+          account,
+          signatureData.deadline,
+          false,
+          signatureData.v,
+          signatureData.r,
+          signatureData.s,
+        ]
+      }
+      // removeLiquidityETHWithPermit
+      else {
+        methodNames = ['removeLiquidityWithPermit']
+        args = [
+          tokenA.address,
+          tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[Field.CURRENCY_A].toString(),
+          amountsMin[Field.CURRENCY_B].toString(),
+          account,
+          signatureData.deadline,
+          false,
+          signatureData.v,
+          signatureData.r,
+          signatureData.s,
+        ]
+      }
+    } else {
+      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
+    }
+
+    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      methodNames.map((methodName) =>
+        router.estimateGas[methodName](...args)
+          .then(calculateGasMargin)
+          .catch((error) => {
+            console.error(`estimateGas failed`, methodName, args, error)
+            return undefined
+          }),
+      ),
+    )
+
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+      BigNumber.isBigNumber(safeGasEstimate),
+    )
+
+    // all estimations failed...
+    if (indexOfSuccessfulEstimation === -1) {
+      console.error('This transaction would fail. Please contact support.')
+    } else {
+      const methodName = methodNames[indexOfSuccessfulEstimation]
+      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
+
+      await router[methodName](...args, {
+        gasLimit: safeGasEstimate,
+      })
+        .then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary:
+              'Remove ' +
+              parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
+              ' ' +
+              currencyA?.symbol +
+              ' and ' +
+              parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
+              ' ' +
+              currencyB?.symbol,
+          })
+
+          setTxHash(response.hash)
+        })
+        .catch((error: Error) => {
+          // we only care if the error is something _other_ than the user rejected the tx
+          console.error(error)
+        })
+    }
+  }, [
+    account,
+    addTransaction,
+    allowedSlippage,
+    approval,
+    chainId,
+    currencyA,
+    currencyB,
+    deadline,
+    library,
+    parsedAmounts,
+    signatureData,
+    tokenA,
+    tokenB,
+  ])
+
+  const liquidityPercentChangeCallback = useCallback(
+    (value: number) => {
+      onUserInput(Field.LIQUIDITY_PERCENT, value.toString())
+    },
+    [onUserInput],
+  )
+
+  const [innerLiquidityPercentage, setInnerLiquidityPercentage] = useDebouncedChangeHandler(
+    Number.parseInt(parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0)),
+    liquidityPercentChangeCallback,
+  )
+
+  const handleConfirm = useCallback(async () => {
+    setLoadingModalOpen(true)
+    try {
+      if (!(approval === ApprovalState.APPROVED || signatureData !== null)) {
+        await onAttemptToApprove()
+      }
+      await onRemove()
+      toast.success('Transaction submitted')
+    } catch (error) {
+      console.error(error)
+      toast.error(isString(error) ? error : (error as any).message ?? 'Error submitting transaction', {
+        autoClose: false,
+      })
+    } finally {
+      setLoadingModalOpen(false)
+      setSignatureData(null) // important that we clear signature data to avoid bad sigs
+      // if there was a tx hash, we want to clear the input
+      if (txHash) {
+        onUserInput(Field.LIQUIDITY_PERCENT, '0')
+      }
+      setTxHash('')
+    }
+  }, [approval, signatureData, onRemove, onAttemptToApprove, txHash, onUserInput])
 
   return (
     <div className={'py-4'}>
       <div className={'py-4'}>
-        <span onClick={goBack} className={'inline-flex h-8 items-center gap-2 text-sm'}>
+        <Button
+          onPress={() => {
+            history.goBack()
+          }}
+          className={'inline-flex h-8 items-center gap-2 text-sm'}
+        >
           <PixelarticonsChevronLeft aria-hidden className={'text-xl'} />
           {'Remove'}
-        </span>
+        </Button>
       </div>
+
+      <AriaModal
+        isOpen={loadingModalOpen}
+        onOpenChange={setLoadingModalOpen}
+        isKeyboardDismissDisabled
+        className={'flex flex-col items-center gap-4'}
+      >
+        <span aria-hidden className={'loading !w-20 text-lemonYellow'} />
+        <Heading slot="title">CONFIRMATION</Heading>
+        <p className={'text-xs'}>CONFIRM TRANSACTION IN YOUR WALLET</p>
+      </AriaModal>
 
       <div className={'flex justify-center'}>
         <div
@@ -44,44 +383,40 @@ export default function PoolRemove() {
           }}
         >
           <SlippageSetting className={'self-end mb-6'} />
-          <div
-            className={clsx('relative flex flex-col rounded-md bg-[#242424] p-6', {
-              'border border-[#FF2323] rhombus-bg-[#FF2323]': false,
-              'before:top-rhombus': true,
-            })}
-          >
+          <div className={clsx('relative flex flex-col rounded-md bg-[#242424] p-6 before:top-rhombus')}>
             <form className={'flex flex-col gap-4'}>
               <label htmlFor={inputId} className={'text-[#9E9E9E] text-xs'}>
                 {'YOU REMOVE'}
               </label>
               <div className={'flex flex-col gap-4'}>
-                <div className={'relative h-7 w-16 rounded-sm'}>
-                  <input
-                    type={'number'}
-                    defaultValue={0.5}
-                    step={0.1}
-                    min={0}
-                    max={100}
-                    className={'h-full w-full bg-transparent py-2 pl-2.5 pr-3 reset-input-number'}
-                  />
-                  <span className={'absolute right-2.5 top-1/2 -translate-y-1/2'}>{'%'}</span>
-                </div>
+                <div className={'relative h-7 w-16 rounded-sm'}>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</div>
                 <div>
                   <input
                     type={'range'}
-                    className={'range w-full'}
+                    className={'w-full'}
                     min={0}
                     max={100}
                     step={0.1}
-                    style={{ '--range-color': 'var(--lemon-yellow)' }}
+                    value={innerLiquidityPercentage}
+                    onChange={(event) => {
+                      setInnerLiquidityPercentage(Number.parseInt(event.target.value, 10))
+                    }}
                   />
                 </div>
               </div>
               <div className={'flex items-center justify-start text-xs gap-4'}>
-                <Button {...commonSpanStyles}>{'25%'}</Button>
-                <Button {...commonSpanStyles}>{'50%'}</Button>
-                <Button {...commonSpanStyles}>{'75%'}</Button>
-                <Button {...commonSpanStyles}>{'MAX'}</Button>
+                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '25')}>
+                  {'25%'}
+                </Button>
+                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '50')}>
+                  {'50%'}
+                </Button>
+                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '75')}>
+                  {'75%'}
+                </Button>
+                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '100')}>
+                  {'MAX'}
+                </Button>
               </div>
             </form>
           </div>
@@ -94,38 +429,44 @@ export default function PoolRemove() {
             <form className={'flex flex-col gap-4'}>
               <div className={'flex items-center text-xs'}>
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'REMOVING'}</span>
-                <TokenLogoTwo />
-                <span className={'ml-auto text-[#9E9E9E]'}>{'600'} USDB</span>
+                <CurrencyLogo currency={currencyA} />
+                <span className={'ml-auto text-[#9E9E9E]'}>
+                  {formattedAmounts[Field.CURRENCY_A] || '-'} {currencyA?.symbol}
+                </span>
               </div>
               <div className={'flex items-center text-xs'}>
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'REMOVING'}</span>
-                <TokenLogoTwo />
-                <span className={'ml-auto text-[#9E9E9E]'}>{'0'} WETH</span>
+                <CurrencyLogo currency={currencyB} />
+                <span className={'ml-auto text-[#9E9E9E]'}>
+                  {formattedAmounts[Field.CURRENCY_B] || '-'} {currencyB?.symbol}
+                </span>
               </div>
               <div className={'flex items-center text-xs'}>
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'RATE'}</span>
-                <span className={'ml-auto text-[#9E9E9E]'}>{'1 USDB = 0.000321 WETH'}</span>
+                <span className={'ml-auto text-[#9E9E9E]'}>
+                  1 {currencyA?.symbol} = {tokenA && pair ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
+                  {currencyB?.symbol}
+                </span>
               </div>
             </form>
           </div>
-          <div className={'flex flex-col items-center justify-center'}>
-            <button
-              type={'button'}
-              className={
-                'mt-14 flex h-9 w-[240px] items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
-              }
-            >
-              {'Confirm'}
-            </button>
-            <button
-              type={'button'}
-              className={
-                'mt-14 flex h-9 w-[240px] items-center justify-center rounded border border-lemonYellow text-xs text-lemonYellow'
-              }
-            >
-              <img src={WalletSvg} alt="icon" />
-              <span className={'ml-6'}>{'Connect Wallet'}</span>
-            </button>
+          <div className={'flex justify-center mt-8'}>
+            {account ? (
+              isValid ? (
+                <ButtonYellow onPress={handleConfirm} className={'w-full max-w-[240px]'}>
+                  {'Confirm'}
+                </ButtonYellow>
+              ) : (
+                <ButtonYellowLight className={'w-full max-w-[240px]'} isDisabled>
+                  {'Confirm'}
+                </ButtonYellowLight>
+              )
+            ) : (
+              <ButtonYellowLight onPress={toggleWalletModal} className={'w-full max-w-[240px]'}>
+                <Wallet className={'text-xl mr-6'} />
+                <span>Connect Wallet</span>
+              </ButtonYellowLight>
+            )}
           </div>
         </div>
       </div>

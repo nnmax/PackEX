@@ -22,7 +22,7 @@ import { RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
 import AppBar from '@/components/AppBar'
 import PoolAll from './Pool/all'
 import PoolMy from './Pool/my'
-import Pex from './Pex'
+import Pax from './Pax'
 
 export default function App() {
   return (
@@ -41,9 +41,8 @@ export default function App() {
               <Route exact strict path="/pool" component={() => <Redirect to={'/pool/all'} />} />
               <Route exact strict path="/pool/all" component={PoolAll} />
               <Route exact strict path="/pool/my" component={PoolMy} />
-              <Route exact strict path="/pool/all/add" component={PoolAdd} />
-              <Route exact strict path="/pool/my/add" component={PoolAdd} />
-              <Route exact strict path="/pool/my/remove" component={PoolRemove} />
+              <Route exact strict path="/pool/add/:currencyIdA/:currencyIdB" component={PoolAdd} />
+              <Route exact strict path="/pool/remove/:currencyIdA/:currencyIdB" component={PoolRemove} />
               <Route exact strict path="/asset" component={Asset} />
               <Route exact strict path="/asset/withdraw" component={Withdraw} />
               <Route exact strict path="/asset/deposit" component={Deposit} />
@@ -53,7 +52,7 @@ export default function App() {
               <Route exact path="/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
               <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />
               <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
-              <Route exact strict path="/pex" component={Pex} />
+              <Route exact strict path="/pax" component={Pax} />
               <Route component={RedirectPathToSwapOnly} />
             </Switch>
           </Web3ReactManager>

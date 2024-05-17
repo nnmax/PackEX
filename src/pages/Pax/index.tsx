@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { Button, Group, Input } from 'react-aria-components'
 import { useMeasure } from 'react-use'
 
-export default function PexPage() {
+export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
 

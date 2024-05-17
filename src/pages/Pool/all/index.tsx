@@ -1,17 +1,6 @@
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
-import {
-  Cell,
-  Button,
-  Column,
-  Row,
-  Table,
-  TableBody,
-  TableHeader,
-  ModalOverlay,
-  Modal,
-  Checkbox,
-} from 'react-aria-components'
+import { Link } from 'react-router-dom'
+import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
@@ -46,7 +35,6 @@ function TokenLogoTwo() {
 }
 
 const PoolAll = () => {
-  const history = useHistory()
   const [isOpen, setOpen] = useState<boolean>(false)
 
   function GearIconLogo() {
@@ -98,15 +86,12 @@ const PoolAll = () => {
               <Cell>{item.apy}</Cell>
               <Cell>
                 <div className={'flex items-center justify-center gap-10'}>
-                  <Button
-                    onPress={() => {
-                      history.push('/pool/all/add')
-                    }}
+                  <Link
+                    to={'/pool/add/currencyIdA/currencyIdB'}
                     className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
                   >
                     {'+ADD'}
-                  </Button>
-                  {/* <LinkTab to="/pool/add"> {'+ADD'}</LinkTab> */}
+                  </Link>
                 </div>
               </Cell>
             </Row>

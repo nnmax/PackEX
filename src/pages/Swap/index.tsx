@@ -32,7 +32,7 @@ import { LinkStyledButton } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import Loader from '../../components/Loader'
-import SlippageSetting from '@/components/swap/SlippageSetting'
+import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 
@@ -316,12 +316,12 @@ export default function Swap() {
 
         <div className={'flex justify-center mt-8'}>
           {!account ? (
-            <ButtonYellowLight onPress={toggleWalletModal} className={'text-xs'}>
+            <ButtonYellowLight onPress={toggleWalletModal} className={'text-xs w-full max-w-[240px]'}>
               <Wallet className={'text-xl mr-6'} />
               <span>Connect Wallet</span>
             </ButtonYellowLight>
           ) : showWrap ? (
-            <ButtonYellowLight isDisabled={Boolean(wrapInputError)} onPress={onWrap}>
+            <ButtonYellowLight isDisabled={Boolean(wrapInputError)} onPress={onWrap} className={'w-full max-w-[240px]'}>
               {wrapInputError ?? (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
             </ButtonYellowLight>
           ) : noRoute && userHasSpecifiedInputOutput ? (
@@ -373,6 +373,7 @@ export default function Swap() {
             </RowBetween>
           ) : (
             <ButtonYellow
+              className={'w-full max-w-[240px]'}
               onPress={() => {
                 if (isExpertMode) {
                   handleSwap()

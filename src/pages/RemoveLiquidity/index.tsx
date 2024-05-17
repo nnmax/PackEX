@@ -186,7 +186,8 @@ export default function RemoveLiquidity({
 
   // tx sending
   const addTransaction = useTransactionAdder()
-  async function onRemove() {
+
+  const onRemove = useCallback(async () => {
     if (!chainId || !library || !account) throw new Error('missing dependencies')
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
     if (!currencyAmountA || !currencyAmountB) {
@@ -319,12 +320,6 @@ export default function RemoveLiquidity({
           })
 
           setTxHash(response.hash)
-
-          ReactGA.event({
-            category: 'Liquidity',
-            action: 'Remove',
-            label: [currencyA?.symbol, currencyB?.symbol].join('/'),
-          })
         })
         .catch((error: Error) => {
           setAttemptingTxn(false)
@@ -332,7 +327,21 @@ export default function RemoveLiquidity({
           console.error(error)
         })
     }
-  }
+  }, [
+    account,
+    addTransaction,
+    allowedSlippage,
+    approval,
+    chainId,
+    currencyA,
+    currencyB,
+    deadline,
+    library,
+    parsedAmounts,
+    signatureData,
+    tokenA,
+    tokenB,
+  ])
 
   function modalHeader() {
     return (

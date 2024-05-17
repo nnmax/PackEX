@@ -28,7 +28,7 @@ interface CurrencyInputPanelProps {
   onMax?: () => void
   showMaxButton: boolean
   label?: string
-  onCurrencySelect: (currency: Token) => void
+  onCurrencySelect?: (currency: Token) => void
   currency?: Token | null
   disableCurrencySelect?: boolean
   hideBalance?: boolean
@@ -56,6 +56,7 @@ export default function CurrencyInputPanel({
   className,
   rhombus,
   insufficientBalance,
+  disableCurrencySelect,
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
@@ -91,7 +92,12 @@ export default function CurrencyInputPanel({
             className={'w-full bg-transparent text-white outline-none reset-input-number placeholder:text-[#9e9e9e]'}
           />
         </NumberField>
-        <Button type={'button'} className={selectButtonClasses} onPress={() => setModalOpen(true)}>
+        <Button
+          isDisabled={disableCurrencySelect}
+          type={'button'}
+          className={selectButtonClasses}
+          onPress={() => setModalOpen(true)}
+        >
           {pair ? (
             <DoubleCurrencyLogo currency0={pair.token0} currency1={pair.token1} size={20} margin />
           ) : currency ? (
@@ -106,7 +112,7 @@ export default function CurrencyInputPanel({
                     currency.symbol.slice(currency.symbol.length - 5, currency.symbol.length)
                   : currency?.symbol) || 'CHOOSE'}
           </span>
-          <ArrowDown className={'text-lemonYellow'} aria-hidden />
+          {!disableCurrencySelect && <ArrowDown className={'text-lemonYellow'} aria-hidden />}
         </Button>
       </div>
       {!!account && !hideBalance && (
@@ -125,13 +131,15 @@ export default function CurrencyInputPanel({
         </div>
       )}
 
-      <ChooseModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onCurrencySelect={onCurrencySelect}
-        otherSelectedCurrency={otherCurrency}
-        selectedCurrency={currency}
-      />
+      {!disableCurrencySelect && !!onCurrencySelect && (
+        <ChooseModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onCurrencySelect={onCurrencySelect}
+          otherSelectedCurrency={otherCurrency}
+          selectedCurrency={currency}
+        />
+      )}
     </div>
   )
 }

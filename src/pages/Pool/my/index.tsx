@@ -1,19 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Fragment } from 'react'
-import {
-  Button,
-  Cell,
-  Column,
-  Row,
-  Table,
-  TableBody,
-  TableHeader,
-  ModalOverlay,
-  Modal,
-  Checkbox,
-} from 'react-aria-components'
+import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
@@ -49,7 +38,6 @@ function TokenLogoTwo() {
 }
 
 const PoolMy = () => {
-  const history = useHistory()
   const [isOpen, setOpen] = useState<boolean>(false)
 
   function GearIconLogo() {
@@ -102,22 +90,18 @@ const PoolMy = () => {
                 <Cell>{item.apy}</Cell>
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
-                    <Button
-                      onPress={() => {
-                        history.push('/pool/my/add')
-                      }}
+                    <Link
+                      to={'/pool/add/currencyIdA/currencyIdB'}
                       className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
                     >
                       {'+ADD'}
-                    </Button>
-                    <Button
-                      onPress={() => {
-                        history.push('/pool/my/remove')
-                      }}
+                    </Link>
+                    <Link
+                      to={'/pool/remove/a/b'}
                       className={'text-lemonYellow w-[88px] h-6 border rounded-sm border-lemonYellow'}
                     >
                       {'—REMOVE'}
-                    </Button>
+                    </Link>
                   </div>
                 </Cell>
               </Row>

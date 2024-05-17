@@ -20,7 +20,7 @@ export default function AppBar() {
           <LinkTab to={'/swap'}>{'Dex'}</LinkTab>
           <LinkTab to={'/pool'}>{'Pools'}</LinkTab>
           <LinkTab to={'/asset'}>{'Assets'}</LinkTab>
-          <LinkTab to={'/pex'}>{'$PEX'}</LinkTab>
+          <LinkTab to={'/pax'}>{'$PAX'}</LinkTab>
         </NavTabs>
 
         <div className={'ml-auto flex items-center gap-6'}>
