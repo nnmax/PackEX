@@ -49,6 +49,7 @@ export default function PoolAdd() {
     price,
     noLiquidity,
     poolTokenPercentage,
+    liquidityMinted,
     error,
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
@@ -235,6 +236,7 @@ export default function PoolAdd() {
         approvalA={approvalA}
         approvalB={approvalB}
         txHash={txHash}
+        liquidityMinted={liquidityMinted}
       />
       <div className={'flex w-full justify-center'}>
         <div className={'px-16 py-8'}>

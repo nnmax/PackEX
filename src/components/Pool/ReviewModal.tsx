@@ -4,7 +4,7 @@ import DoubleCurrencyLogo from '@/components/DoubleLogo'
 import Steps from '@/components/Pool/Steps'
 import { ApprovalState } from '@/hooks/useApproveCallback'
 import { Field } from '@/state/mint/actions'
-import { Currency, CurrencyAmount, Fraction, Percent } from '@nnmax/uniswap-sdk-v2'
+import { Currency, CurrencyAmount, Fraction, Percent, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import { Heading } from 'react-aria-components'
 
@@ -19,6 +19,7 @@ export default function ReviewModal(props: {
   approvalB: ApprovalState
   txHash: string
   onDismiss?: () => void
+  liquidityMinted?: TokenAmount
 }) {
   const {
     modalOpen,
@@ -31,6 +32,7 @@ export default function ReviewModal(props: {
     approvalB,
     txHash,
     onDismiss,
+    liquidityMinted,
   } = props
 
   const activeStep = useMemo(() => {
@@ -55,7 +57,7 @@ export default function ReviewModal(props: {
       <hr className={'mb-6 mt-1.5 h-px w-full border-none bg-[#6A6A6A]'} />
       <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>YOU WILL RECEIVE</p>
       <p className={'flex justify-between'}>
-        <span>NaN</span>
+        <span>{liquidityMinted?.toSignificant(6) ?? '-'}</span>
         <span>POOL TOKENS</span>
       </p>
       <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>PAIR</p>

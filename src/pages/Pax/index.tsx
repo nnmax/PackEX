@@ -1,12 +1,46 @@
 import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
 import DoubleCurrencyLogo from '@/components/DoubleLogo'
+import OTP from '@/components/OTPInput'
+import { useActiveWeb3React } from '@/hooks'
+import { useWalletModalToggle } from '@/state/application/hooks'
 import clsx from 'clsx'
-import { Button, Group, Input } from 'react-aria-components'
+import { forwardRef } from 'react'
+import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
+import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
+
+const leaderboards = Array.from({ length: 20 }, (_, i) => ({
+  rank: i + 1,
+  name: 'User ' + i,
+  totalMinted: i * 100,
+}))
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
+  const { account, library } = useActiveWeb3React()
+  const toggleWalletModal = useWalletModalToggle()
+
+  const handleWatchAsset = () => {
+    if (!account) {
+      toggleWalletModal()
+      return
+    }
+    if (!library) return
+    // TODO
+    // library.send('wallet_watchAsset', [
+    //   {
+    //     type: 'ERC20',
+    //     options: {
+    //       address: '0x00000000000000000',
+    //       symbol: 'PAX',
+    //       decimals: 18,
+    //       image: 'https://packex.io/favicon.ico',
+    //     },
+    //   },
+    // ])
+  }
 
   return (
     <div
@@ -27,7 +61,9 @@ export default function PaxPage() {
         <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
           <span className={'text-lemonYellow mr-2'}>Contract: </span>
           <span>0x00000000000000000</span>
-          <ButtonYellow className={'ml-7 w-full max-w-[288px]'}>+ADD $PAX TO YOUR WALLET</ButtonYellow>
+          <ButtonYellow className={'ml-7 w-full max-w-[288px]'} onPress={handleWatchAsset}>
+            +ADD $PAX TO YOUR WALLET
+          </ButtonYellow>
         </div>
       </section>
 
@@ -67,15 +103,51 @@ export default function PaxPage() {
         <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
           <DoubleCurrencyLogo />
           <span>PAX / USDB</span>
-          <ButtonYellow className={'ml-7 w-[180px]'}>+ADD LIQUIDITY</ButtonYellow>
+          <Link
+            // TODO: currencyIdA 和 currencyIdB 替换成对应的 address
+            to={'/pool/add/:currencyIdA/:currencyIdB'}
+            className={
+              'ml-7 w-[180px] bg-lemonYellow text-[#020202] flex h-9 px-2 items-center justify-center self-center rounded-md text-xs'
+            }
+          >
+            +ADD LIQUIDITY
+          </Link>
         </div>
       </section>
 
       <section className={'flex flex-col gap-6'}>
         <h2 className={'text-[30px]'}>$PAX MINTED</h2>
-        <ButtonYellow className={'w-full max-w-[180px]'} isDisabled>
-          20500
-        </ButtonYellow>
+        <div className={'flex justify-center -mb-4'}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            version="1.1"
+            width="280"
+            height="44"
+            viewBox="0 0 280 44"
+          >
+            <g transform="matrix(-1,0,0,-1,392,88)">
+              <path
+                d="M202.88628,79.78739999999999C200.15794,83.0412,202.47132,88,206.7176,88L387,88C389.76099999999997,88,392,85.76140000000001,392,83L392,49C392,46.23858,389.76099999999997,44,387,44L235.2267,44C233.7481,44,232.34539999999998,44.654416,231.3954,45.7874L202.88628,79.78739999999999Z"
+                fill="#FFC300"
+                fillOpacity="1"
+              />
+            </g>
+            <path
+              d="M178.01618,35.9958C175.53917,39.2914,177.89042,44,182.0131,44L275,44C277.76099999999997,44,280,41.7614,280,39L280,5C280,2.23858,277.76099999999997,0,275,0L207.5685,0C205.9966,0,204.5161,0.739252,203.5716,1.99583L178.01618,35.9958ZM178.81556,36.5967Q178.09422,37.5564,178.01351,38.7068Q177.93739,39.7917,178.43441,40.787Q178.93143,41.7823,179.84439,42.3733Q180.81249,43,182.0131,43L275,43Q276.657,43,277.828,41.8284Q279,40.6569,279,39L279,5Q279,3.34315,277.828,2.17157Q276.657,1,275,1L207.5685,1Q205.5711,1,204.371,2.59666L178.81556,36.5967Z"
+              fillRule="evenodd"
+              fill="#FFC300"
+              fillOpacity="1"
+            />
+
+            <text x="20" y="28" fill="#000" fontSize="14">
+              DAILY REWARDS
+            </text>
+            <text x="215" y="28" fill="#FFC300" fontSize="16">
+              410
+            </text>
+          </svg>
+        </div>
         <div aria-hidden className={'w-full mb-[23px] pl-[--padding-left] pr-[--padding-right]'}>
           <div aria-hidden className={'border-t-4 border-lemonYellow w-full'} />
         </div>
@@ -84,56 +156,71 @@ export default function PaxPage() {
             <div className={'flex gap-12'}>
               <div className={boxClasses} data-ratio={'1/6'} ref={boxOneRef}>
                 <span className={'text-xs mt-4'}>SWAP</span>
-                <span className={'text-lemonYellow mt-8'}>4100</span>
+                <span className={'text-lemonYellow mt-8'}>[ 4100 ]</span>
               </div>
               <div className={boxClasses} data-ratio={'1/2'}>
                 <span className={'text-xs mt-4'}>POOL</span>
-                <span className={'text-lemonYellow mt-8'}>4100</span>
+                <span className={'text-lemonYellow mt-8'}>[ 4100 ]</span>
               </div>
               <div className={boxClasses} data-ratio={'1/6'}>
                 <span className={'text-xs mt-4'}>MIGRATED ASSETS </span>
-                <span className={'text-lemonYellow mt-8'}>4100</span>
+                <span className={'text-lemonYellow mt-8'}>[ 4100 ]</span>
               </div>
             </div>
             <div className={'mt-10 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}>
               <p className={'flex gap-6'}>
-                <span className={'w-20'}>Total</span>
+                <span className={'w-[140px]'}>TOTAL MINTED</span>
                 <span className={'text-[#9E9E9E]'}>0</span>
               </p>
               <p className={'flex gap-6 mt-8'}>
-                <span className={'w-20'}>Unclaim</span>
+                <span className={'w-[140px]'}>Unclaim</span>
                 <span className={'text-[#9E9E9E]'}>0</span>
               </p>
-              <ButtonYellow className={'w-20 mt-6 ml-[104px]'}>Claim</ButtonYellow>
+              <ButtonYellow className={'w-20 mt-6 ml-[164px]'}>Claim</ButtonYellow>
             </div>
           </div>
           <div className={'w-80 ml-6'}>
-            <div
-              data-ratio={'1/6'}
-              ref={boxTwoRef}
-              className={clsx(
-                verticalLineClasses,
-                'relative border border-lemonYellow px-5 py-4 rounded flex flex-col',
-              )}
-            >
-              <span className={'self-center'}>SOCIAL</span>
-              <Group aria-label={'invite code'} className={'flex justify-between w-full mt-3'}>
-                <Input className={inputClasses} maxLength={1} minLength={1} />
-                <Input className={inputClasses} maxLength={1} minLength={1} />
-                <Input className={inputClasses} maxLength={1} minLength={1} />
-                <Input className={inputClasses} maxLength={1} minLength={1} />
-                <Input className={inputClasses} maxLength={1} minLength={1} />
-              </Group>
-              <ButtonYellowLight className={'w-full mt-[44px]'} isDisabled>
-                Enter Invite Code to mint $PAX
-              </ButtonYellowLight>
-              <span className={'self-center mt-8 text-[#FBFC02] text-xs'}>Already registered?</span>
-              <Button className={'self-center mt-2 text-xs text-[#A4BAFF] underline'}>Log in with your wallet</Button>
-            </div>
+            <SocialBox ref={boxTwoRef} />
             <p className={'text-xs leading-[22px] pt-2 px-5'}>
               You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint,
               the more you mint.
             </p>
+          </div>
+        </div>
+        <div className={'flex gap-5'}>
+          <div className={'border flex-1 border-lemonYellow rounded py-8 px-4'}>
+            <h3 className={'text-lemonYellow'} id={'leaderboard-id'}>
+              Leaderboard
+            </h3>
+            <MyTable />
+          </div>
+
+          <div className={'border flex-1 border-lemonYellow rounded py-8 px-4'}>
+            <div className={'flex justify-between'}>
+              <h3 className={'text-lemonYellow'} id={'invite-id'}>
+                Invite
+              </h3>
+              <div className={'flex text-lemonYellow gap-4 items-center'}>
+                <span className={'text-xs'}>Invite Code:</span>
+                <span>AS78W</span>
+                <Button
+                  aria-label={'Copy'}
+                  onPress={() => {
+                    navigator.clipboard
+                      .writeText('AS78W')
+                      .then(() => {
+                        toast.success('Copied!')
+                      })
+                      .catch(() => {
+                        toast.error('Failed to copy!')
+                      })
+                  }}
+                >
+                  <span className={'icon-[pixelarticons--copy]'} aria-hidden />
+                </Button>
+              </div>
+            </div>
+            <MyTable />
           </div>
         </div>
       </section>
@@ -141,7 +228,7 @@ export default function PaxPage() {
   )
 }
 
-const inputClasses = 'border border-lemonYellow rounded h-9 w-9 text-center bg-[#6F6F6F]'
+const inputClasses = 'border border-lemonYellow rounded h-9 w-9 text-center bg-transparent'
 const verticalLineClasses = clsx`
   before:content-[attr(data-ratio)]
   before:absolute
@@ -160,3 +247,62 @@ const boxClasses = clsx(
   verticalLineClasses,
   'relative flex-1 border border-lemonYellow rounded flex flex-col items-center h-32',
 )
+
+function MyTable() {
+  return (
+    <div className={'h-[600px] overflow-y-auto'}>
+      <Table aria-labelledby={'invite-id'} className={'text-center w-full mt-6'}>
+        <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
+          <Column>RANK</Column>
+          <Column>NAME</Column>
+          <Column isRowHeader>TOTAL $PAX MINTED</Column>
+        </TableHeader>
+        <TableBody items={leaderboards}>
+          {(item) => (
+            <Row id={item.rank} className={'h-[60px]'}>
+              <Cell>{item.rank}</Cell>
+              <Cell>{item.name}</Cell>
+              <Cell>{item.totalMinted}</Cell>
+            </Row>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  )
+}
+
+const SocialBox = forwardRef<HTMLDivElement>(function SocialBox(props, ref) {
+  const { account } = useActiveWeb3React()
+  const toggleWalletModal = useWalletModalToggle()
+
+  return (
+    <div
+      data-ratio={'1/6'}
+      ref={ref}
+      className={clsx(verticalLineClasses, 'relative border border-lemonYellow px-5 py-4 rounded flex flex-col')}
+    >
+      <span className={'self-center'}>SOCIAL</span>
+      <OTP
+        length={5}
+        aria-label={'invite code'}
+        className={'flex justify-between w-full mt-3'}
+        inputClassName={clsx(inputClasses, !account && '!bg-[#6F6F6F]')}
+        disabled={!account}
+        onChange={(value) => {
+          console.log('%c [ value ]-196', 'font-size:13px; background:pink; color:#bf2c9f;', value)
+        }}
+      />
+      <ButtonYellowLight className={'w-full mt-[44px]'} isDisabled>
+        Enter Invite Code to mint $PAX
+      </ButtonYellowLight>
+      {!account && (
+        <>
+          <span className={'self-center mt-8 text-[#FBFC02] text-xs'}>Already registered?</span>
+          <Button className={'self-center mt-2 text-xs text-[#A4BAFF] underline'} onPress={toggleWalletModal}>
+            Log in with your wallet
+          </Button>
+        </>
+      )}
+    </div>
+  )
+})
