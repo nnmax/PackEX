@@ -55,7 +55,7 @@ export default function PoolAdd() {
 
   const isValid = !error
 
-  const [modalOpen, setModalOpen] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
 
   // txn values
   const [deadline] = useUserDeadline() // custom from users settings
