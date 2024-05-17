@@ -91,13 +91,15 @@ const PoolMy = () => {
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
                     <Link
-                      to={'/pool/add/currencyIdA/currencyIdB'}
+                      // TODO: currencyIdA 和 currencyIdB 替换成对应的 address
+                      to={'/pool/add/:currencyIdA/:currencyIdB'}
                       className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
                     >
                       {'+ADD'}
                     </Link>
                     <Link
-                      to={'/pool/remove/a/b'}
+                      // TODO: currencyIdA 和 currencyIdB 替换成对应的 address
+                      to={'/pool/remove/:currencyIdA/:currencyIdB'}
                       className={'text-lemonYellow w-[88px] h-6 border rounded-sm border-lemonYellow'}
                     >
                       {'—REMOVE'}
