@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Web3Provider } from '@ethersproject/providers'
 import { isMobile } from 'react-device-detect'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import usePrevious from '../../hooks/usePrevious'
@@ -7,7 +8,8 @@ import { MESSAGE_KEY, SIGNATURE_KEY, SUPPORTED_WALLETS, USER_KEY } from '../../c
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import Dialog from '@/components/Dialog'
-import { connectWallet } from '@/api'
+import { connectWallet, disconnectWallet } from '@/api'
+import { useUserInfo } from '@/state/user/hooks'
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -18,12 +20,10 @@ const WALLET_VIEWS = {
 
 export default function WalletModal() {
   // important that these are destructed from the account-specific web3-react context
-  const { active, account, connector, activate, error } = useWeb3React()
-
+  const { active, account, connector, activate, error, deactivate } = useWeb3React<Web3Provider>()
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
-
   const [pendingWallet, setPendingWallet] = useState<AbstractConnector | undefined>()
-
+  const [, updateUserInfo] = useUserInfo()
   const walletModalOpen = useWalletModalOpen()
   const toggleWalletModal = useWalletModalToggle()
 
@@ -42,6 +42,13 @@ export default function WalletModal() {
       setWalletView(WALLET_VIEWS.ACCOUNT)
     }
   }, [walletModalOpen])
+
+  useEffect(() => {
+    if (error instanceof UnsupportedChainIdError) {
+      deactivate()
+      disconnectWallet().catch(() => {})
+    }
+  }, [error, deactivate])
 
   // close modal when a connection is successful
   const activePrevious = usePrevious(active)
@@ -68,69 +75,77 @@ export default function WalletModal() {
       connector.walletConnectProvider = undefined
     }
 
-    if (connector) {
-      try {
-        await activate(connector, undefined, true)
-      } catch (error) {
+    if (!connector) return
+
+    const result = await activate(connector, undefined, true)
+      .then(() => true)
+      .catch(async (error) => {
         if (error instanceof UnsupportedChainIdError) {
-          const provider = await connector.getProvider()
+          const provider: Web3Provider = await connector.getProvider()
           const chainId = '0x' + Number.parseInt(process.env.REACT_APP_CHAIN_ID!, 10).toString(16)
-          try {
-            await provider.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId }],
+          return provider
+            .send('wallet_switchEthereumChain', [{ chainId }])
+            .then(() => true)
+            .catch(async (err: { code: number }) => {
+              // This error code indicates that the chain has not been added to MetaMask
+              if (err.code === 4902) {
+                const config = JSON.parse(process.env.REACT_APP_CHAIN_CONFIRM!)
+                return provider
+                  .send('wallet_addEthereumChain', [
+                    {
+                      chainId,
+                      ...config,
+                    },
+                  ])
+                  .then(() => true)
+                  .catch(() => false)
+              }
+              return false
             })
-          } catch (err) {
-            // This error code indicates that the chain has not been added to MetaMask
-            if ((err as any).code === 4902) {
-              const config = JSON.parse(process.env.REACT_APP_CHAIN_CONFIRM!)
-              await provider.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                  {
-                    chainId,
-                    ...config,
-                  },
-                ],
-              })
-            }
-          }
-        } else {
-          setWalletView(WALLET_VIEWS.ACCOUNT)
         }
-      }
 
-      const _account = await connector.getAccount()
-      if (_account) {
-        const s = window.localStorage.getItem(SIGNATURE_KEY)
-        const m = window.localStorage.getItem(MESSAGE_KEY)
-        const connectWalletResponse = await connectWallet({
+        setWalletView(WALLET_VIEWS.ACCOUNT)
+        return false
+      })
+
+    if (!result) {
+      setPendingWallet(undefined)
+      setWalletView(WALLET_VIEWS.ACCOUNT)
+      return
+    }
+
+    const _account = await connector.getAccount()
+    if (!_account) return
+
+    const s = window.localStorage.getItem(SIGNATURE_KEY)
+    const m = window.localStorage.getItem(MESSAGE_KEY)
+    const connectWalletResponse = await connectWallet({
+      address: _account,
+      signature: s,
+      message: m,
+    })
+
+    if (typeof connectWalletResponse === 'string') {
+      const provider = await connector.getProvider()
+      if (provider && typeof provider.request === 'function') {
+        const signatureawait = (await provider.request({
+          method: 'personal_sign',
+          params: [connectWalletResponse, _account],
+        })) as string
+        const connectWalletResponse2 = await connectWallet({
           address: _account,
-          signature: s,
-          message: m,
+          signature: signatureawait,
+          message: connectWalletResponse,
         })
-
-        if (typeof connectWalletResponse === 'string') {
-          const provider = await connector.getProvider()
-          if (provider && typeof provider.request === 'function') {
-            const signatureawait = (await provider.request({
-              method: 'personal_sign',
-              params: [connectWalletResponse, _account],
-            })) as string
-            const connectWalletResponse2 = await connectWallet({
-              address: _account,
-              signature: signatureawait,
-              message: connectWalletResponse,
-            })
-            if (typeof connectWalletResponse2 === 'string') return
-            window.localStorage.setItem(SIGNATURE_KEY, signatureawait)
-            window.localStorage.setItem(MESSAGE_KEY, connectWalletResponse)
-            window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse2))
-          }
-        } else {
-          window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse))
-        }
+        if (typeof connectWalletResponse2 === 'string') return
+        window.localStorage.setItem(SIGNATURE_KEY, signatureawait)
+        window.localStorage.setItem(MESSAGE_KEY, connectWalletResponse)
+        window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse2))
+        updateUserInfo(connectWalletResponse2)
       }
+    } else {
+      window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse))
+      updateUserInfo(connectWalletResponse)
     }
   }
 
@@ -147,11 +162,7 @@ export default function WalletModal() {
             name={option.name}
             loading={walletView === WALLET_VIEWS.PENDING && option.connector === pendingWallet}
             onClick={async () => {
-              if (option.connector === connector) {
-                setWalletView(WALLET_VIEWS.ACCOUNT)
-              } else if (!option.href) {
-                await tryActivation(option.connector)
-              }
+              await tryActivation(option.connector)
             }}
             key={key}
             icon={require('../../assets/images/' + option.iconName)}

@@ -1,6 +1,5 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import AddLiquidity from './AddLiquidity'
@@ -23,11 +22,34 @@ import AppBar from '@/components/AppBar'
 import PoolAll from './Pool/all'
 import PoolMy from './Pool/my'
 import Pax from './Pax'
+import { getUser } from '@/api'
+import { useUserInfo } from '@/state/user/hooks'
+
+function useInitialUserInfo() {
+  const [, updateUserInfo] = useUserInfo()
+
+  useEffect(() => {
+    let isMounted = true
+
+    getUser()
+      .then((userInfo) => {
+        if (isMounted) {
+          updateUserInfo(userInfo)
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      isMounted = false
+    }
+  }, [updateUserInfo])
+}
 
 export default function App() {
+  useInitialUserInfo()
+
   return (
     <Suspense fallback={null}>
-      <Route component={GoogleAnalyticsReporter} />
       <AppBar />
       <main className={'flex min-h-[calc(100vh-80px)] justify-center px-14 pb-6'}>
         <div className={'flex w-full max-w-[--main-max-width] flex-col'}>

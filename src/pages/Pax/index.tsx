@@ -1,11 +1,13 @@
+import { enterInvitationCode } from '@/api'
 import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
 import DoubleCurrencyLogo from '@/components/DoubleLogo'
 import OTP from '@/components/OTPInput'
 import { useActiveWeb3React } from '@/hooks'
 import { useWalletModalToggle } from '@/state/application/hooks'
+import { useUserInfo } from '@/state/user/hooks'
 import clsx from 'clsx'
-import { forwardRef } from 'react'
-import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
+import { forwardRef, useState } from 'react'
+import { Button, Cell, Column, FieldError, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
@@ -19,11 +21,12 @@ const leaderboards = Array.from({ length: 20 }, (_, i) => ({
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
-  const { account, library } = useActiveWeb3React()
+  const { library } = useActiveWeb3React()
+  const [userInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
 
   const handleWatchAsset = () => {
-    if (!account) {
+    if (!userInfo) {
       toggleWalletModal()
       return
     }
@@ -40,6 +43,26 @@ export default function PaxPage() {
     //     },
     //   },
     // ])
+  }
+
+  const handleAdd = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!userInfo) {
+      event.preventDefault()
+      toggleWalletModal()
+    }
+  }
+
+  const handleCopy = () => {
+    if (!userInfo || !userInfo.invitationCode) return
+
+    navigator.clipboard
+      .writeText(userInfo.invitationCode.toString())
+      .then(() => {
+        toast.success('Copied!')
+      })
+      .catch(() => {
+        toast.error('Failed to copy!')
+      })
   }
 
   return (
@@ -106,6 +129,7 @@ export default function PaxPage() {
           <Link
             // TODO: currencyIdA 和 currencyIdB 替换成对应的 address
             to={'/pool/add/:currencyIdA/:currencyIdB'}
+            onClick={handleAdd}
             className={
               'ml-7 w-[180px] bg-lemonYellow text-[#020202] flex h-9 px-2 items-center justify-center self-center rounded-md text-xs'
             }
@@ -200,25 +224,15 @@ export default function PaxPage() {
               <h3 className={'text-lemonYellow'} id={'invite-id'}>
                 Invite
               </h3>
-              <div className={'flex text-lemonYellow gap-4 items-center'}>
-                <span className={'text-xs'}>Invite Code:</span>
-                <span>AS78W</span>
-                <Button
-                  aria-label={'Copy'}
-                  onPress={() => {
-                    navigator.clipboard
-                      .writeText('AS78W')
-                      .then(() => {
-                        toast.success('Copied!')
-                      })
-                      .catch(() => {
-                        toast.error('Failed to copy!')
-                      })
-                  }}
-                >
-                  <span className={'icon-[pixelarticons--copy]'} aria-hidden />
-                </Button>
-              </div>
+              {!!userInfo && userInfo.invitationCode && (
+                <div className={'flex text-lemonYellow gap-4 items-center'}>
+                  <span className={'text-xs'}>Invite Code:</span>
+                  <span>{userInfo.invitationCode}</span>
+                  <Button aria-label={'Copy'} onPress={handleCopy}>
+                    <span className={'icon-[pixelarticons--copy]'} aria-hidden />
+                  </Button>
+                </div>
+              )}
             </div>
             <MyTable />
           </div>
@@ -272,8 +286,28 @@ function MyTable() {
 }
 
 const SocialBox = forwardRef<HTMLDivElement>(function SocialBox(props, ref) {
-  const { account } = useActiveWeb3React()
+  const [userInfo, updateUserInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
+  const [loading, setLoading] = useState(false)
+  const [invalid, setInvalid] = useState(false)
+
+  const handleChange = (value: string) => {
+    if (!userInfo) return
+    setLoading(true)
+    enterInvitationCode(value)
+      .then((res) => {
+        updateUserInfo({
+          ...userInfo,
+          invitationCode: res,
+        })
+      })
+      .catch(() => {
+        setInvalid(true)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }
 
   return (
     <div
@@ -283,19 +317,22 @@ const SocialBox = forwardRef<HTMLDivElement>(function SocialBox(props, ref) {
     >
       <span className={'self-center'}>SOCIAL</span>
       <OTP
+        loading={loading}
+        formatter={(value) => value.toUpperCase()}
         length={5}
         aria-label={'invite code'}
         className={'flex justify-between w-full mt-3'}
-        inputClassName={clsx(inputClasses, !account && '!bg-[#6F6F6F]')}
-        disabled={!account}
-        onChange={(value) => {
-          console.log('%c [ value ]-196', 'font-size:13px; background:pink; color:#bf2c9f;', value)
-        }}
+        inputClassName={clsx(inputClasses, !userInfo && '!bg-[#6F6F6F]')}
+        disabled={!userInfo}
+        onChange={handleChange}
       />
+      {invalid && (
+        <span className={'text-xs text-[#FF3535] absolute self-center top-[100px]'}>Invalid invite code.</span>
+      )}
       <ButtonYellowLight className={'w-full mt-[44px]'} isDisabled>
         Enter Invite Code to mint $PAX
       </ButtonYellowLight>
-      {!account && (
+      {!userInfo && (
         <>
           <span className={'self-center mt-8 text-[#FBFC02] text-xs'}>Already registered?</span>
           <Button className={'self-center mt-2 text-xs text-[#A4BAFF] underline'} onPress={toggleWalletModal}>

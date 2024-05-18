@@ -1,5 +1,6 @@
 import { toast } from 'react-toastify'
 import type { CommonResponse } from '@/api/types'
+import { disconnectWallet } from '@/api'
 
 interface FetcherOptions<ResponseData> extends RequestInit {
   disabledErrorToast?: boolean | ((response: CommonResponse<ResponseData>) => boolean)
@@ -26,7 +27,7 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
         return data.data
       }
       if (data.code === 401) {
-        // TODO: logout
+        disconnectWallet().catch(() => {})
         throw data
       }
       if (disabledErrorToast === true || (typeof disabledErrorToast === 'function' && disabledErrorToast(data))) {

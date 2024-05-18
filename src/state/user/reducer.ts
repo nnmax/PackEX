@@ -11,7 +11,9 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
   updateUserDeadline,
+  updateUserInfo,
 } from './actions'
+import { ConnectWalletData } from '@/api'
 
 const currentTimestamp = () => new Date().getTime()
 
@@ -44,6 +46,8 @@ export interface UserState {
   }
 
   timestamp: number
+
+  userInfo: ConnectWalletData | null
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -59,6 +63,7 @@ export const initialState: UserState = {
   tokens: {},
   pairs: {},
   timestamp: currentTimestamp(),
+  userInfo: null,
 }
 
 export default createReducer(initialState, (builder) =>
@@ -117,6 +122,10 @@ export default createReducer(initialState, (builder) =>
         delete state.pairs[chainId][pairKey(tokenAAddress, tokenBAddress)]
         delete state.pairs[chainId][pairKey(tokenBAddress, tokenAAddress)]
       }
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(updateUserInfo, (state, { payload }) => {
+      state.userInfo = payload
       state.timestamp = currentTimestamp()
     }),
 )

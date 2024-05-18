@@ -4,8 +4,20 @@ import LinkTab from '../LinkTab'
 import { Link } from 'react-router-dom'
 import Web3Status from '../Web3Status'
 import XLogo from '@/assets/images/X-logo.svg'
+import { useWalletModalToggle } from '@/state/application/hooks'
+import { useUserInfo } from '@/state/user/hooks'
 
 export default function AppBar() {
+  const [userInfo] = useUserInfo()
+  const toggleWalletModal = useWalletModalToggle()
+
+  const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    if (!userInfo) {
+      event.preventDefault()
+      toggleWalletModal()
+    }
+  }
+
   return (
     <header className={'flex h-[80px] flex-row justify-center bg-[#030303] px-[56px]'}>
       <div className={'flex w-full max-w-[--main-max-width] flex-row items-center'}>
@@ -18,8 +30,12 @@ export default function AppBar() {
 
         <NavTabs>
           <LinkTab to={'/swap'}>{'Dex'}</LinkTab>
-          <LinkTab to={'/pool'}>{'Pools'}</LinkTab>
-          <LinkTab to={'/asset'}>{'Assets'}</LinkTab>
+          <LinkTab to={'/pool'} onClick={handleClick}>
+            {'Pools'}
+          </LinkTab>
+          <LinkTab to={'/asset'} onClick={handleClick}>
+            {'Assets'}
+          </LinkTab>
           <LinkTab to={'/pax'}>{'$PAX'}</LinkTab>
         </NavTabs>
 

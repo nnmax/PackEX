@@ -115,7 +115,7 @@ export default function CurrencyInputPanel({
           {!disableCurrencySelect && <ArrowDown className={'text-lemonYellow'} aria-hidden />}
         </Button>
       </div>
-      {!!account && !hideBalance && (
+      {!hideBalance && (
         <div className={'my-1.5 flex items-center justify-between text-xs'}>
           <span className={'text-[#FF2323]'}>{insufficientBalance ? 'INSUFFICIENT FUNDS' : ''}</span>
           <div>

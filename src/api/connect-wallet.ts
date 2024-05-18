@@ -8,9 +8,9 @@ export type ConnectWalletParams = {
 
 export type ConnectWalletData = {
   /** 邀请人 ID */
-  inviterId?: number
+  inviterId: number | null
   /** 用户邀请码 */
-  invitationCode: number
+  invitationCode: string | null
   /** 用户 eth 钱包地址 */
   ethAddress: string
 }

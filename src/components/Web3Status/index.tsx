@@ -8,9 +8,11 @@ import ArrowDown from '@/components/Icons/ArrowDown'
 import Wallet from '@/components/Icons/Wallet'
 import MaterialSymbolsLogout from '@/components/Icons/MaterialSymbolsLogout'
 import { disconnectWallet } from '@/api'
+import { useUserInfo } from '@/state/user/hooks'
 
 function Web3StatusInner() {
-  const { account, deactivate } = useWeb3React()
+  const { deactivate } = useWeb3React()
+  const [userInfo] = useUserInfo()
 
   const toggleWalletModal = useWalletModalToggle()
 
@@ -19,11 +21,11 @@ function Web3StatusInner() {
     disconnectWallet()
   }
 
-  if (account) {
+  if (userInfo) {
     return (
       <MenuTrigger>
         <Button className={'flex items-center text-xs h-9 px-2 rounded gap-2 bg-[#192129] outline-none'}>
-          <span>{shortenAddress(account)}</span>
+          <span>{shortenAddress(userInfo.ethAddress)}</span>
           <ArrowDown className={'text-lemonYellow text-xl'} />
         </Button>
 

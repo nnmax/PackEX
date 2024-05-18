@@ -13,7 +13,6 @@ import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpa
 import { ArrowWrapper, SwapCallbackError } from '../../components/swap/styleds'
 import TokenWarningModal from '../../components/TokenWarningModal'
 import ProgressSteps from '../../components/ProgressSteps'
-import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
@@ -27,7 +26,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks'
-import { useExpertModeManager, useUserDeadline, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useExpertModeManager, useUserDeadline, useUserInfo, useUserSlippageTolerance } from '../../state/user/hooks'
 import { LinkStyledButton } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
@@ -38,7 +37,7 @@ import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 
 export default function Swap() {
   const loadedUrlParams = useDefaultsFromURLSearch()
-
+  const [userInfo] = useUserInfo()
   // token warning stuff
   const [loadedInputCurrency, loadedOutputCurrency] = [
     useCurrency(loadedUrlParams?.inputCurrencyId),
@@ -53,7 +52,6 @@ export default function Swap() {
     setDismissTokenWarning(true)
   }, [])
 
-  const { account } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
 
   // toggle wallet when disconnected
@@ -315,7 +313,7 @@ export default function Swap() {
         ) : null}
 
         <div className={'flex justify-center mt-8'}>
-          {!account ? (
+          {!userInfo ? (
             <ButtonYellowLight onPress={toggleWalletModal} className={'text-xs w-full max-w-[240px]'}>
               <Wallet className={'text-xl mr-6'} />
               <span>Connect Wallet</span>

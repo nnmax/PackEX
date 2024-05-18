@@ -10,6 +10,7 @@ import { AppDispatch, AppState } from '../index'
 import {
   addSerializedPair,
   addSerializedToken,
+  updateUserInfo,
   removeSerializedToken,
   SerializedPair,
   SerializedToken,
@@ -17,6 +18,7 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
 } from './actions'
+import { ConnectWalletData } from '@/api'
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -222,4 +224,21 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 
     return Object.keys(keyed).map((key) => keyed[key])
   }, [combinedList])
+}
+
+type UserInfoPayload = AppState['user']['userInfo']
+
+export function useUserInfo(): [UserInfoPayload, (data: UserInfoPayload) => void] {
+  const { account } = useActiveWeb3React()
+  const userInfo = useSelector<AppState, UserInfoPayload>((state) => state.user.userInfo)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const updateUser = useCallback(
+    (data: UserInfoPayload) => {
+      dispatch(updateUserInfo(data))
+    },
+    [dispatch],
+  )
+
+  return useMemo(() => [account ? userInfo : null, updateUser], [account, updateUser, userInfo])
 }

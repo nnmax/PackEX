@@ -2,6 +2,7 @@ import { Group, GroupProps } from 'react-aria-components'
 import { useCallback, useEffect, useRef, useState, ChangeEventHandler, KeyboardEventHandler, forwardRef } from 'react'
 import useForkRef from '@/hooks/useForkRef'
 import { Input, InputProps } from 'react-aria-components'
+import clsx from 'clsx'
 
 export interface OTPRef {
   focus: VoidFunction
@@ -17,6 +18,7 @@ export interface OTPProps extends Omit<GroupProps, 'onChange'> {
   formatter?: (value: string) => string
   disabled?: boolean
   inputClassName?: string
+  loading?: boolean
 }
 
 function strToArr(str: string) {
@@ -33,6 +35,7 @@ export default function OTP(props: OTPProps) {
     disabled,
     autoFocus,
     inputClassName,
+    loading,
     ...restProps
   } = props
 
@@ -138,7 +141,9 @@ export default function OTP(props: OTPProps) {
             onActiveChange={onInputActiveChange}
             autoFocus={index === 0 && autoFocus}
             disabled={disabled}
-            className={inputClassName}
+            className={clsx(inputClassName, {
+              loading,
+            })}
           />
         )
       })}

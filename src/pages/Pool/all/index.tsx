@@ -58,7 +58,7 @@ const PoolAll = () => {
           <Column>
             <span className={'relative'}>
               {'TVL '}
-              <SortIcon />
+              <SortIcon className={'inline'} />
             </span>
           </Column>
           <Column>{'VOLUME (24H)'}</Column>
