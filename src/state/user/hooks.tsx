@@ -18,7 +18,6 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
 } from './actions'
-import { ConnectWalletData } from '@/api'
 
 function serializeToken(token: Token): SerializedToken {
   return {

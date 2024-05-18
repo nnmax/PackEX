@@ -1,4 +1,5 @@
 import { CracoConfig } from '@craco/types'
+import optimizeLocales from '@react-aria/optimize-locales-plugin'
 
 const cracoConfig: CracoConfig = {
   babel: {
@@ -12,6 +13,13 @@ const cracoConfig: CracoConfig = {
       config.ignoreWarnings ??= []
       config.ignoreWarnings.push(/Failed to parse source map/)
       return config
+    },
+    plugins: {
+      add: [
+        optimizeLocales.webpack({
+          locales: ['en-US'],
+        }),
+      ],
     },
   },
 }
