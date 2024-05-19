@@ -1,8 +1,5 @@
-// import PnL from './PnL'
-
-interface IntroduceProsp {
-  pnlVal: string | number
-  totalVal: string | number
+interface IntroduceProps {
+  totalVal: number
 }
 
 /**
@@ -10,11 +7,8 @@ interface IntroduceProsp {
  * @param props
  * @returns JSX Element
  */
-const Introduce: React.FC<IntroduceProsp> = (props: IntroduceProsp): JSX.Element => {
-  const {
-    // pnlVal,
-    totalVal,
-  } = props
+const Introduce: React.FC<IntroduceProps> = (props: IntroduceProps): JSX.Element => {
+  const { totalVal } = props
   return (
     <div className={'mb-6 mt-6 flex items-center gap-[60px]'}>
       <dl
@@ -27,12 +21,6 @@ const Introduce: React.FC<IntroduceProsp> = (props: IntroduceProsp): JSX.Element
           <dt>{'Total Value'}</dt>
           <dd className={'mt-4 text-base text-lemonYellow'}>{`$ ${totalVal}`}</dd>
         </div>
-        {/* <div className={'mt-4'}>
-          <dt>{"Change（Today）"}</dt>
-          <dd className={'mt-4'}>
-            <PnL value={Number(pnlVal)} positive />
-          </dd>
-        </div> */}
       </dl>
 
       <p className={'text-sm leading-7 [&>span]:text-lemonYellow'}>

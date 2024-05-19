@@ -1,21 +1,27 @@
 import { useState, useEffect } from 'react'
 import Introduce from './components/Introduce'
 import DataTable from './components/DataTable'
+import AssertRes from './mock'
 
 export default function Asset() {
-  const [pnlVal, setPnlVal] = useState<string | number>('23.11')
-  const [totalVal, setTotalVal] = useState<string | number>('1233.21')
+  const [totalVal, setTotalVal] = useState<number>(0)
+  const [assetsList, setAssetsList] = useState<any[]>([])
 
   useEffect(() => {
-    // TODO: fetch data from interface & update the pnlVal
-    setPnlVal('23.11')
-    setTotalVal('1233.21')
+    const { data = {} } = AssertRes
+    const { totalValue, assetList = [] } = data as any
+    if (totalValue) {
+      setTotalVal(totalValue)
+    }
+    if (assetList && assetList.length > 0) {
+      setAssetsList(assetList)
+    }
   }, [])
 
   return (
     <>
-      <Introduce pnlVal={pnlVal} totalVal={totalVal} />
-      <DataTable />
+      <Introduce totalVal={totalVal} />
+      <DataTable assetsList={assetsList} />
     </>
   )
 }

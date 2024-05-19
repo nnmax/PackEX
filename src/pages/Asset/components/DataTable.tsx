@@ -5,28 +5,30 @@ import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 // import TokenBlast from '@/components/Icons/TokenBlast'
 import PnL from './PnL'
 
-const data = Array.from({ length: 10 }, (_, i) => ({
-  id: i + 1,
-  token: `Bitcoin`,
-  chain: 'BTC',
-  amount: `242 35${i}`,
-  available: `234 43${i}`,
-  value: `234 56${i}`,
-  pnl: `${23.31 + i + 1}%`,
-}))
+interface DataTableProps {
+  assetsList: any[]
+}
+
+// const data = Array.from({ length: 10 }, (_, i) => ({
+//   id: i + 1,
+//   token: `Bitcoin`,
+//   chain: 'BTC',
+//   amount: `242 35${i}`,
+//   available: `234 43${i}`,
+//   value: `234 56${i}`,
+//   pnl: `${23.31 + i + 1}%`,
+// }))
 
 function TokenLogo() {
   return (
     <div className={'h-6 w-6 rounded-full bg-black'}>
       <CryptocurrencyColorBtc className={'h-full w-full rounded-full'} />
-      {/* <div className={'absolute right-0 top-0 h-4 w-4 -translate-y-1.5 translate-x-1.5 rounded-full bg-black'}>
-        <TokenBlast className={'h-full w-full'} />
-      </div> */}
     </div>
   )
 }
 
-export default function DataTable() {
+const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element => {
+  const { assetsList } = props
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
       <TableHeader className={'h-12 text-[#9E9E9E] [&_th]:font-normal'}>
@@ -37,36 +39,40 @@ export default function DataTable() {
         <Column>{'CHANGE（TODAY）'}</Column>
         <Column> </Column>
       </TableHeader>
-      <TableBody items={data} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+      <TableBody items={assetsList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
         {(item) => (
-          <Row id={item.id} className={'[&>td]:px-3'}>
+          <Row id={item.symbol} className={'[&>td]:px-3'}>
             <Cell>
-              <div className={'flex items-center justify-center gap-4'}>
+              <div className={'flex items-center  gap-4'}>
                 <TokenLogo />
                 <div className={'flex flex-col items-start'}>
-                  <span className={'text-sm'}>{item.token}</span>
-                  <span className={'text-[#9E9E9E]'}>{item.chain}</span>
+                  <span className={'text-sm'}>{item.name}</span>
+                  <span className={'text-[#9E9E9E]'}>{item.symbol}</span>
                 </div>
               </div>
             </Cell>
-            <Cell>{item.amount}</Cell>
-            <Cell>{item.available}</Cell>
+            <Cell>{item.totalAmount}</Cell>
+            <Cell>{item.availableAmount}</Cell>
             <Cell>
               {'$ '}
               {item.value}
             </Cell>
             <Cell>
-              <PnL value={item.pnl} {...(item.id % 2 === 0 ? { negative: true } : { positive: true })} />
+              <PnL value={item.changeToday} />
             </Cell>
             <Cell>
               <div className={'flex items-center justify-center gap-10'}>
-                <Button className={'text-lemonYellow underline'}>{'Swap'}</Button>
-                <Link className={'text-lemonYellow underline'} to={'/asset/deposit'}>
-                  {'Deposit'}
-                </Link>
-                <Link className={'text-lemonYellow underline'} to={'/asset/withdraw'}>
-                  {'Withdraw'}
-                </Link>
+                {item.swapFlag === 1 ? <Button className={'text-lemonYellow underline'}>{'Swap'}</Button> : null}
+                {item.depositFlag === 1 ? (
+                  <Link className={'text-lemonYellow underline'} to={'/asset/deposit'}>
+                    {'Deposit'}
+                  </Link>
+                ) : null}
+                {item.withdrawFlag === 1 ? (
+                  <Link className={'text-lemonYellow underline'} to={'/asset/withdraw'}>
+                    {'Withdraw'}
+                  </Link>
+                ) : null}
               </div>
             </Cell>
           </Row>
@@ -75,3 +81,5 @@ export default function DataTable() {
     </Table>
   )
 }
+
+export default DataTable
