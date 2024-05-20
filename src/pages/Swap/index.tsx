@@ -34,6 +34,7 @@ import Loader from '../../components/Loader'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
+import { calculateGasMargin } from '@/utils'
 
 export default function Swap() {
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -137,7 +138,7 @@ export default function Swap() {
   const noRoute = !route
 
   // check whether the user has approved the router on the input token
-  const [approval, approveCallback] = useApproveCallbackFromTrade(trade, allowedSlippage)
+  const [approval, approveCallback, approveGas] = useApproveCallbackFromTrade(trade, allowedSlippage)
 
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
@@ -153,14 +154,23 @@ export default function Swap() {
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
   // the callback to execute the swap
-  const { callback: swapCallback, error: swapCallbackError } = useSwapCallback(
-    trade,
-    allowedSlippage,
-    deadline,
-    recipient,
-  )
+  const {
+    callback: swapCallback,
+    error: swapCallbackError,
+    gas: swapGas,
+  } = useSwapCallback(trade, allowedSlippage, deadline, recipient)
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
+
+  const totalGas = useMemo(() => {
+    if (approveGas && swapGas) {
+      return calculateGasMargin(approveGas.add(swapGas))
+    }
+    if (swapGas) {
+      return calculateGasMargin(swapGas)
+    }
+    return undefined
+  }, [approveGas, swapGas])
 
   const handleSwap = useCallback(() => {
     if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
@@ -296,7 +306,7 @@ export default function Swap() {
           className={'mt-1'}
         />
 
-        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} />
+        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} totalGas={totalGas} />
 
         {recipient !== null && !showWrap ? (
           <>
@@ -344,19 +354,7 @@ export default function Swap() {
                 )}
               </ButtonConfirmed>
               <ButtonError
-                onClick={() => {
-                  if (isExpertMode) {
-                    handleSwap()
-                  } else {
-                    setSwapState({
-                      tradeToConfirm: trade,
-                      attemptingTxn: false,
-                      swapErrorMessage: undefined,
-                      showConfirm: true,
-                      txHash: undefined,
-                    })
-                  }
-                }}
+                onClick={handleSwap}
                 width="48%"
                 id="swap-button"
                 disabled={!isValid || approval !== ApprovalState.APPROVED || (priceImpactSeverity > 3 && !isExpertMode)}

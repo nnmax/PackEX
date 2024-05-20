@@ -116,6 +116,7 @@
     "npm": "please-use-yarn"
   },
   "dependencies": {
+    "@ethersproject/bignumber": "^5.7.0",
     "@floating-ui/react": "^0.26.13",
     "@headlessui/react": "^2.0.2",
     "@nnmax/uniswap-sdk-v2": "^1.0.4",
