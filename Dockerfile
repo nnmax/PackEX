@@ -30,7 +30,7 @@ ARG PROXY_PASS
 ENV SERVER_NAME=$SERVER_NAME
 ENV PROXY_PASS=$PROXY_PASS
 
-COPY ngnix.conf.template /etc/nginx/templates/
+COPY nginx.conf.template /etc/nginx/templates/
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
