@@ -8,8 +8,8 @@ on:
 
 env:
   AWS_REGION: us-west-2
-  ECR_REPOSITORY: preotc-web
-  ECS_SERVICE: preotc-web
+  ECR_REPOSITORY: packex-web
+  ECS_SERVICE: packex-web
   ECS_CLUSTER: flip-god
   ECS_TASK_DEFINITION: .aws/ecs/task-definition.json
   CONTAINER_NAME: app
