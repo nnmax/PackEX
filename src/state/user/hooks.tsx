@@ -225,15 +225,13 @@ export function useTrackedTokenPairs(): [Token, Token][] {
   }, [combinedList])
 }
 
-type UserInfoPayload = AppState['user']['userInfo']
-
-export function useUserInfo(): [UserInfoPayload, (data: UserInfoPayload) => void] {
+export function useUserInfo(): [AppState['user']['userInfo'], (data: AppState['user']['userInfo']) => void] {
   const { account } = useActiveWeb3React()
-  const userInfo = useSelector<AppState, UserInfoPayload>((state) => state.user.userInfo)
+  const userInfo = useSelector<AppState, AppState['user']['userInfo']>((state) => state.user.userInfo)
   const dispatch = useDispatch<AppDispatch>()
 
   const updateUser = useCallback(
-    (data: UserInfoPayload) => {
+    (data: AppState['user']['userInfo']) => {
       dispatch(updateUserInfo(data))
     },
     [dispatch],

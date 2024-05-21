@@ -1,4 +1,4 @@
-import { ChainId, Currency, ETHER, Pair, Token } from '@nnmax/uniswap-sdk-v2'
+import { Currency, ETHER, Pair, Token } from '@nnmax/uniswap-sdk-v2'
 import { useState, useRef, useMemo } from 'react'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencyLogo from '../CurrencyLogo'
@@ -14,7 +14,6 @@ import { useAllTokens, useToken } from '@/hooks/Tokens'
 import { isAddress } from '@/utils'
 import { filterTokens } from '@/components/SearchModal/filtering'
 import { useTokenComparator } from '@/components/SearchModal/sorting'
-import { SUGGESTED_BASES } from '@/constants'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import { isSet } from 'lodash-es'
@@ -230,13 +229,12 @@ function ChooseModal(props: {
           onKeyDown={handleEnter}
         />
       </div>
-      <SuggestedTokens chainId={chainId} onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
+      <SuggestedTokens onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
       <hr className={'mb-2 mt-4 h-0.5 w-full border-none bg-[#494949]'} />
 
       <CurrencyList
         currencies={filteredSortedTokens}
         onCurrencySelect={handleCurrencySelect}
-        showETH
         otherCurrency={otherSelectedCurrency}
         selectedCurrency={selectedCurrency}
       />
@@ -244,14 +242,11 @@ function ChooseModal(props: {
   )
 }
 
-function SuggestedTokens(props: {
-  chainId?: ChainId
-  selectedCurrency?: Token | null
-  onSelect: (currency: Token) => void
-}) {
-  const { chainId, onSelect, selectedCurrency } = props
+function SuggestedTokens(props: { selectedCurrency?: Token | null; onSelect: (currency: Token) => void }) {
+  const { onSelect, selectedCurrency } = props
   const value = selectedCurrency instanceof Token ? selectedCurrency.address : ''
-  const options = chainId ? SUGGESTED_BASES[chainId] : []
+  const allTokens = useAllTokens()
+  const options = Object.values(allTokens).filter((token) => token.commonFlag)
 
   return (
     <ToggleButtonGroup
@@ -263,7 +258,7 @@ function SuggestedTokens(props: {
         }
       }}
     >
-      {(chainId ? SUGGESTED_BASES[chainId] : []).map((token) => {
+      {options.map((token) => {
         return (
           <ToggleButton
             className={'flex h-8 items-center gap-1 rounded bg-[#0F0F0F] px-1 py-1.5'}
@@ -288,7 +283,7 @@ function CurrencyList(props: {
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
   otherCurrency?: Token | null
-  showETH: boolean
+  showETH?: boolean
 }) {
   const { showETH, currencies, onCurrencySelect, otherCurrency, selectedCurrency } = props
 

@@ -4,10 +4,11 @@ import { disconnectWallet } from '@/api'
 
 interface FetcherOptions<ResponseData> extends RequestInit {
   disabledErrorToast?: boolean | ((response: CommonResponse<ResponseData>) => boolean)
+  disabled401?: boolean
 }
 
 export default function fetcher<ResponseData = unknown>(input: string, options?: FetcherOptions<ResponseData>) {
-  const { disabledErrorToast, ...rest } = options || {}
+  const { disabledErrorToast, disabled401, ...rest } = options || {}
   let url = input
   return fetch(url, {
     ...rest,
@@ -26,7 +27,7 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       if (data.code === 200) {
         return data.data
       }
-      if (data.code === 401) {
+      if (data.code === 401 && !disabled401) {
         disconnectWallet().catch(() => {})
         throw data
       }

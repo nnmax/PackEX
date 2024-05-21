@@ -19,6 +19,12 @@ import { BrowserRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 
+declare module '@uniswap/token-lists' {
+  export interface TokenInfo {
+    commonFlag: 0 | 1
+  }
+}
+
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 
 if ('ethereum' in window) {

@@ -147,6 +147,9 @@ export default function WalletModal() {
       window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse))
       updateUserInfo(connectWalletResponse)
     }
+    setPendingWallet(undefined)
+    setWalletView(WALLET_VIEWS.ACCOUNT)
+    toggleWalletModal()
   }
 
   // get wallets user can switch too, depending on device/browser

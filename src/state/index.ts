@@ -1,5 +1,5 @@
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
-import { save, load } from 'redux-localstorage-simple'
+// import { save, load } from 'redux-localstorage-simple'
 
 import application from './application/reducer'
 import { updateVersion } from './global/actions'
@@ -11,7 +11,10 @@ import lists from './lists/reducer'
 import burn from './burn/reducer'
 import multicall from './multicall/reducer'
 
-const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists']
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const PERSISTED_KEYS: string[] = [
+  /* 'user', 'transactions', 'lists' */
+]
 
 const store = configureStore({
   reducer: {
@@ -24,8 +27,8 @@ const store = configureStore({
     multicall,
     lists,
   },
-  middleware: [...getDefaultMiddleware({ thunk: false }), save({ states: PERSISTED_KEYS })],
-  preloadedState: load({ states: PERSISTED_KEYS }),
+  middleware: [...getDefaultMiddleware({ thunk: false }) /* , save({ states: PERSISTED_KEYS }) */],
+  /* preloadedState: load({ states: PERSISTED_KEYS }), */
 })
 
 store.dispatch(updateVersion())

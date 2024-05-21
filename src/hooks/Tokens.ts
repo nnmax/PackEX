@@ -1,7 +1,7 @@
 import { parseBytes32String } from '@ethersproject/strings'
 import { Currency, ETHER, Token, currencyEquals } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
-import { useSelectedTokenList } from '../state/lists/hooks'
+import { WrappedTokenInfo, useSelectedTokenList } from '../state/lists/hooks'
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import { useUserAddedTokens } from '../state/user/hooks'
 import { isAddress } from '../utils'
@@ -9,27 +9,14 @@ import { isAddress } from '../utils'
 import { useActiveWeb3React } from './index'
 import { useBytes32TokenContract, useTokenContract } from './useContract'
 
-export function useAllTokens(): { [address: string]: Token } {
+export function useAllTokens(): { [address: string]: WrappedTokenInfo } {
   const { chainId } = useActiveWeb3React()
-  const userAddedTokens = useUserAddedTokens()
   const allTokens = useSelectedTokenList()
 
   return useMemo(() => {
     if (!chainId) return {}
-    return (
-      userAddedTokens
-        // reduce into all ALL_TOKENS filtered by the current chain
-        .reduce<{ [address: string]: Token }>(
-          (tokenMap, token) => {
-            tokenMap[token.address] = token
-            return tokenMap
-          },
-          // must make a copy because reduce modifies the map, and we do not
-          // want to make a copy in every iteration
-          { ...allTokens[chainId] },
-        )
-    )
-  }, [chainId, userAddedTokens, allTokens])
+    return allTokens[chainId]
+  }, [chainId, allTokens])
 }
 
 // Check if currency is included in custom list from user storage
