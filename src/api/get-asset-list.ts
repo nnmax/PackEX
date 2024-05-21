@@ -1,10 +1,26 @@
-// import { ConnectWalletData } from '@/api/connect-wallet'
 import fetcher from '@/utils/fetcher'
 
-// export type GetUserData = ConnectWalletData
+interface Asset {
+  availableAmount: number
+  totalAmount: number
+  value: number
+  changeToday: number
+  name: string
+  symbol: string
+  logoUri: string
+  todayStartPrice: number
+  swapFlag: 0 | 1
+  depositFlag: 0 | 1
+  withdrawFlag: 0 | 1
+}
+
+export type AssetListData = {
+  totalValue: number
+  assetList: Asset[]
+}
 
 export default function getAssertList() {
-  return fetcher<any>('/api/get-asset-list', {
+  return fetcher<AssetListData>('/api/get-asset-list', {
     method: 'GET',
     disabledErrorToast: true,
   })

@@ -1,30 +1,10 @@
 'use client'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
-import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
-// import TokenBlast from '@/components/Icons/TokenBlast'
 import PnL from './PnL'
 
 interface DataTableProps {
   assetsList: any[]
-}
-
-// const data = Array.from({ length: 10 }, (_, i) => ({
-//   id: i + 1,
-//   token: `Bitcoin`,
-//   chain: 'BTC',
-//   amount: `242 35${i}`,
-//   available: `234 43${i}`,
-//   value: `234 56${i}`,
-//   pnl: `${23.31 + i + 1}%`,
-// }))
-
-function TokenLogo() {
-  return (
-    <div className={'h-6 w-6 rounded-full bg-black'}>
-      <CryptocurrencyColorBtc className={'h-full w-full rounded-full'} />
-    </div>
-  )
 }
 
 const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element => {
@@ -41,10 +21,11 @@ const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element
       </TableHeader>
       <TableBody items={assetsList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
         {(item) => (
-          <Row id={item.symbol} className={'[&>td]:px-3'}>
+          <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:max-w-[100px]'}>
             <Cell>
-              <div className={'flex items-center  gap-4'}>
-                <TokenLogo />
+              <div className={'flex items-center gap-4'}>
+                {/* <TokenLogo /> */}
+                <img className={'h-6 w-6 rounded-ful'} src={item.logoUri} alt="img" />
                 <div className={'flex flex-col items-start'}>
                   <span className={'text-sm'}>{item.name}</span>
                   <span className={'text-[#9E9E9E]'}>{item.symbol}</span>
