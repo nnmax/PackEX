@@ -22,7 +22,7 @@ export default function Asset() {
       .catch(() => {
         console.log('asset list fetch error')
       })
-  }, [totalVal, assetsList])
+  }, [])
 
   return (
     <>

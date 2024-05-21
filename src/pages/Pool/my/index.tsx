@@ -1,8 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
+import { getMyPools, MyPooltListData } from '@/api'
 import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
@@ -39,6 +40,22 @@ function TokenLogoTwo() {
 
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
+  const [myPoolList, setMyPoollist] = useState<any[]>([])
+
+  console.log(myPoolList)
+
+  useEffect(() => {
+    getMyPools()
+      .then((data: MyPooltListData) => {
+        const { myPools } = data
+        if (myPools && myPools.length > 0) {
+          setMyPoollist(myPools)
+        }
+      })
+      .catch(() => {
+        console.log('fetch all pool list error')
+      })
+  }, [])
 
   function GearIconLogo() {
     return (
