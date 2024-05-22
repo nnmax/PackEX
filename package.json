@@ -40,6 +40,7 @@
     "cids": "^1.0.0",
     "copy-to-clipboard": "^3.2.0",
     "cross-env": "^7.0.2",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.34.1",
@@ -79,8 +80,11 @@
     "@walletconnect/web3-provider": "1.1.1-alpha.0"
   },
   "scripts": {
+    "test": "env-cmd -f .env env-cmd -f .env.production node test.js",
     "start": "craco start",
-    "build": "craco build",
+    "build": "yarn build:dev",
+    "build:dev": "env-cmd -f .env craco build",
+    "build:prod": "env-cmd -f .env env-cmd -f .env.production craco build",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
     "tsc": "tsc --noEmit",
     "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",

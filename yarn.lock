@@ -6287,6 +6287,7 @@ __metadata:
     clsx: "npm:^2.1.1"
     copy-to-clipboard: "npm:^3.2.0"
     cross-env: "npm:^7.0.2"
+    env-cmd: "npm:^10.1.0"
     eslint: "npm:^8.57.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-react: "npm:^7.34.1"
@@ -9631,6 +9632,18 @@ __metadata:
   version: 2.2.0
   resolution: "entities@npm:2.2.0"
   checksum: 10c0/7fba6af1f116300d2ba1c5673fc218af1961b20908638391b4e1e6d5850314ee2ac3ec22d741b3a8060479911c99305164aed19b6254bde75e7e6b1b2c3f3aa3
+  languageName: node
+  linkType: hard
+
+"env-cmd@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "env-cmd@npm:10.1.0"
+  dependencies:
+    commander: "npm:^4.0.0"
+    cross-spawn: "npm:^7.0.0"
+  bin:
+    env-cmd: bin/env-cmd.js
+  checksum: 10c0/8ea5f4205bed83f39ea0ef0eb94d52a47bc815302c55779fb6c38346ca9284df1855f0847c8f5c702554f7f01e3575d171f12cffd13a1bada01961815842abe3
   languageName: node
   linkType: hard
 

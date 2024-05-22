@@ -154,7 +154,6 @@ function ChooseModal(props: {
 
   const [searchQuery, setSearchQuery] = useState('')
   const fixedList = useRef<FixedSizeList>()
-  const { chainId } = useActiveWeb3React()
 
   const isAddressSearch = isAddress(searchQuery)
   const searchToken = useToken(searchQuery)

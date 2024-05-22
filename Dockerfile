@@ -18,10 +18,13 @@ FROM base AS builder
 
 WORKDIR /app
 
+ARG APP_ENV=dev
+ENV APP_ENV=$APP_ENV
+
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN yarn build
+RUN yarn build:$APP_ENV
 
 FROM nginx:alpine
 
