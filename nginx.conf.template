@@ -1,5 +1,5 @@
 server {
-  listen 80;
+  listen 8080;
   server_name $SERVER_NAME www.$SERVER_NAME;
   root /usr/share/nginx/html;
   index index.html;
