@@ -17,11 +17,13 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       ...rest?.headers,
     },
   })
-    .then<CommonResponse<ResponseData>>((response) => {
+    .then<CommonResponse<ResponseData>>(async (response) => {
       if (response.ok) {
         return response.json()
       }
-      throw new Error('Failed to fetch data')
+      const errorMessage = await response.text()
+      toast.error(errorMessage)
+      throw new Error(errorMessage)
     })
     .then((data) => {
       if (data.code === 200) {

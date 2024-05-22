@@ -123,6 +123,9 @@ export default function WalletModal() {
       address: _account,
       signature: s,
       message: m,
+    }).catch((error) => {
+      setPendingWallet(undefined)
+      throw error
     })
 
     if (typeof connectWalletResponse === 'string') {
