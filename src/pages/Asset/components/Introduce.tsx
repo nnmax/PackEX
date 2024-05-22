@@ -1,5 +1,7 @@
+import clsx from 'clsx'
 interface IntroduceProps {
   totalVal: number
+  loading: boolean
 }
 
 /**
@@ -8,7 +10,7 @@ interface IntroduceProps {
  * @returns JSX Element
  */
 const Introduce: React.FC<IntroduceProps> = (props: IntroduceProps): JSX.Element => {
-  const { totalVal } = props
+  const { totalVal, loading } = props
   return (
     <div className={'mb-6 mt-6 flex items-center gap-[60px]'}>
       <dl
@@ -19,7 +21,7 @@ const Introduce: React.FC<IntroduceProps> = (props: IntroduceProps): JSX.Element
         <div aria-hidden className={'rhombus-bg-[--body-bg] -rhombus-top-px rhombus-w-[calc(50%-2px)] top-rhombus'} />
         <div>
           <dt>{'Total Value'}</dt>
-          <dd className={'mt-4 text-base text-lemonYellow'}>{`$ ${totalVal}`}</dd>
+          <dd className={clsx('mt-4 text-base text-lemonYellow', { loading: loading === true })}>{`$ ${totalVal}`}</dd>
         </div>
       </dl>
 

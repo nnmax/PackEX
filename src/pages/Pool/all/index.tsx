@@ -1,45 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
+import clsx from 'clsx'
 import { getAllPools, AllPooltListData } from '@/api'
-import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
-import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
 import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
-const data = Array.from({ length: 15 }, (_, i) => ({
-  id: i + 1,
-  tokenOne: `EZETH`,
-  tokenTwo: 'WETH',
-  tvl: `5${i} M`,
-  oneday: `123 ${i}23`,
-  severDay: `321 ${i}23`,
-  value: `Value ${i}`,
-  apy: `${3.1 + i}%`,
-}))
-
-function TokenLogo() {
-  return (
-    <div className={'relative h-6 w-6 rounded-full'}>
-      <CryptocurrencyColorBtc className={'h-full w-full rounded-full'} />
-    </div>
-  )
-}
-
-function TokenLogoTwo() {
-  return (
-    <div className={'relative h-6 w-6 rounded-full mr-4'}>
-      <TokenBlast className={'h-full w-full rounded-full'} />
-    </div>
-  )
-}
-
 const PoolAll = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const [allpoolList, setAllPoollist] = useState<any[]>([])
-
-  console.log(allpoolList)
 
   useEffect(() => {
     getAllPools()
@@ -47,10 +18,12 @@ const PoolAll = () => {
         const { allPools } = data
         if (allPools && allPools.length > 0) {
           setAllPoollist(allPools)
+          setLoading(false)
         }
       })
       .catch(() => {
         console.log('fetch all pool list error')
+        setLoading(false)
       })
   }, [])
 
@@ -70,7 +43,7 @@ const PoolAll = () => {
   return (
     <PoolLayout activeTab={'all'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader className={'h-12 text-[#9E9E9E] [&_th]:font-normal'}>
+        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>
             <span className={'relative'}>
@@ -83,24 +56,24 @@ const PoolAll = () => {
           <Column>{'APY'}</Column>
           <Column>{'ACTION'}</Column>
         </TableHeader>
-        <TableBody items={data} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody items={allpoolList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
           {(item) => (
             <Row id={item.id} className={'[&>td]:px-3'}>
               <Cell>
                 <div className={'flex items-center justify-center'}>
                   <div className={'flex items-center relative'}>
                     {item.id === 1 && <GearIconLogo />}
-                    <TokenLogo />
-                    <TokenLogoTwo />
+                    <img className={'relative h-6 w-6 rounded-full'} src={item.token0LogoUri} alt="logo0" />
+                    <img className={'relative h-6 w-6 rounded-full mr-4'} src={item.token1LogoUri} alt="logo1" />
                   </div>
-                  <span className={'text-xs mr-2'}>{item.tokenOne}</span> /
-                  <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
+                  <span className={'text-xs mr-2'}>{item.token0Name}</span> /
+                  <span className={'text-xs ml-2'}>{item.token1Name}</span>
                 </div>
               </Cell>
               <Cell>{item.tvl}</Cell>
-              <Cell>{item.oneday}</Cell>
-              <Cell>{item.severDay}</Cell>
-              <Cell>{item.apy}</Cell>
+              <Cell>{item.volume24h}</Cell>
+              <Cell>{item.volume7d}</Cell>
+              <Cell>{`${item.apy} %`}</Cell>
               <Cell>
                 <div className={'flex items-center justify-center gap-10'}>
                   <Link

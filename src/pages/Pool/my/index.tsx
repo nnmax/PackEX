@@ -3,46 +3,15 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
+import clsx from 'clsx'
 import { getMyPools, MyPooltListData } from '@/api'
-import CryptocurrencyColorBtc from '@/components/Icons/CryptocurrencyColorBtc'
-import TokenBlast from '@/components/Icons/TokenBlast'
 import GearIcon from '@/components/Icons/GearIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
-const data = Array.from({ length: 15 }, (_, i) => ({
-  id: i + 1,
-  tokenOne: `EZETH`,
-  tokenTwo: 'WETH',
-  tvl: `5${i} M`,
-  amount1: `22.${i}`,
-  amount2: `${3.1 + i}%`,
-  share: `${3.1 + i}%`,
-  earn: `22.${i}`,
-  value: `Value ${i}`,
-  apy: `${3.1 + i}%`,
-}))
-
-function TokenLogo() {
-  return (
-    <div className={'relative h-6 w-6 rounded-full bg-black'}>
-      <CryptocurrencyColorBtc className={'h-full w-full rounded-full'} />
-    </div>
-  )
-}
-
-function TokenLogoTwo() {
-  return (
-    <div className={'relative h-6 w-6 rounded-full bg-black'}>
-      <TokenBlast className={'h-full w-full rounded-full'} />
-    </div>
-  )
-}
-
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   const [myPoolList, setMyPoollist] = useState<any[]>([])
-
-  console.log(myPoolList)
 
   useEffect(() => {
     getMyPools()
@@ -50,10 +19,12 @@ const PoolMy = () => {
         const { myPools } = data
         if (myPools && myPools.length > 0) {
           setMyPoollist(myPools)
+          setLoading(false)
         }
       })
       .catch(() => {
         console.log('fetch all pool list error')
+        setLoading(false)
       })
   }, [])
 
@@ -73,7 +44,7 @@ const PoolMy = () => {
   return (
     <PoolLayout activeTab={'my'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader className={'h-12 text-[#9E9E9E] [&_th]:font-normal'}>
+        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>{'AMOUNT'}</Column>
           <Column>{'POOL SHARE'}</Column>
@@ -81,7 +52,7 @@ const PoolMy = () => {
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
-        <TableBody items={data} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody items={myPoolList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
           {(item) => (
             <Fragment key={item.id}>
               <Row id={item.id} className={'[&>td]:px-3'}>
@@ -89,22 +60,24 @@ const PoolMy = () => {
                   <div className={'flex justify-center'}>
                     <div className={'relative flex items-center'}>
                       {item.id === 1 && <GearIconLogo />}
-                      <span className={'text-xs mr-2'}>{item.tokenOne}</span>/
-                      <span className={'text-xs ml-2'}>{item.tokenTwo}</span>
+                      <span className={'text-xs mr-2'}>{item.token0Name}</span> /
+                      <span className={'text-xs ml-2'}>{item.token1Name}</span>
                     </div>
                   </div>
                 </Cell>
                 <Cell>
                   <div className={'flex items-center justify-center gap-4'}>
-                    <div className={'flex items-center'}>
-                      <TokenLogo /> <span className={'text-xs ml-2 mr-2'}>{item.amount1}</span> /
-                      <TokenLogoTwo /> <span className={'text-xs ml-2'}>{item.amount2}</span>
+                    <div className={'flex items-center justify-start'}>
+                      <img className={'h-6 w-6 rounded-ful'} src={item.token0LogoUri} alt="logo0" />{' '}
+                      <span className={'text-xs ml-2 mr-2'}>{item.token0Amount}</span> /
+                      <img className={'h-6 w-6 rounded-ful ml-2'} src={item.token0LogoUri} alt="logo1" />{' '}
+                      <span className={'text-xs ml-2'}>{item.token1Amount}</span>
                     </div>
                   </div>
                 </Cell>
-                <Cell>{item.share}</Cell>
-                <Cell>{item.earn}</Cell>
-                <Cell>{item.apy}</Cell>
+                <Cell>{`${item.poolShare} %`}</Cell>
+                <Cell>{item.feeEarned}</Cell>
+                <Cell>{item.lpTokenAmount}</Cell>
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
                     <Link

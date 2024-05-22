@@ -1,17 +1,19 @@
 'use client'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
+import clsx from 'clsx'
 import PnL from './PnL'
 
 interface DataTableProps {
+  loading: boolean
   assetsList: any[]
 }
 
 const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element => {
-  const { assetsList } = props
+  const { assetsList, loading } = props
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-      <TableHeader className={'h-12 text-[#9E9E9E] [&_th]:font-normal'}>
+      <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
         <Column isRowHeader>{'TOKEN'}</Column>
         <Column>{'AMOUNT'}</Column>
         <Column>{'AVAILABLE'}</Column>
