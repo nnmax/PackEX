@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import Introduce from './components/Introduce'
 import DataTable from './components/DataTable'
-// import AssertRes from './mock'
-import { getAssetList, AssetListData } from '@/api'
+import { getAssetList, type Asset } from '@/api'
 
-export default function Asset() {
+export default function AssetPage() {
   const [totalVal, setTotalVal] = useState<number>(0)
-  const [assetsList, setAssetsList] = useState<any[]>([])
+  const [assetsList, setAssetsList] = useState<Asset[]>([])
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     getAssetList()
-      .then((data: AssetListData) => {
+      .then((data) => {
         const { totalValue, assetList = [] } = data
         if (totalValue) {
           setTotalVal(totalValue)

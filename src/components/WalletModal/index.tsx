@@ -149,7 +149,6 @@ export default function WalletModal() {
     }
     setPendingWallet(undefined)
     setWalletView(WALLET_VIEWS.ACCOUNT)
-    toggleWalletModal()
   }
 
   // get wallets user can switch too, depending on device/browser

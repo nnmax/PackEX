@@ -1,16 +1,18 @@
-'use client'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
 import clsx from 'clsx'
 import PnL from './PnL'
+import QueryString from 'qs'
+import { Asset } from '@/api'
 
 interface DataTableProps {
   loading: boolean
-  assetsList: any[]
+  assetsList: Asset[]
 }
 
-const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element => {
+const DataTable = (props: DataTableProps) => {
   const { assetsList, loading } = props
+
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
       <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
@@ -18,7 +20,7 @@ const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element
         <Column>{'AMOUNT'}</Column>
         <Column>{'AVAILABLE'}</Column>
         <Column>{'VALUE'}</Column>
-        <Column>{'CHANGE（TODAY）'}</Column>
+        <Column>{'CHANGE (TODAY)'}</Column>
         <Column> </Column>
       </TableHeader>
       <TableBody items={assetsList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
@@ -52,7 +54,15 @@ const DataTable: React.FC<DataTableProps> = (props: DataTableProps): JSX.Element
                   </Link>
                 ) : null}
                 {item.withdrawFlag === 1 ? (
-                  <Link className={'text-lemonYellow underline'} to={'/asset/withdraw'}>
+                  <Link
+                    className={'text-lemonYellow underline'}
+                    to={{
+                      pathname: '/asset/withdraw',
+                      search: QueryString.stringify(item, {
+                        addQueryPrefix: true,
+                      }),
+                    }}
+                  >
                     {'Withdraw'}
                   </Link>
                 ) : null}

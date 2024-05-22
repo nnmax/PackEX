@@ -1,5 +1,5 @@
 import { Suspense, useEffect } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import AddLiquidity from './AddLiquidity'
@@ -27,6 +27,7 @@ import { useUserInfo } from '@/state/user/hooks'
 
 function useInitialUserInfo() {
   const [, updateUserInfo] = useUserInfo()
+  const history = useHistory()
 
   useEffect(() => {
     let isMounted = true
@@ -37,12 +38,17 @@ function useInitialUserInfo() {
           updateUserInfo(userInfo)
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        if ('code' in err && err.code === 401) {
+          updateUserInfo(null)
+          history.replace('/swap')
+        }
+      })
 
     return () => {
       isMounted = false
     }
-  }, [updateUserInfo])
+  }, [history, updateUserInfo])
 }
 
 export default function App() {
