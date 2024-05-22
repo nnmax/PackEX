@@ -30,10 +30,12 @@ ARG PROXY_PASS
 ENV SERVER_NAME=$SERVER_NAME
 ENV PROXY_PASS=$PROXY_PASS
 
+USER nginx
+
 COPY nginx.conf.template /etc/nginx/templates/
 
 COPY --from=builder /app/build /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
