@@ -30,7 +30,8 @@ ARG PROXY_PASS
 ENV SERVER_NAME=$SERVER_NAME
 ENV PROXY_PASS=$PROXY_PASS
 
-RUN mkdir -p /var/cache/nginx/client_temp && \
+RUN rm /etc/nginx/conf.d/default.conf && \
+        mkdir -p /var/cache/nginx/client_temp && \
         mkdir -p /var/cache/nginx/proxy_temp && \
         mkdir -p /var/cache/nginx/fastcgi_temp && \
         mkdir -p /var/cache/nginx/uwsgi_temp && \
