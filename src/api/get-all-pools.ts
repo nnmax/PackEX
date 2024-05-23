@@ -19,7 +19,7 @@ export type AllPooltListData = {
 }
 
 export default function getAllPools() {
-  return fetcher<AllPooltListData>('/api/get-all-pools', {
+  return fetcher<AllPooltListData>('/get-all-pools', {
     method: 'GET',
     disabledErrorToast: true,
   })

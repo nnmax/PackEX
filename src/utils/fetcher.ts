@@ -1,6 +1,7 @@
 import { toast } from 'react-toastify'
 import type { CommonResponse } from '@/api/types'
 import { disconnectWallet } from '@/api'
+import { API_BASE } from '@/constants'
 
 interface FetcherOptions<ResponseData> extends RequestInit {
   disabledErrorToast?: boolean | ((response: CommonResponse<ResponseData>) => boolean)
@@ -9,8 +10,7 @@ interface FetcherOptions<ResponseData> extends RequestInit {
 
 export default function fetcher<ResponseData = unknown>(input: string, options?: FetcherOptions<ResponseData>) {
   const { disabledErrorToast, disabled401, ...rest } = options || {}
-  let url = input
-  return fetch(url, {
+  return fetch(API_BASE + input, {
     ...rest,
     headers: {
       'Content-Type': 'application/json',

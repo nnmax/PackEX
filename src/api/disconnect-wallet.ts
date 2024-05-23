@@ -6,7 +6,7 @@ export default function disconnectWallet() {
   window.localStorage.removeItem(MESSAGE_KEY)
   window.localStorage.removeItem(SIGNATURE_KEY)
 
-  return fetcher('/api/disconnect-wallet', {
+  return fetcher('/disconnect-wallet', {
     method: 'POST',
   })
 }

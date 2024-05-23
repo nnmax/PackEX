@@ -16,7 +16,7 @@ export type ConnectWalletData = {
 }
 
 export default function connectWallet(params: ConnectWalletParams) {
-  return fetcher<ConnectWalletData | string>('/api/connect-wallet', {
+  return fetcher<ConnectWalletData | string>('/connect-wallet', {
     method: 'POST',
     body: JSON.stringify(params),
   })

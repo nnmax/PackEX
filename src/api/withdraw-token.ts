@@ -30,7 +30,7 @@ export type WithdrawTokenData = {
 }
 
 export default function withdrawToken(params: WithdrawTokenParams) {
-  return fetcher<WithdrawTokenData>('/api/withdraw-token', {
+  return fetcher<WithdrawTokenData>('/withdraw-token', {
     method: 'POST',
     body: JSON.stringify(params),
   })

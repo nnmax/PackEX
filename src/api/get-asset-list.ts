@@ -26,7 +26,7 @@ export type AssetListData = {
 }
 
 export default function getAssertList() {
-  return fetcher<AssetListData>('/api/get-asset-list', {
+  return fetcher<AssetListData>('/get-asset-list', {
     method: 'GET',
     disabledErrorToast: true,
   })
