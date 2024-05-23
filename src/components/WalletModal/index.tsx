@@ -10,6 +10,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 import Dialog from '@/components/Dialog'
 import { connectWallet, disconnectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
+import { toast } from 'react-toastify'
 
 const WALLET_VIEWS = {
   OPTIONS: 'options',
@@ -115,7 +116,13 @@ export default function WalletModal() {
     }
 
     const _account = await connector.getAccount()
-    if (!_account) return
+
+    if (!_account) {
+      toast.error('Please connect your wallet')
+      setPendingWallet(undefined)
+      setWalletView(WALLET_VIEWS.ACCOUNT)
+      return
+    }
 
     const s = window.localStorage.getItem(SIGNATURE_KEY)
     const m = window.localStorage.getItem(MESSAGE_KEY)

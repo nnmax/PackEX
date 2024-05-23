@@ -1,14 +1,13 @@
 server {
   listen 8080;
   server_name $SERVER_NAME www.$SERVER_NAME;
-  root /usr/share/nginx/html;
-  index index.html;
 
   location / {
+    root /usr/share/nginx/html;
     try_files $uri $uri/ /index.html;
   }
 
-  location ^~ /api/ {
+  location /api {
     proxy_pass $PROXY_PASS;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

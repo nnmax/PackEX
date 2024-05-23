@@ -20,7 +20,6 @@ function Web3StatusInner() {
     disconnectWallet()
   }
 
-  console.log('%c [ userInfo ]-25', 'font-size:13px; background:pink; color:#bf2c9f;', userInfo)
   if (userInfo) {
     return (
       <MenuTrigger>
