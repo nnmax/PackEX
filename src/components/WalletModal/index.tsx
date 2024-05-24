@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Web3Provider } from '@ethersproject/providers'
 import { isMobile } from 'react-device-detect'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
-import usePrevious from '../../hooks/usePrevious'
 import { useWalletModalOpen, useWalletModalToggle } from '../../state/application/hooks'
 import { MESSAGE_KEY, SIGNATURE_KEY, SUPPORTED_WALLETS, USER_KEY } from '../../constants'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
@@ -11,37 +10,13 @@ import Dialog from '@/components/Dialog'
 import { connectWallet, disconnectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
 
-const WALLET_VIEWS = {
-  OPTIONS: 'options',
-  OPTIONS_SECONDARY: 'options_secondary',
-  ACCOUNT: 'account',
-  PENDING: 'pending',
-}
-
 export default function WalletModal() {
   // important that these are destructed from the account-specific web3-react context
-  const { active, account, connector, activate, error, deactivate } = useWeb3React<Web3Provider>()
-  const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
-  const [pendingWallet, setPendingWallet] = useState<AbstractConnector | undefined>()
+  const { activate, error, deactivate } = useWeb3React<Web3Provider>()
+  const [pendingWallet, setPendingWallet] = useState<AbstractConnector>()
   const [, updateUserInfo] = useUserInfo()
   const walletModalOpen = useWalletModalOpen()
   const toggleWalletModal = useWalletModalToggle()
-
-  const previousAccount = usePrevious(account)
-
-  // close on connection, when logged out before
-  useEffect(() => {
-    if (account && !previousAccount && walletModalOpen) {
-      toggleWalletModal()
-    }
-  }, [account, previousAccount, toggleWalletModal, walletModalOpen])
-
-  // always reset to account view
-  useEffect(() => {
-    if (walletModalOpen) {
-      setWalletView(WALLET_VIEWS.ACCOUNT)
-    }
-  }, [walletModalOpen])
 
   useEffect(() => {
     if (error instanceof UnsupportedChainIdError) {
@@ -50,18 +25,8 @@ export default function WalletModal() {
     }
   }, [error, deactivate])
 
-  // close modal when a connection is successful
-  const activePrevious = usePrevious(active)
-  const connectorPrevious = usePrevious(connector)
-  useEffect(() => {
-    if (walletModalOpen && ((active && !activePrevious) || (connector && connector !== connectorPrevious && !error))) {
-      setWalletView(WALLET_VIEWS.ACCOUNT)
-    }
-  }, [setWalletView, active, error, connector, walletModalOpen, activePrevious, connectorPrevious])
-
   const tryActivation = async (connector: AbstractConnector | undefined) => {
     setPendingWallet(connector) // set wallet for pending view
-    setWalletView(WALLET_VIEWS.PENDING)
 
     // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
     if (
@@ -75,7 +40,10 @@ export default function WalletModal() {
       connector.walletConnectProvider = undefined
     }
 
-    if (!connector) return
+    if (!connector) {
+      setPendingWallet(undefined)
+      return
+    }
 
     const result = await activate(connector, undefined, true)
       .then(() => true)
@@ -103,14 +71,11 @@ export default function WalletModal() {
               return false
             })
         }
-
-        setWalletView(WALLET_VIEWS.ACCOUNT)
         return false
       })
 
     if (!result) {
       setPendingWallet(undefined)
-      setWalletView(WALLET_VIEWS.ACCOUNT)
       return
     }
 
@@ -140,7 +105,10 @@ export default function WalletModal() {
           signature: signatureawait,
           message: connectWalletResponse,
         })
-        if (typeof connectWalletResponse2 === 'string') return
+        if (typeof connectWalletResponse2 === 'string') {
+          setPendingWallet(undefined)
+          return
+        }
         window.localStorage.setItem(SIGNATURE_KEY, signatureawait)
         window.localStorage.setItem(MESSAGE_KEY, connectWalletResponse)
         window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse2))
@@ -151,7 +119,7 @@ export default function WalletModal() {
       updateUserInfo(connectWalletResponse)
     }
     setPendingWallet(undefined)
-    setWalletView(WALLET_VIEWS.ACCOUNT)
+    toggleWalletModal()
   }
 
   // get wallets user can switch too, depending on device/browser
@@ -165,7 +133,7 @@ export default function WalletModal() {
         !option.mobileOnly && (
           <ListItem
             name={option.name}
-            loading={walletView === WALLET_VIEWS.PENDING && option.connector === pendingWallet}
+            loading={option.connector === pendingWallet}
             onClick={async () => {
               await tryActivation(option.connector)
             }}
