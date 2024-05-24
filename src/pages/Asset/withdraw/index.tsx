@@ -41,11 +41,11 @@ enum FormField {
 }
 
 export default function Withdraw() {
-  const [isOpen, setOpen] = useState(false)
+  const [isOpen, setOpen] = useState<boolean>(false)
   const { search } = useLocation()
-  const [amount, setAmount] = useState(0)
+  const [amount, setAmount] = useState<number>(0)
   const { library } = useActiveWeb3React()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
