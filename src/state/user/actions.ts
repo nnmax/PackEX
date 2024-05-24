@@ -1,4 +1,4 @@
-import { ConnectWalletData } from '@/api'
+import { Asset, ConnectWalletData } from '@/api'
 import { createAction } from '@reduxjs/toolkit'
 
 export interface SerializedToken {
@@ -26,3 +26,5 @@ export const removeSerializedPair = createAction<{ chainId: number; tokenAAddres
   'user/removeSerializedPair',
 )
 export const updateUserInfo = createAction<ConnectWalletData | null>('user/updateUserInfo')
+export const updateAssetsList = createAction<{ assetsList: Asset[] }>('user/updateAssetsList')
+export const updateTotalValue = createAction<{ totalValue: number }>('user/updateTotalValue')

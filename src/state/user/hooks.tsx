@@ -17,6 +17,8 @@ import {
   updateUserDeadline,
   updateUserExpertMode,
   updateUserSlippageTolerance,
+  updateAssetsList,
+  updateTotalValue,
 } from './actions'
 
 function serializeToken(token: Token): SerializedToken {
@@ -238,4 +240,42 @@ export function useUserInfo(): [AppState['user']['userInfo'], (data: AppState['u
   )
 
   return useMemo(() => [account ? userInfo : null, updateUser], [account, updateUser, userInfo])
+}
+
+export function useAssetList() {
+  const assetsList = useSelector<AppState, AppState['user']['assetsList']>((state) => state.user.assetsList)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const _updateAssetsList = useCallback(
+    (
+      action:
+        | AppState['user']['assetsList']
+        | ((state: AppState['user']['assetsList']) => AppState['user']['assetsList']),
+    ) => {
+      let data: AppState['user']['assetsList']
+      if (typeof action === 'function') {
+        data = action(assetsList)
+      } else {
+        data = action
+      }
+      dispatch(updateAssetsList({ assetsList: data }))
+    },
+    [assetsList, dispatch],
+  )
+
+  return [assetsList, _updateAssetsList] as const
+}
+
+export function useTotalValue(): [AppState['user']['totalValue'], (data: AppState['user']['totalValue']) => void] {
+  const totalValue = useSelector<AppState, AppState['user']['totalValue']>((state) => state.user.totalValue)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const _updateTotalValue = useCallback(
+    (data: AppState['user']['totalValue']) => {
+      dispatch(updateTotalValue({ totalValue: data }))
+    },
+    [dispatch],
+  )
+
+  return [totalValue, _updateTotalValue]
 }

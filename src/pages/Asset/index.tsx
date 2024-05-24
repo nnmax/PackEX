@@ -1,35 +1,34 @@
 import { useState, useEffect } from 'react'
 import Introduce from './components/Introduce'
 import DataTable from './components/DataTable'
-import { getAssetList, type Asset } from '@/api'
+import { getAssetList } from '@/api'
+import { useAssetList, useTotalValue } from '@/state/user/hooks'
+import { isEqual } from 'lodash-es'
 
 export default function AssetPage() {
-  const [totalVal, setTotalVal] = useState<number>(0)
-  const [assetsList, setAssetsList] = useState<Asset[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
+  const [assetsList, updateAssetsList] = useAssetList()
+  const [totalValue, updateTotalValue] = useTotalValue()
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
+    setLoading(true)
     getAssetList()
       .then((data) => {
-        const { totalValue, assetList = [] } = data
-        if (totalValue) {
-          setTotalVal(totalValue)
-        }
-        if (assetList && assetList.length > 0) {
-          setAssetsList(assetList)
-        }
+        updateTotalValue(data.totalValue)
+        updateAssetsList((prev) => {
+          if (isEqual(prev, data.assetList)) return prev
+          return data.assetList
+        })
+      })
+      .finally(() => {
         setLoading(false)
       })
-      .catch(() => {
-        console.log('asset list fetch error')
-        setLoading(false)
-      })
-  }, [])
+  }, [updateAssetsList, updateTotalValue])
 
   return (
     <>
-      <Introduce totalVal={totalVal} loading={loading} />
-      <DataTable assetsList={assetsList} loading={loading} />
+      <Introduce totalVal={totalValue} />
+      <DataTable assetsList={assetsList} loading={assetsList.length <= 0 && loading} />
     </>
   )
 }

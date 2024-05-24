@@ -12,8 +12,10 @@ import {
   updateUserSlippageTolerance,
   updateUserDeadline,
   updateUserInfo,
+  updateAssetsList,
+  updateTotalValue,
 } from './actions'
-import { ConnectWalletData } from '@/api'
+import { Asset, ConnectWalletData } from '@/api'
 
 const currentTimestamp = () => new Date().getTime()
 
@@ -48,6 +50,8 @@ export interface UserState {
   timestamp: number
 
   userInfo: ConnectWalletData | null
+  assetsList: Asset[]
+  totalValue: number
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -64,6 +68,8 @@ export const initialState: UserState = {
   pairs: {},
   timestamp: currentTimestamp(),
   userInfo: null,
+  assetsList: [],
+  totalValue: 0,
 }
 
 export default createReducer(initialState, (builder) =>
@@ -126,6 +132,14 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateUserInfo, (state, { payload }) => {
       state.userInfo = payload
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(updateAssetsList, (state, { payload }) => {
+      state.assetsList = payload.assetsList
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(updateTotalValue, (state, { payload }) => {
+      state.totalValue = payload.totalValue
       state.timestamp = currentTimestamp()
     }),
 )
