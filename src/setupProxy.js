@@ -8,7 +8,7 @@ module.exports = function setupProxy(
   app,
 ) {
   app.use(
-    '/api',
+    '/packex',
     createProxyMiddleware({
       target: process.env.API_ENDPOINT,
       changeOrigin: true,
