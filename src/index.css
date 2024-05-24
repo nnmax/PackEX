@@ -22,3 +22,21 @@ body {
     local('pixelmix'),
     url(./fonts/pixelmix.ttf) format('truetype');
 }
+
+@supports (scrollbar-width: thin) and (scrollbar-color: var(--lemon-yellow)) {
+  :root {
+    scrollbar-width: thin;
+    scrollbar-color: var(--lemon-yellow) var(--body-bg);
+  }
+}
+
+@supports not (scrollbar-width: thin) {
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--lemon-yellow);
+    border-radius: 2px;
+  }
+}
