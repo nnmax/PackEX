@@ -107,4 +107,4 @@ export const SIGNATURE_KEY = 'packex.signature'
 export const MESSAGE_KEY = 'packex.message'
 export const USER_KEY = 'packex.user'
 
-export const API_BASE = '/api'
+export const API_BASE = '/packex'

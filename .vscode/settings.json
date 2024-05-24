@@ -29,7 +29,7 @@
   "svg.preview.background": "dark-transparent",
   "[dockerfile]": {
     "editor.formatOnSave": false,
-    "editor.defaultFormatter": null
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[svg]": {
     "editor.defaultFormatter": "jock.svg"

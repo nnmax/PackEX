@@ -22,7 +22,10 @@ ARG APP_ENV=dev
 ENV APP_ENV=$APP_ENV
 
 COPY --from=deps /app/node_modules ./node_modules
-COPY . .
+COPY .yarn ./.yarn
+COPY public ./public
+COPY src ./src
+COPY yarn.lock .env .env.production craco.config.ts package.json .yarnrc.yml tsconfig.json tailwind.config.js ./
 
 RUN yarn build:$APP_ENV
 
