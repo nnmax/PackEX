@@ -36,6 +36,7 @@
     "@web3-react/walletconnect-connector": "^6.1.1",
     "@web3-react/walletlink-connector": "^6.0.9",
     "ajv": "^6.12.3",
+    "babel-plugin-react-compiler": "0.0.0-experimental-592953e-20240517",
     "babel-plugin-styled-components": "^2.1.4",
     "cids": "^1.0.0",
     "copy-to-clipboard": "^3.2.0",
@@ -44,6 +45,7 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-compiler": "0.0.0-experimental-c8b3f72-20240517",
     "eslint-plugin-react-hooks": "^4.6.2",
     "ethers": "^5.0.7",
     "http-proxy-middleware": "^3.0.0",
@@ -96,10 +98,14 @@
       "react-app",
       "prettier"
     ],
+    "plugins": [
+      "eslint-plugin-react-compiler"
+    ],
     "rules": {
       "react/jsx-pascal-case": "off",
       "react/jsx-uses-react": "off",
-      "react/react-in-jsx-scope": "off"
+      "react/react-in-jsx-scope": "off",
+      "react-compiler/react-compiler": "error"
     }
   },
   "browserslist": {
@@ -127,6 +133,7 @@
     "clsx": "^2.1.1",
     "lodash-es": "^4.17.21",
     "react-aria-components": "^1.2.0",
+    "react-compiler-runtime": "file:./lib/react-compiler-runtime",
     "react-toastify": "^10.0.5",
     "react-use": "^17.5.0"
   },

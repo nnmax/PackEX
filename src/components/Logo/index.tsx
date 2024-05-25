@@ -23,6 +23,7 @@ export default function Logo({ srcs, alt, ...rest }: LogoProps) {
         alt={alt}
         src={src}
         onError={() => {
+          // eslint-disable-next-line react-compiler/react-compiler
           if (src) BAD_SRCS[src] = true
           refresh((i) => i + 1)
         }}

@@ -3,7 +3,15 @@ import optimizeLocales from '@react-aria/optimize-locales-plugin'
 
 const cracoConfig: CracoConfig = {
   babel: {
-    plugins: ['babel-plugin-styled-components'],
+    plugins: [
+      [
+        'babel-plugin-react-compiler',
+        {
+          runtimeModule: 'react-compiler-runtime',
+        },
+      ],
+      'babel-plugin-styled-components',
+    ],
   },
   webpack: {
     alias: {
