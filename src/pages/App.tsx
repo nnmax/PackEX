@@ -24,6 +24,7 @@ import PoolMy from './Pool/my'
 import Pax from './Pax'
 import { getUser } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
+import Footer from '@/components/Footer'
 
 function useInitialUserInfo() {
   const [, updateUserInfo] = useUserInfo()
@@ -57,7 +58,7 @@ export default function App() {
   return (
     <Suspense fallback={null}>
       <AppBar />
-      <main className={'flex min-h-[calc(100vh-80px)] justify-center px-14 pb-6'}>
+      <main className={'flex min-h-[calc(100vh-80px-80px)] justify-center px-[--main-x-padding] pb-6'}>
         <div className={'flex w-full max-w-[--main-max-width] flex-col'}>
           <Popups />
           <Web3ReactManager>
@@ -86,6 +87,7 @@ export default function App() {
           </Web3ReactManager>
         </div>
       </main>
+      <Footer />
     </Suspense>
   )
 }
