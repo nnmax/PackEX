@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { getMyPools, MyPooltListData } from '@/api'
+import { getMyPools, MyPooltListData, PoolMyItem } from '@/api'
 import GearIcon from '@/components/Icons/GearIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
@@ -13,7 +13,7 @@ const PoolMy = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const [myPoolList, setMyPoollist] = useState<any[]>([])
+  const [myPoolList, setMyPoollist] = useState<PoolMyItem[]>([])
 
   useEffect(() => {
     getMyPools()

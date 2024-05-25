@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { getAllPools, AllPooltListData } from '@/api'
+import { getAllPools, AllPooltListData, PoolAllItem } from '@/api'
 import GearIcon from '@/components/Icons/GearIcon'
 import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
@@ -12,7 +12,7 @@ const PoolAll = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const [allpoolList, setAllPoollist] = useState<any[]>([])
+  const [allpoolList, setAllPoollist] = useState<PoolAllItem[]>([])
 
   useEffect(() => {
     getAllPools()
