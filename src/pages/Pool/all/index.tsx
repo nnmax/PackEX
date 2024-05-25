@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { getAllPools, AllPooltListData, PoolAllItem } from '@/api'
+import { isEqual } from 'lodash-es'
+import { getAllPools, AllPooltListData } from '@/api'
+import { usePoolAllList } from '@/state/user/hooks'
 import GearIcon from '@/components/Icons/GearIcon'
 import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
@@ -12,19 +14,17 @@ const PoolAll = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const [allpoolList, setAllPoollist] = useState<PoolAllItem[]>([])
+  const [poolAllList, updatePoolAllList] = usePoolAllList()
 
   useEffect(() => {
     getAllPools()
       .then((data: AllPooltListData) => {
-        const { allPools } = data
-        if (allPools && allPools.length > 0) {
-          setAllPoollist(allPools)
-          setLoading(false)
-        }
+        updatePoolAllList((prev) => {
+          if (isEqual(prev, data.allPools)) return prev
+          return data.allPools
+        })
       })
-      .catch(() => {
-        console.log('fetch all pool list error')
+      .finally(() => {
         setLoading(false)
       })
   }, [])
@@ -45,7 +45,9 @@ const PoolAll = () => {
   return (
     <PoolLayout activeTab={'all'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
+        <TableHeader
+          className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading && poolAllList.length <= 0 })}
+        >
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>
             <span className={'relative'}>
@@ -58,7 +60,7 @@ const PoolAll = () => {
           <Column>{'APY'}</Column>
           <Column>{'ACTION'}</Column>
         </TableHeader>
-        <TableBody items={allpoolList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody items={poolAllList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
           {(item) => (
             <Row id={item.id} className={'[&>td]:px-3'}>
               <Cell>

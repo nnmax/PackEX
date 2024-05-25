@@ -14,8 +14,10 @@ import {
   updateUserInfo,
   updateAssetsList,
   updateTotalValue,
+  updatePoolAllList,
+  updatePoolMyList,
 } from './actions'
-import { Asset, ConnectWalletData } from '@/api'
+import { Asset, PoolMyItem, PoolAllItem, ConnectWalletData } from '@/api'
 
 const currentTimestamp = () => new Date().getTime()
 
@@ -52,6 +54,8 @@ export interface UserState {
   userInfo: ConnectWalletData | null
   assetsList: Asset[]
   totalValue: number
+  poolAllList: PoolAllItem[]
+  poolMyList: PoolMyItem[]
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -69,6 +73,8 @@ export const initialState: UserState = {
   timestamp: currentTimestamp(),
   userInfo: null,
   assetsList: [],
+  poolAllList: [],
+  poolMyList: [],
   totalValue: 0,
 }
 
@@ -140,6 +146,14 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updateTotalValue, (state, { payload }) => {
       state.totalValue = payload.totalValue
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(updatePoolMyList, (state, { payload }) => {
+      state.poolMyList = payload.poolMyList
+      state.timestamp = currentTimestamp()
+    })
+    .addCase(updatePoolAllList, (state, { payload }) => {
+      state.poolAllList = payload.poolAllList
       state.timestamp = currentTimestamp()
     }),
 )

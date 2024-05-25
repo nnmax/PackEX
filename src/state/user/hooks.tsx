@@ -19,6 +19,8 @@ import {
   updateUserSlippageTolerance,
   updateAssetsList,
   updateTotalValue,
+  updatePoolAllList,
+  updatePoolMyList,
 } from './actions'
 
 function serializeToken(token: Token): SerializedToken {
@@ -278,4 +280,52 @@ export function useTotalValue(): [AppState['user']['totalValue'], (data: AppStat
   )
 
   return [totalValue, _updateTotalValue]
+}
+
+export function usePoolMyList() {
+  const poolMyList = useSelector<AppState, AppState['user']['poolMyList']>((state) => state.user.poolMyList)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const _updatePoolMyLst = useCallback(
+    (
+      action:
+        | AppState['user']['poolMyList']
+        | ((state: AppState['user']['poolMyList']) => AppState['user']['poolMyList']),
+    ) => {
+      let data: AppState['user']['poolMyList']
+      if (typeof action === 'function') {
+        data = action(poolMyList)
+      } else {
+        data = action
+      }
+      dispatch(updatePoolMyList({ poolMyList: data }))
+    },
+    [poolMyList, dispatch],
+  )
+
+  return [poolMyList, _updatePoolMyLst] as const
+}
+
+export function usePoolAllList() {
+  const poolAllList = useSelector<AppState, AppState['user']['poolAllList']>((state) => state.user.poolAllList)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const _updatePoolAllLst = useCallback(
+    (
+      action:
+        | AppState['user']['poolAllList']
+        | ((state: AppState['user']['poolAllList']) => AppState['user']['poolAllList']),
+    ) => {
+      let data: AppState['user']['poolAllList']
+      if (typeof action === 'function') {
+        data = action(poolAllList)
+      } else {
+        data = action
+      }
+      dispatch(updatePoolAllList({ poolAllList: data }))
+    },
+    [poolAllList, dispatch],
+  )
+
+  return [poolAllList, _updatePoolAllLst] as const
 }

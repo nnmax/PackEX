@@ -4,7 +4,9 @@ import { Link } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { getMyPools, MyPooltListData, PoolMyItem } from '@/api'
+import { isEqual } from 'lodash-es'
+import { getMyPools, MyPooltListData } from '@/api'
+import { usePoolMyList } from '@/state/user/hooks'
 import GearIcon from '@/components/Icons/GearIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
@@ -13,19 +15,18 @@ const PoolMy = () => {
   const [loading, setLoading] = useState<boolean>(true)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const [myPoolList, setMyPoollist] = useState<PoolMyItem[]>([])
+  const [poolMyList, updatePoolMyList] = usePoolMyList()
 
   useEffect(() => {
+    setLoading(true)
     getMyPools()
       .then((data: MyPooltListData) => {
-        const { myPools } = data
-        if (myPools && myPools.length > 0) {
-          setMyPoollist(myPools)
-          setLoading(false)
-        }
+        updatePoolMyList((prev) => {
+          if (isEqual(prev, data.myPools)) return prev
+          return data.myPools
+        })
       })
-      .catch(() => {
-        console.log('fetch all pool list error')
+      .finally(() => {
         setLoading(false)
       })
   }, [])
@@ -46,7 +47,9 @@ const PoolMy = () => {
   return (
     <PoolLayout activeTab={'my'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
+        <TableHeader
+          className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading && poolMyList.length <= 0 })}
+        >
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>{'AMOUNT'}</Column>
           <Column>{'POOL SHARE'}</Column>
@@ -54,7 +57,7 @@ const PoolMy = () => {
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
-        <TableBody items={myPoolList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody items={poolMyList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
           {(item) => (
             <Fragment key={item.id}>
               <Row id={item.id} className={'[&>td]:px-3'}>
