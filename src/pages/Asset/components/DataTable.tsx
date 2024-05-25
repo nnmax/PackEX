@@ -49,7 +49,15 @@ const DataTable = (props: DataTableProps) => {
               <div className={'flex items-center justify-center gap-10'}>
                 {item.swapFlag === 1 ? <Button className={'text-lemonYellow underline'}>{'Swap'}</Button> : null}
                 {item.depositFlag === 1 ? (
-                  <Link className={'text-lemonYellow underline'} to={'/asset/deposit'}>
+                  <Link
+                    className={'text-lemonYellow underline'}
+                    to={{
+                      pathname: '/asset/deposit',
+                      search: QueryString.stringify(item, {
+                        addQueryPrefix: true,
+                      }),
+                    }}
+                  >
                     {'Deposit'}
                   </Link>
                 ) : null}
