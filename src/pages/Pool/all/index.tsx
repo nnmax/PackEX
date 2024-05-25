@@ -79,8 +79,7 @@ const PoolAll = () => {
               <Cell>
                 <div className={'flex items-center justify-center gap-10'}>
                   <Link
-                    // TODO: currencyIdA 和 currencyIdB 替换成对应的 address
-                    to={'/pool/add/:currencyIdA/:currencyIdB'}
+                    to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
                     className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
                   >
                     {'+ADD'}
