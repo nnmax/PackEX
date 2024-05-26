@@ -1,13 +1,49 @@
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
+// import { BigNumber } from '@ethersproject/bignumber'
+import QueryString from 'qs'
 import clsx from 'clsx'
 import PnL from './PnL'
-import QueryString from 'qs'
 import { Asset } from '@/api'
 
 interface DataTableProps {
   loading: boolean
   assetsList: Asset[]
+}
+
+const toNonExponential = (num: number): string => {
+  const m = num.toExponential().match(/\d(?:\.(\d*))?e([+-]\d+)/)
+  if (!m) return num.toFixed(0)
+  const fractionLength = (m[1] || '').length
+  const exponent = parseInt(m[2], 10)
+  const digitsAfterDecimal = Math.max(0, fractionLength - exponent)
+  return num.toFixed(digitsAfterDecimal)
+}
+
+const formatAmountColumn = (originNumber: number) => {
+  const result = toNonExponential(originNumber)
+  if (result === '0') {
+    return 0
+  } else if (Number(result) < 0.001) {
+    return `< 0.001`
+  }
+  return result
+}
+
+const formatValueColumn = (num: number) => {
+  if (num === 0) {
+    return 0
+  }
+  if (num < 0.01) {
+    return `< 0.01`
+  }
+  const result = num.toFixed(2)
+
+  if (Number(result) === 0) {
+    return 0
+  } else {
+    return result
+  }
 }
 
 const DataTable = (props: DataTableProps) => {
@@ -36,11 +72,11 @@ const DataTable = (props: DataTableProps) => {
                 </div>
               </div>
             </Cell>
-            <Cell>{item.totalAmount}</Cell>
-            <Cell>{item.availableAmount}</Cell>
+            <Cell>{formatAmountColumn(item.totalAmount)}</Cell>
+            <Cell>{formatAmountColumn(item.availableAmount)}</Cell>
             <Cell>
               {'$ '}
-              {item.value}
+              {formatValueColumn(item.value)}
             </Cell>
             <Cell>
               <PnL value={item.changeToday} />

@@ -4,6 +4,22 @@ interface IntroduceProps {
   totalVal: number
 }
 
+const formatValueColumn = (num: number) => {
+  if (num === 0) {
+    return 0
+  }
+  if (num < 0.01) {
+    return `< 0.01`
+  }
+  const result = num.toFixed(2)
+
+  if (Number(result) === 0) {
+    return 0
+  } else {
+    return result
+  }
+}
+
 /**
  * @description assets card information
  * @param props
@@ -21,7 +37,7 @@ const Introduce = (props: IntroduceProps) => {
         <div aria-hidden className={'rhombus-bg-[--body-bg] -rhombus-top-px rhombus-w-[calc(50%-2px)] top-rhombus'} />
         <div>
           <dt>{'Total Value'}</dt>
-          <dd className={clsx('mt-4 text-base text-lemonYellow')}>{`$ ${totalVal}`}</dd>
+          <dd className={clsx('mt-4 text-base text-lemonYellow')}>{`$ ${formatValueColumn(totalVal)}`}</dd>
         </div>
       </dl>
 
