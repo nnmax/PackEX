@@ -1,4 +1,4 @@
-import { Currency, CurrencyAmount, JSBI, Token, Trade } from '@nnmax/uniswap-sdk-v2'
+import { Currency, CurrencyAmount, JSBI, Trade } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { Text } from 'rebass'
@@ -11,9 +11,7 @@ import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { AutoRow, RowBetween } from '../../components/Row'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
 import { ArrowWrapper } from '../../components/swap/styleds'
-import TokenWarningModal from '../../components/TokenWarningModal'
 import ProgressSteps from '../../components/ProgressSteps'
-import { useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
@@ -37,21 +35,8 @@ import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
 
 export default function Swap() {
-  const loadedUrlParams = useDefaultsFromURLSearch()
+  useDefaultsFromURLSearch()
   const [userInfo] = useUserInfo()
-  // token warning stuff
-  const [loadedInputCurrency, loadedOutputCurrency] = [
-    useCurrency(loadedUrlParams?.inputCurrencyId),
-    useCurrency(loadedUrlParams?.outputCurrencyId),
-  ]
-  const [dismissTokenWarning, setDismissTokenWarning] = useState<boolean>(false)
-  const urlLoadedTokens: Token[] = useMemo(
-    () => [loadedInputCurrency, loadedOutputCurrency]?.filter((c): c is Token => c instanceof Token) ?? [],
-    [loadedInputCurrency, loadedOutputCurrency],
-  )
-  const handleConfirmTokenWarning = useCallback(() => {
-    setDismissTokenWarning(true)
-  }, [])
 
   const theme = useContext(ThemeContext)
 
@@ -238,12 +223,6 @@ export default function Swap() {
 
   return (
     <div className={'flex flex-col items-center'}>
-      <TokenWarningModal
-        isOpen={urlLoadedTokens.length > 0 && !dismissTokenWarning}
-        tokens={urlLoadedTokens}
-        onConfirm={handleConfirmTokenWarning}
-      />
-
       <ConfirmSwapModal
         isOpen={showConfirm}
         trade={trade}

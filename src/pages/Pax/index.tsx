@@ -147,7 +147,7 @@ export default function PaxPage() {
           <DoubleCurrencyLogo />
           <span>PAX / USDB</span>
           <Link
-            to={`/pool/add/${infoData?.paxContract}/0x8c292da7bc345b86a00c94b64786f5f6b8d951cb`}
+            to={`/pool/add/${infoData?.paxContract}/${process.env.REACT_APP_USDB_ADDRESS}`}
             onClick={handleAdd}
             className={
               'ml-7 w-[180px] bg-lemonYellow text-[#020202] flex h-9 px-2 items-center justify-center self-center rounded-md text-xs'

@@ -1,6 +1,5 @@
-import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
+import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
-// import { BigNumber } from '@ethersproject/bignumber'
 import QueryString from 'qs'
 import clsx from 'clsx'
 import PnL from './PnL'
@@ -83,7 +82,14 @@ const DataTable = (props: DataTableProps) => {
             </Cell>
             <Cell>
               <div className={'flex items-center justify-center gap-10'}>
-                {item.swapFlag === 1 ? <Button className={'text-lemonYellow underline'}>{'Swap'}</Button> : null}
+                {item.swapFlag === 1 ? (
+                  <Link
+                    to={`/swap?inputCurrency=${item.tokenContract}&outputCurrency=${process.env.REACT_APP_USDB_ADDRESS}`}
+                    className={'text-lemonYellow underline'}
+                  >
+                    {'Swap'}
+                  </Link>
+                ) : null}
                 {item.depositFlag === 1 ? (
                   <Link
                     className={'text-lemonYellow underline'}
