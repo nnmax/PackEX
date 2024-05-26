@@ -27,7 +27,7 @@ const PoolAll = () => {
       .finally(() => {
         setLoading(false)
       })
-  }, [])
+  }, [updatePoolAllList])
 
   function GearIconLogo() {
     return (

@@ -1,6 +1,6 @@
 import { ChainId, Pair, Token } from '@nnmax/uniswap-sdk-v2'
 import { flatMap } from 'lodash-es'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from '../../constants'
 
@@ -248,6 +248,8 @@ export function useAssetList() {
   const assetsList = useSelector<AppState, AppState['user']['assetsList']>((state) => state.user.assetsList)
   const dispatch = useDispatch<AppDispatch>()
 
+  const assetsListRef = useRef(assetsList)
+  assetsListRef.current = assetsList
   const _updateAssetsList = useCallback(
     (
       action:
@@ -256,13 +258,13 @@ export function useAssetList() {
     ) => {
       let data: AppState['user']['assetsList']
       if (typeof action === 'function') {
-        data = action(assetsList)
+        data = action(assetsListRef.current)
       } else {
         data = action
       }
       dispatch(updateAssetsList({ assetsList: data }))
     },
-    [assetsList, dispatch],
+    [dispatch],
   )
 
   return [assetsList, _updateAssetsList] as const
@@ -286,6 +288,8 @@ export function usePoolMyList() {
   const poolMyList = useSelector<AppState, AppState['user']['poolMyList']>((state) => state.user.poolMyList)
   const dispatch = useDispatch<AppDispatch>()
 
+  const poolMyListRef = useRef(poolMyList)
+  poolMyListRef.current = poolMyList
   const _updatePoolMyLst = useCallback(
     (
       action:
@@ -294,13 +298,13 @@ export function usePoolMyList() {
     ) => {
       let data: AppState['user']['poolMyList']
       if (typeof action === 'function') {
-        data = action(poolMyList)
+        data = action(poolMyListRef.current)
       } else {
         data = action
       }
       dispatch(updatePoolMyList({ poolMyList: data }))
     },
-    [poolMyList, dispatch],
+    [dispatch],
   )
 
   return [poolMyList, _updatePoolMyLst] as const
@@ -310,6 +314,8 @@ export function usePoolAllList() {
   const poolAllList = useSelector<AppState, AppState['user']['poolAllList']>((state) => state.user.poolAllList)
   const dispatch = useDispatch<AppDispatch>()
 
+  const poolAllListRef = useRef(poolAllList)
+  poolAllListRef.current = poolAllList
   const _updatePoolAllLst = useCallback(
     (
       action:
@@ -318,13 +324,13 @@ export function usePoolAllList() {
     ) => {
       let data: AppState['user']['poolAllList']
       if (typeof action === 'function') {
-        data = action(poolAllList)
+        data = action(poolAllListRef.current)
       } else {
         data = action
       }
       dispatch(updatePoolAllList({ poolAllList: data }))
     },
-    [poolAllList, dispatch],
+    [dispatch],
   )
 
   return [poolAllList, _updatePoolAllLst] as const

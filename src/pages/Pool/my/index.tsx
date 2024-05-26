@@ -29,7 +29,7 @@ const PoolMy = () => {
       .finally(() => {
         setLoading(false)
       })
-  }, [])
+  }, [updatePoolMyList])
 
   function GearIconLogo() {
     return (

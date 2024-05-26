@@ -31,6 +31,5 @@ export type MyPoolListData = {
 export default function getMyPools() {
   return fetcher<MyPoolListData>('/get-my-pools', {
     method: 'GET',
-    disabledErrorToast: true,
   })
 }

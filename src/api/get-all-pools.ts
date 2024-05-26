@@ -31,6 +31,5 @@ export type AllPoolListData = {
 export default function getAllPools() {
   return fetcher<AllPoolListData>('/get-all-pools', {
     method: 'GET',
-    disabledErrorToast: true,
   })
 }

@@ -13,7 +13,7 @@ export default function useUnisatWallet() {
   //   total: 0,
   // })
 
-  const getBasicInfo = async () => {
+  const getBasicInfo = useCallback(async () => {
     const unisat = (window as any).unisat
 
     const _publicKey = (await unisat.getPublicKey().catch((e: unknown) => {
@@ -32,7 +32,7 @@ export default function useUnisatWallet() {
       publicKey: _publicKey,
       network: _network,
     }
-  }
+  }, [])
 
   const handleAccountsChanged = useCallback(
     (accounts: string[]) => {
@@ -45,7 +45,7 @@ export default function useUnisatWallet() {
         setAddress(undefined)
       }
     },
-    [address],
+    [address, getBasicInfo],
   )
 
   const connect = async () => {
@@ -131,7 +131,7 @@ export default function useUnisatWallet() {
     return () => {
       unisat.removeListener('networkChanged', getBasicInfo)
     }
-  }, [])
+  }, [getBasicInfo])
 
   useEffect(() => {
     const wallet = window.localStorage.getItem(CURRENT_BTC_WALLET) as BTCWallet | null
