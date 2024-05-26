@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
 import { isEqual } from 'lodash-es'
-import { getAllPools, AllPooltListData } from '@/api'
+import { getAllPools, AllPoolListData } from '@/api'
 import { usePoolAllList } from '@/state/user/hooks'
 import GearIcon from '@/components/Icons/GearIcon'
 import SortIcon from '@/components/Icons/sortIcon'
@@ -18,7 +18,7 @@ const PoolAll = () => {
 
   useEffect(() => {
     getAllPools()
-      .then((data: AllPooltListData) => {
+      .then((data: AllPoolListData) => {
         updatePoolAllList((prev) => {
           if (isEqual(prev, data.allPools)) return prev
           return data.allPools

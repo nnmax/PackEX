@@ -5,7 +5,7 @@ import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
 import { isEqual } from 'lodash-es'
-import { getMyPools, MyPooltListData } from '@/api'
+import { getMyPools, MyPoolListData } from '@/api'
 import { usePoolMyList } from '@/state/user/hooks'
 import GearIcon from '@/components/Icons/GearIcon'
 import PoolLayout from '@/pages/Pool/Layout'
@@ -20,7 +20,7 @@ const PoolMy = () => {
   useEffect(() => {
     setLoading(true)
     getMyPools()
-      .then((data: MyPooltListData) => {
+      .then((data: MyPoolListData) => {
         updatePoolMyList((prev) => {
           if (isEqual(prev, data.myPools)) return prev
           return data.myPools

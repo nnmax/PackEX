@@ -24,12 +24,12 @@ interface PoolAll {
 
 export type PoolAllItem = PoolAll
 
-export type AllPooltListData = {
+export type AllPoolListData = {
   allPools: PoolAll[]
 }
 
 export default function getAllPools() {
-  return fetcher<AllPooltListData>('/get-all-pools', {
+  return fetcher<AllPoolListData>('/get-all-pools', {
     method: 'GET',
     disabledErrorToast: true,
   })

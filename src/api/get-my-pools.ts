@@ -24,12 +24,12 @@ interface PoolMy {
 
 export type PoolMyItem = PoolMy
 
-export type MyPooltListData = {
+export type MyPoolListData = {
   myPools: PoolMy[]
 }
 
 export default function getMyPools() {
-  return fetcher<MyPooltListData>('/get-my-pools', {
+  return fetcher<MyPoolListData>('/get-my-pools', {
     method: 'GET',
     disabledErrorToast: true,
   })
