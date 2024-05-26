@@ -11,6 +11,7 @@ ENV YARN_NM_MODE=hardlinks-local
 
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
+COPY lib ./lib
 
 RUN yarn install --immutable
 
@@ -25,6 +26,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY .yarn ./.yarn
 COPY public ./public
 COPY src ./src
+COPY lib ./lib
 COPY yarn.lock .env .env.production craco.config.ts package.json .yarnrc.yml tsconfig.json tailwind.config.js ./
 
 RUN yarn build:$APP_ENV
