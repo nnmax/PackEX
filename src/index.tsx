@@ -1,5 +1,6 @@
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
 import 'inter-ui'
+import { ClickToComponent } from 'click-to-react-component'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
@@ -60,6 +61,7 @@ function Providers({ children }: { children: React.ReactNode }) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <ClickToComponent />
     <BrowserRouter>
       <Providers>
         <Updaters />

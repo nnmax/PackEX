@@ -21,6 +21,8 @@ import {
   updateTotalValue,
   updatePoolAllList,
   updatePoolMyList,
+  updatePaxInvite,
+  updatePaxInfo,
 } from './actions'
 
 function serializeToken(token: Token): SerializedToken {
@@ -334,4 +336,58 @@ export function usePoolAllList() {
   )
 
   return [poolAllList, _updatePoolAllLst] as const
+}
+
+export function usePaxInvite() {
+  const paxInvite = useSelector<AppState, AppState['user']['paxInviteData']>((state) => state.user.paxInviteData)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const paxInviteRef = useRef(paxInvite)
+  paxInviteRef.current = paxInvite
+
+  const _updatePaxInvite = useCallback(
+    (
+      action:
+        | AppState['user']['paxInviteData']
+        | ((state: AppState['user']['paxInviteData']) => AppState['user']['paxInviteData']),
+    ) => {
+      let data: AppState['user']['paxInviteData']
+      if (typeof action === 'function') {
+        data = action(paxInviteRef.current)
+      } else {
+        data = action
+      }
+      dispatch(updatePaxInvite(data))
+    },
+    [dispatch],
+  )
+
+  return [paxInvite, _updatePaxInvite] as const
+}
+
+export function usePaxInfo() {
+  const paxInfo = useSelector<AppState, AppState['user']['paxInfoData']>((state) => state.user.paxInfoData)
+  const dispatch = useDispatch<AppDispatch>()
+
+  const paxInfoRef = useRef(paxInfo)
+  paxInfoRef.current = paxInfo
+
+  const _updatePaxInfo = useCallback(
+    (
+      action:
+        | AppState['user']['paxInfoData']
+        | ((state: AppState['user']['paxInfoData']) => AppState['user']['paxInfoData']),
+    ) => {
+      let data: AppState['user']['paxInfoData']
+      if (typeof action === 'function') {
+        data = action(paxInfoRef.current)
+      } else {
+        data = action
+      }
+      dispatch(updatePaxInfo(data))
+    },
+    [dispatch],
+  )
+
+  return [paxInfo, _updatePaxInfo] as const
 }

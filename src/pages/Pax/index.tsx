@@ -1,4 +1,6 @@
 import { enterInvitationCode } from '@/api'
+import { PaxRewardRatio, PaxTableData, useFetchPaxInfo } from '@/api/get-pax-info'
+import { useFetchPaxInvite } from '@/api/get-pax-invite'
 import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
 import DoubleCurrencyLogo from '@/components/DoubleLogo'
 import OTP from '@/components/OTPInput'
@@ -6,17 +8,21 @@ import { useActiveWeb3React } from '@/hooks'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import { useUserInfo } from '@/state/user/hooks'
 import clsx from 'clsx'
+import { last } from 'lodash-es'
 import { forwardRef, useState } from 'react'
-import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
+import {
+  Button,
+  Cell,
+  Column,
+  ResizableTableContainer,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+} from 'react-aria-components'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
-
-const leaderboards = Array.from({ length: 20 }, (_, i) => ({
-  rank: i + 1,
-  name: 'User ' + i,
-  totalMinted: i * 100,
-}))
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
@@ -24,25 +30,31 @@ export default function PaxPage() {
   const { library } = useActiveWeb3React()
   const [userInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
+  const inviteData = useFetchPaxInvite()
+  const infoData = useFetchPaxInfo()
 
   const handleWatchAsset = () => {
     if (!userInfo) {
       toggleWalletModal()
       return
     }
-    if (!library) return
-    // TODO
-    // library.send('wallet_watchAsset', [
-    //   {
-    //     type: 'ERC20',
-    //     options: {
-    //       address: '0x00000000000000000',
-    //       symbol: 'PAX',
-    //       decimals: 18,
-    //       image: 'https://packex.io/favicon.ico',
-    //     },
-    //   },
-    // ])
+    if (!library || !infoData) return
+    const options = {
+      address: infoData.paxContract,
+      symbol: 'PAX',
+      decimals: 18,
+      image: 'https://packex.io/favicon.ico',
+    }
+    library
+      .send('wallet_watchAsset', [
+        {
+          type: 'ERC20',
+          options,
+        },
+      ])
+      .catch((e) => {
+        toast.error(e?.message || 'Failed to watch asset')
+      })
   }
 
   const handleAdd = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
@@ -83,7 +95,15 @@ export default function PaxPage() {
         </p>
         <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
           <span className={'text-lemonYellow mr-2'}>Contract: </span>
-          <span>0x00000000000000000</span>
+          <div className={'min-w-[500px] flex justify-center'}>
+            <span
+              className={clsx({
+                loading: infoData?.paxContract === undefined,
+              })}
+            >
+              {infoData?.paxContract}
+            </span>
+          </div>
           <ButtonYellow className={'ml-7 w-full max-w-[288px]'} onPress={handleWatchAsset}>
             +ADD $PAX TO YOUR WALLET
           </ButtonYellow>
@@ -127,8 +147,7 @@ export default function PaxPage() {
           <DoubleCurrencyLogo />
           <span>PAX / USDB</span>
           <Link
-            // TODO: currencyIdA 和 currencyIdB 替换成对应的 address
-            to={'/pool/add/:currencyIdA/:currencyIdB'}
+            to={`/pool/add/${infoData?.paxContract}/0x8c292da7bc345b86a00c94b64786f5f6b8d951cb`}
             onClick={handleAdd}
             className={
               'ml-7 w-[180px] bg-lemonYellow text-[#020202] flex h-9 px-2 items-center justify-center self-center rounded-md text-xs'
@@ -168,7 +187,7 @@ export default function PaxPage() {
               DAILY REWARDS
             </text>
             <text x="215" y="28" fill="#FFC300" fontSize="16">
-              410
+              {infoData?.dailyRewards ?? 0}
             </text>
           </svg>
         </div>
@@ -178,33 +197,36 @@ export default function PaxPage() {
         <div className={'flex justify-between px-5'}>
           <div className={'flex-1'}>
             <div className={'flex gap-12'}>
-              <div className={boxClasses} data-ratio={'1/6'} ref={boxOneRef}>
-                <span className={'text-xs mt-4'}>SWAP</span>
-                <span className={'text-lemonYellow mt-8'}>[ 4100 ]</span>
-              </div>
-              <div className={boxClasses} data-ratio={'1/2'}>
-                <span className={'text-xs mt-4'}>POOL</span>
-                <span className={'text-lemonYellow mt-8'}>[ 4100 ]</span>
-              </div>
-              <div className={boxClasses} data-ratio={'1/6'}>
-                <span className={'text-xs mt-4'}>MIGRATED ASSETS </span>
-                <span className={'text-lemonYellow mt-8'}>[ 4100 ]</span>
-              </div>
+              {(
+                infoData?.paxRewardRatio ??
+                Array.from({ length: 4 }, () => ({
+                  amount: 0,
+                  name: '-',
+                  ratio: 0,
+                }))
+              )
+                .filter((_, index, array) => index !== array.length - 1)
+                .map((item) => (
+                  <div className={boxClasses} data-ratio={item.ratio} ref={boxOneRef}>
+                    <span className={'text-xs mt-4'}>{item.name}</span>
+                    <span className={'text-lemonYellow mt-8'}>[ {item.amount} ]</span>
+                  </div>
+                ))}
             </div>
             <div className={'mt-10 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}>
               <p className={'flex gap-6'}>
                 <span className={'w-[140px]'}>TOTAL MINTED</span>
-                <span className={'text-[#9E9E9E]'}>0</span>
+                <span className={'text-[#9E9E9E]'}>{infoData?.totalMinted ?? 0}</span>
               </p>
               <p className={'flex gap-6 mt-8'}>
                 <span className={'w-[140px]'}>Unclaim</span>
-                <span className={'text-[#9E9E9E]'}>0</span>
+                <span className={'text-[#9E9E9E]'}>{infoData?.unclaimed ?? 0}</span>
               </p>
               <ButtonYellow className={'w-20 mt-6 ml-[164px]'}>Claim</ButtonYellow>
             </div>
           </div>
-          <div className={'w-80 ml-6'}>
-            <SocialBox ref={boxTwoRef} />
+          <div className={'w-80 ml-6 flex flex-col'}>
+            <SocialBox ref={boxTwoRef} data={last(infoData?.paxRewardRatio ?? [])} />
             <p className={'text-xs leading-[22px] pt-2 px-5'}>
               You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint,
               the more you mint.
@@ -212,14 +234,14 @@ export default function PaxPage() {
           </div>
         </div>
         <div className={'flex gap-5'}>
-          <div className={'border flex-1 border-lemonYellow rounded py-8 px-4'}>
+          <div className={'border flex-1 border-lemonYellow rounded py-8 px-4 overflow-hidden'}>
             <h3 className={'text-lemonYellow'} id={'leaderboard-id'}>
               Leaderboard
             </h3>
-            <MyTable />
+            <MyTable data={infoData?.leaderBoard ?? []} />
           </div>
 
-          <div className={'border flex-1 border-lemonYellow rounded py-8 px-4'}>
+          <div className={'border flex-1 border-lemonYellow rounded py-8 px-4 overflow-hidden'}>
             <div className={'flex justify-between'}>
               <h3 className={'text-lemonYellow'} id={'invite-id'}>
                 Invite
@@ -234,7 +256,7 @@ export default function PaxPage() {
                 </div>
               )}
             </div>
-            <MyTable />
+            <MyTable data={inviteData?.invite ?? []} />
           </div>
         </div>
       </section>
@@ -262,30 +284,49 @@ const boxClasses = clsx(
   'relative flex-1 border border-lemonYellow rounded flex flex-col items-center h-32',
 )
 
-function MyTable() {
+function MyTable(props: { data: PaxTableData[] }) {
+  const { data } = props
+
   return (
     <div className={'h-[600px] overflow-y-auto'}>
-      <Table aria-labelledby={'invite-id'} className={'text-center w-full mt-6'}>
-        <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
-          <Column>RANK</Column>
-          <Column>NAME</Column>
-          <Column isRowHeader>TOTAL $PAX MINTED</Column>
-        </TableHeader>
-        <TableBody items={leaderboards}>
-          {(item) => (
-            <Row id={item.rank} className={'h-[60px]'}>
-              <Cell>{item.rank}</Cell>
-              <Cell>{item.name}</Cell>
-              <Cell>{item.totalMinted}</Cell>
-            </Row>
-          )}
-        </TableBody>
-      </Table>
+      <ResizableTableContainer>
+        <Table aria-labelledby={'invite-id'} className={'text-center w-full mt-6 [&_th]:px-4 [&_td]:px-4'}>
+          <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
+            <Column width="10%">RANK</Column>
+            <Column isRowHeader width="60%">
+              NAME
+            </Column>
+            <Column width="30%">$PAX</Column>
+          </TableHeader>
+          <TableBody
+            items={data}
+            renderEmptyState={() => <p className={'mt-36 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}
+          >
+            {(item) => (
+              <Row id={item.rank} className={'h-[60px]'}>
+                <Cell>{item.rank}</Cell>
+                <Cell className="truncate">
+                  <span title={item.address}>{item.address}</span>
+                </Cell>
+                <Cell className="truncate">
+                  <span title={item.totalAmount.toString()}>{item.totalAmount}</span>
+                </Cell>
+              </Row>
+            )}
+          </TableBody>
+        </Table>
+      </ResizableTableContainer>
     </div>
   )
 }
 
-const SocialBox = forwardRef<HTMLDivElement>(function SocialBox(props, ref) {
+const SocialBox = forwardRef<
+  HTMLDivElement,
+  {
+    data: PaxRewardRatio | undefined
+  }
+>(function SocialBox(props, ref) {
+  const { data } = props
   const [userInfo, updateUserInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
   const [loading, setLoading] = useState(false)
@@ -313,31 +354,41 @@ const SocialBox = forwardRef<HTMLDivElement>(function SocialBox(props, ref) {
     <div
       data-ratio={'1/6'}
       ref={ref}
-      className={clsx(verticalLineClasses, 'relative border border-lemonYellow px-5 py-4 rounded flex flex-col')}
-    >
-      <span className={'self-center'}>SOCIAL</span>
-      <OTP
-        loading={loading}
-        formatter={(value) => value.toUpperCase()}
-        length={5}
-        aria-label={'invite code'}
-        className={'flex justify-between w-full mt-3'}
-        inputClassName={clsx(inputClasses, !userInfo && '!bg-[#6F6F6F]')}
-        disabled={!userInfo}
-        onChange={handleChange}
-      />
-      {invalid && (
-        <span className={'text-xs text-[#FF3535] absolute self-center top-[100px]'}>Invalid invite code.</span>
+      className={clsx(
+        verticalLineClasses,
+        userInfo?.invitationCode ? 'h-32' : 'flex-1',
+        'relative border border-lemonYellow px-5 py-4 rounded flex flex-col',
       )}
-      <ButtonYellowLight className={'w-full mt-[44px]'} isDisabled>
-        Enter Invite Code to mint $PAX
-      </ButtonYellowLight>
-      {!userInfo && (
+    >
+      <span className={'self-center'}>{data?.name ?? 'SOCIAL'}</span>
+      {userInfo?.invitationCode ? (
+        <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.amount} ]</p>
+      ) : (
         <>
-          <span className={'self-center mt-8 text-[#FBFC02] text-xs'}>Already registered?</span>
-          <Button className={'self-center mt-2 text-xs text-[#A4BAFF] underline'} onPress={toggleWalletModal}>
-            Log in with your wallet
-          </Button>
+          <OTP
+            loading={loading}
+            formatter={(value) => value.toUpperCase()}
+            length={5}
+            aria-label={'invite code'}
+            className={'flex justify-between w-full mt-3'}
+            inputClassName={clsx(inputClasses, !userInfo && '!bg-[#6F6F6F]')}
+            disabled={!userInfo}
+            onChange={handleChange}
+          />
+          {invalid && (
+            <span className={'text-xs text-[#FF3535] absolute self-center top-[100px]'}>Invalid invite code.</span>
+          )}
+          <ButtonYellowLight className={'w-full mt-[44px]'} isDisabled>
+            Enter Invite Code to mint $PAX
+          </ButtonYellowLight>
+          {!userInfo && (
+            <>
+              <span className={'self-center mt-8 text-[#FBFC02] text-xs'}>Already registered?</span>
+              <Button className={'self-center mt-2 text-xs text-[#A4BAFF] underline'} onPress={toggleWalletModal}>
+                Log in with your wallet
+              </Button>
+            </>
+          )}
         </>
       )}
     </div>

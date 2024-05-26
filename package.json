@@ -130,6 +130,7 @@
     "@floating-ui/react": "^0.26.13",
     "@headlessui/react": "^2.0.2",
     "@nnmax/uniswap-sdk-v2": "^1.0.4",
+    "click-to-react-component": "^1.1.0",
     "clsx": "^2.1.1",
     "lodash-es": "^4.17.21",
     "react-aria-components": "^1.2.0",
