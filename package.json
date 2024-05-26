@@ -139,7 +139,7 @@
   },
   "packageManager": "yarn@4.2.1",
   "lint-staged": {
-    "*.{js,ts,tsx,cjs,mjs}": "eslint --fix",
+    "*.{js,ts,tsx,cjs,mjs}": "eslint --fix --max-warnings 0",
     "**/*": "prettier --write --ignore-unknown"
   }
 }

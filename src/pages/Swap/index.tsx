@@ -10,7 +10,7 @@ import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { AutoRow, RowBetween } from '../../components/Row'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
-import { ArrowWrapper, SwapCallbackError } from '../../components/swap/styleds'
+import { ArrowWrapper } from '../../components/swap/styleds'
 import TokenWarningModal from '../../components/TokenWarningModal'
 import ProgressSteps from '../../components/ProgressSteps'
 import { useCurrency } from '../../hooks/Tokens'
@@ -26,7 +26,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks'
-import { useExpertModeManager, useUserDeadline, useUserInfo, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useUserDeadline, useUserInfo, useUserSlippageTolerance } from '../../state/user/hooks'
 import { LinkStyledButton } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
