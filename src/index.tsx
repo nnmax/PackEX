@@ -1,9 +1,7 @@
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
 import 'inter-ui'
 import { StrictMode } from 'react'
-import { isMobile } from 'react-device-detect'
-import ReactDOM from 'react-dom'
-import ReactGA from 'react-ga'
+import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
 import { NetworkContextName } from './constants'
 import App from './pages/App'
@@ -18,6 +16,7 @@ import './index.css'
 import { BrowserRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
+import { BTCWalletProvider } from '@/hooks/useBTCWallet'
 
 declare module '@uniswap/token-lists' {
   export interface TokenInfo {
@@ -30,27 +29,6 @@ const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 if ('ethereum' in window) {
   ;(window.ethereum as any).autoRefreshOnNetworkChange = false
 }
-
-const GOOGLE_ANALYTICS_ID: string | undefined = process.env.REACT_APP_GOOGLE_ANALYTICS_ID
-if (typeof GOOGLE_ANALYTICS_ID === 'string') {
-  ReactGA.initialize(GOOGLE_ANALYTICS_ID)
-  ReactGA.set({
-    customBrowserType: !isMobile
-      ? 'desktop'
-      : 'web3' in window || 'ethereum' in window
-        ? 'mobileWeb3'
-        : 'mobileRegular',
-  })
-} else {
-  ReactGA.initialize('test', { testMode: true, debug: true })
-}
-
-window.addEventListener('error', (error) => {
-  ReactGA.exception({
-    description: `${error.message} @ ${error.filename}:${error.lineno}:${error.colno}`,
-    fatal: true,
-  })
-})
 
 function Updaters() {
   return (
@@ -70,7 +48,9 @@ function Providers({ children }: { children: React.ReactNode }) {
       <Web3ProviderNetwork getLibrary={getLibrary}>
         <I18nProvider locale={'en-US'}>
           <RouterProvider navigate={history.push}>
-            <Provider store={store}>{children}</Provider>
+            <BTCWalletProvider>
+              <Provider store={store}>{children}</Provider>
+            </BTCWalletProvider>
           </RouterProvider>
         </I18nProvider>
       </Web3ProviderNetwork>
@@ -78,7 +58,7 @@ function Providers({ children }: { children: React.ReactNode }) {
   )
 }
 
-ReactDOM.render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <Providers>
@@ -90,5 +70,4 @@ ReactDOM.render(
       </Providers>
     </BrowserRouter>
   </StrictMode>,
-  document.getElementById('root'),
 )

@@ -1,7 +1,7 @@
 import { useWeb3React } from '@web3-react/core'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { shortenAddress } from '../../utils'
-import WalletModal from '../WalletModal'
+import WalletModal, { BTCWalletModal } from '../WalletModal'
 import { Button, Menu, MenuItem, MenuTrigger, Popover } from 'react-aria-components'
 import ArrowDown from '@/components/Icons/ArrowDown'
 import Wallet from '@/components/Icons/Wallet'
@@ -20,7 +20,6 @@ function Web3StatusInner() {
     disconnectWallet()
   }
 
-  console.log('%c [ userInfo ]-25', 'font-size:13px; background:pink; color:#bf2c9f;', userInfo)
   if (userInfo) {
     return (
       <MenuTrigger>
@@ -58,18 +57,11 @@ function Web3StatusInner() {
 }
 
 export default function Web3Status() {
-  // const { active } = useWeb3React()
-  // const contextNetwork = useWeb3React(NetworkContextName)
-  // const [userInfo] = useUserInfo()
-
-  // if (!contextNetwork.active && !active) {
-  //   return null
-  // }
-
   return (
     <>
       <Web3StatusInner />
       <WalletModal />
+      <BTCWalletModal />
     </>
   )
 }

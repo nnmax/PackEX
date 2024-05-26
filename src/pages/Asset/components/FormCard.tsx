@@ -1,6 +1,7 @@
 import { Asset } from '@/api'
-import { ButtonYellow } from '@/components/Button'
+import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
+import Wallet from '@/components/Icons/Wallet'
 import clsx from 'clsx'
 import QueryString from 'qs'
 import { useState } from 'react'
@@ -24,8 +25,10 @@ export default function FormCard(props: {
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
   loading?: boolean
   type: 'deposit' | 'withdraw'
+  showConnectWalletButton?: boolean
+  onWalletToggle?: () => void
 }) {
-  const { onSubmit, loading, type } = props
+  const { onSubmit, loading, type, showConnectWalletButton, onWalletToggle } = props
 
   const [amount, setAmount] = useState<number>(0)
 
@@ -123,9 +126,16 @@ export default function FormCard(props: {
           </div>
         )}
       </div>
-      <ButtonYellow type={'submit'} isDisabled={loading} className={clsx('mt-14 w-full max-w-60')}>
-        {loading ? <span aria-label="Loading" className="loading loading-dots" /> : 'Confirm'}
-      </ButtonYellow>
+      {showConnectWalletButton ? (
+        <ButtonYellowLight onPress={onWalletToggle} className={'text-xs w-full max-w-60 mt-14'}>
+          <Wallet className={'text-xl mr-6'} />
+          <span>Connect Wallet</span>
+        </ButtonYellowLight>
+      ) : (
+        <ButtonYellow type={'submit'} isDisabled={loading} className={clsx('mt-14 w-full max-w-60')}>
+          {loading ? <span aria-label="Loading" className="loading loading-dots" /> : 'Confirm'}
+        </ButtonYellow>
+      )}
 
       {type === 'deposit' && (
         <p style={{ fontFamily: 'Prompt' }} className={'w-[390px] mt-20 text-[#6F6F6F] text-[12px] leading-5'}>

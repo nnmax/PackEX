@@ -2,13 +2,30 @@ import { useState, useEffect } from 'react'
 import { Web3Provider } from '@ethersproject/providers'
 import { isMobile } from 'react-device-detect'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
-import { useWalletModalOpen, useWalletModalToggle } from '../../state/application/hooks'
-import { MESSAGE_KEY, SIGNATURE_KEY, SUPPORTED_WALLETS, USER_KEY } from '../../constants'
+import {
+  useBTCWalletModalOpen,
+  useBTCWalletModalToggle,
+  useWalletModalOpen,
+  useWalletModalToggle,
+} from '../../state/application/hooks'
+import {
+  BTC_MESSAGE_KEY,
+  BTC_SIGNATURE_KEY,
+  CURRENT_BTC_WALLET,
+  MESSAGE_KEY,
+  SIGNATURE_KEY,
+  SUPPORTED_WALLETS,
+  USER_KEY,
+} from '../../constants'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import Dialog from '@/components/Dialog'
-import { connectWallet, disconnectWallet } from '@/api'
+import { connectBTCWallet, connectWallet, disconnectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
+import okxLogo from '../../assets/images/okx.svg'
+import unisatLogo from '../../assets/images/unisat.svg'
+import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
+import { isString } from 'lodash-es'
 
 export default function WalletModal() {
   // important that these are destructed from the account-specific web3-react context
@@ -129,9 +146,8 @@ export default function WalletModal() {
 
       // return rest of options
       return (
-        !isMobile &&
-        !option.mobileOnly && (
-          <ListItem
+        !isMobile && (
+          <WalletModalListItem
             name={option.name}
             loading={option.connector === pendingWallet}
             onClick={async () => {
@@ -146,14 +162,88 @@ export default function WalletModal() {
   }
 
   return (
-    <Dialog open={walletModalOpen} onClose={() => toggleWalletModal()} panelClassName={'!max-w-[432px] !px-4 !py-8'}>
+    <WalletModalWrapper open={walletModalOpen} onClose={() => toggleWalletModal()}>
+      {getOptions()}
+    </WalletModalWrapper>
+  )
+}
+
+export function BTCWalletModal() {
+  const walletModalOpen = useBTCWalletModalOpen()
+  const toggleWalletModal = useBTCWalletModalToggle()
+  const { connect, switchNetwork, signMessage, disconnect } = useBTCWallet()
+  const [loadingWallet, setLoadingWallet] = useState<BTCWallet>()
+
+  const handleClick = async (wallet: BTCWallet) => {
+    setLoadingWallet(wallet)
+    try {
+      const { address, network, publicKey } = await connect(wallet)
+
+      if (process.env.APP_ENV === 'prod' && network !== 'livenet') {
+        await switchNetwork(wallet, 'livenet')
+      } else if (process.env.APP_ENV === 'dev' && network !== 'testnet') {
+        await switchNetwork(wallet, 'testnet')
+      }
+
+      const signature = window.localStorage.getItem(BTC_SIGNATURE_KEY)
+      const message = window.localStorage.getItem(BTC_MESSAGE_KEY)
+      const response = await connectBTCWallet({
+        address,
+        signature,
+        message,
+        publicKey,
+      })
+
+      if (isString(response)) {
+        const _signature = await signMessage(wallet, response)
+        window.localStorage.setItem(BTC_MESSAGE_KEY, response)
+        window.localStorage.setItem(BTC_SIGNATURE_KEY, _signature)
+        await connectBTCWallet({
+          address,
+          signature: _signature,
+          message: response,
+          publicKey,
+        })
+      }
+      setLoadingWallet(undefined)
+      toggleWalletModal()
+      window.localStorage.setItem(CURRENT_BTC_WALLET, wallet)
+    } catch (error) {
+      disconnect(wallet)
+      setLoadingWallet(undefined)
+    }
+  }
+
+  return (
+    <WalletModalWrapper open={walletModalOpen} onClose={() => toggleWalletModal()}>
+      <WalletModalListItem
+        icon={unisatLogo}
+        name="Unisat Wallet"
+        loading={loadingWallet === 'unisat'}
+        onClick={() => handleClick('unisat')}
+      />
+      <WalletModalListItem
+        icon={okxLogo}
+        name="OKX Wallet"
+        loading={loadingWallet === 'okx'}
+        onClick={() => handleClick('okx')}
+      />
+    </WalletModalWrapper>
+  )
+}
+
+export function WalletModalWrapper(props: { open: boolean; onClose: () => void; children: React.ReactNode }) {
+  const { open, onClose, children } = props
+
+  return (
+    <Dialog open={open} onClose={onClose} panelClassName={'!max-w-[432px] !px-4 !py-8'}>
       <Dialog.Title className={'text-md mb-[18px] pl-4'}>{'Connect Wallet'}</Dialog.Title>
       <Dialog.Description className={'pl-4 text-xs leading-5'}>
         {"Choose how you want to connect. lf you don't have a wallet, you can select a provider and create one."}
       </Dialog.Description>
 
       <ul className={'mt-[22px]'} role={'menu'}>
-        {getOptions()}
+        {children}
       </ul>
     </Dialog>
   )
@@ -162,7 +252,7 @@ export default function WalletModal() {
 const liClasses =
   'flex h-[60px] items-center aria-disabled:pointer-events-none gap-6 text-sm px-3 rounded hover:bg-white/20 transition-colors cursor-pointer'
 
-function ListItem(props: {
+export function WalletModalListItem(props: {
   loading?: boolean
   icon: string
   name: string

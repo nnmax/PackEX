@@ -5,3 +5,8 @@ export { default as enterInvitationCode } from './enter-invitation-code'
 export { default as getAssetList, type AssetListData, type Asset } from './get-asset-list'
 export { default as getAllPools, type AllPoolListData, type PoolAllItem } from './get-all-pools'
 export { default as getMyPools, type MyPoolListData, type PoolMyItem } from './get-my-pools'
+export {
+  default as connectBTCWallet,
+  type ConnectBTCWalletData,
+  type ConnectBTCWalletParams,
+} from './connect-btc-wallet'
