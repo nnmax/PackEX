@@ -58,8 +58,6 @@ export default function Swap() {
   // toggle wallet when disconnected
   const toggleWalletModal = useWalletModalToggle()
 
-  const [isExpertMode] = useExpertModeManager()
-
   // get custom setting values for user
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
@@ -205,7 +203,7 @@ export default function Swap() {
     (approval === ApprovalState.NOT_APPROVED ||
       approval === ApprovalState.PENDING ||
       (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
-    !(priceImpactSeverity > 3 && !isExpertMode)
+    !(priceImpactSeverity > 3)
 
   const handleConfirmDismiss = useCallback(() => {
     setSwapState({ showConfirm: false, tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
@@ -236,7 +234,7 @@ export default function Swap() {
     [onCurrencySelection],
   )
 
-  const disabled = !isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError
+  const disabled = !isValid || priceImpactSeverity > 3 || !!swapCallbackError
 
   return (
     <div className={'flex flex-col items-center'}>
@@ -357,13 +355,11 @@ export default function Swap() {
                 onClick={handleSwap}
                 width="48%"
                 id="swap-button"
-                disabled={!isValid || approval !== ApprovalState.APPROVED || (priceImpactSeverity > 3 && !isExpertMode)}
+                disabled={!isValid || approval !== ApprovalState.APPROVED || priceImpactSeverity > 3}
                 error={isValid && priceImpactSeverity > 2}
               >
                 <Text fontSize={16} fontWeight={500}>
-                  {priceImpactSeverity > 3 && !isExpertMode
-                    ? `Price Impact High`
-                    : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
+                  {priceImpactSeverity > 3 ? `Price Impact High` : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
                 </Text>
               </ButtonError>
             </RowBetween>
@@ -371,33 +367,27 @@ export default function Swap() {
             <ButtonYellow
               className={'w-full max-w-[240px]'}
               onPress={() => {
-                if (isExpertMode) {
-                  handleSwap()
-                } else {
-                  setSwapState({
-                    tradeToConfirm: trade,
-                    attemptingTxn: false,
-                    swapErrorMessage: undefined,
-                    showConfirm: true,
-                    txHash: undefined,
-                  })
-                }
+                setSwapState({
+                  tradeToConfirm: trade,
+                  attemptingTxn: false,
+                  swapErrorMessage: undefined,
+                  showConfirm: true,
+                  txHash: undefined,
+                })
               }}
               isDisabled={disabled}
               // error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
             >
               {swapInputError
                 ? swapInputError
-                : priceImpactSeverity > 3 && !isExpertMode
+                : priceImpactSeverity > 3
                   ? `Price Impact Too High`
                   : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
             </ButtonYellow>
           )}
           {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
-          {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
         </div>
       </div>
-      {/* <AdvancedSwapDetailsDropdown trade={trade} /> */}
     </div>
   )
 }
