@@ -75,3 +75,38 @@ export function formatExecutionPrice(trade?: Trade, inverted?: boolean): string 
         trade.inputAmount.currency.symbol
       }`
 }
+
+export function toNonExponential(num: number): string {
+  const m = num.toExponential().match(/\d(?:\.(\d*))?e([+-]\d+)/)
+  if (!m) return num.toFixed(0)
+  const fractionLength = (m[1] || '').length
+  const exponent = parseInt(m[2], 10)
+  const digitsAfterDecimal = Math.max(0, fractionLength - exponent)
+  return num.toFixed(digitsAfterDecimal)
+}
+
+export function formatAmountColumn(originNumber: number) {
+  const result = toNonExponential(originNumber)
+  if (result === '0') {
+    return 0
+  } else if (Number(result) < 0.001) {
+    return `< 0.001`
+  }
+  return result
+}
+
+export function formatValueColumn(num: number) {
+  if (num === 0) {
+    return 0
+  }
+  if (num < 0.01) {
+    return `< 0.01`
+  }
+  const result = num.toFixed(2)
+
+  if (Number(result) === 0) {
+    return 0
+  } else {
+    return result
+  }
+}

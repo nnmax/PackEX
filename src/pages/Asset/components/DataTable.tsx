@@ -4,45 +4,11 @@ import QueryString from 'qs'
 import clsx from 'clsx'
 import PnL from './PnL'
 import { Asset } from '@/api'
+import { formatAmountColumn, formatValueColumn } from '@/utils/prices'
 
 interface DataTableProps {
   loading: boolean
   assetsList: Asset[]
-}
-
-const toNonExponential = (num: number): string => {
-  const m = num.toExponential().match(/\d(?:\.(\d*))?e([+-]\d+)/)
-  if (!m) return num.toFixed(0)
-  const fractionLength = (m[1] || '').length
-  const exponent = parseInt(m[2], 10)
-  const digitsAfterDecimal = Math.max(0, fractionLength - exponent)
-  return num.toFixed(digitsAfterDecimal)
-}
-
-const formatAmountColumn = (originNumber: number) => {
-  const result = toNonExponential(originNumber)
-  if (result === '0') {
-    return 0
-  } else if (Number(result) < 0.001) {
-    return `< 0.001`
-  }
-  return result
-}
-
-const formatValueColumn = (num: number) => {
-  if (num === 0) {
-    return 0
-  }
-  if (num < 0.01) {
-    return `< 0.01`
-  }
-  const result = num.toFixed(2)
-
-  if (Number(result) === 0) {
-    return 0
-  } else {
-    return result
-  }
 }
 
 const DataTable = (props: DataTableProps) => {
