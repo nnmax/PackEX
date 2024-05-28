@@ -79,14 +79,14 @@ const PoolAll = () => {
               <Cell>{item.volume7d}</Cell>
               <Cell>{`${item.apy} %`}</Cell>
               <Cell>
-                <div className={'flex items-center justify-center gap-10'}>
-                  <Link
-                    to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
-                    className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
-                  >
-                    {'+ADD'}
-                  </Link>
-                </div>
+                <Link
+                  to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
+                  className={
+                    'text-lemonYellow flex items-center justify-center w-[60px] h-6 border rounded-sm border-lemonYellow'
+                  }
+                >
+                  {'+ADD'}
+                </Link>
               </Cell>
             </Row>
           )}

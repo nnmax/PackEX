@@ -1,14 +1,13 @@
 import { Currency, CurrencyAmount, JSBI, Trade } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
-import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from '../../components/AddressInputPanel'
 import Wallet from '@/components/Icons/Wallet'
-import { ButtonError, ButtonConfirmed, ButtonYellowLight, ButtonYellow } from '../../components/Button'
+import { ButtonYellowLight, ButtonYellow } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
-import { AutoRow, RowBetween } from '../../components/Row'
+import { AutoRow } from '../../components/Row'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
 import { ArrowWrapper } from '../../components/swap/styleds'
 import ProgressSteps from '../../components/ProgressSteps'
@@ -312,13 +311,13 @@ export default function Swap() {
           ) : noRoute && userHasSpecifiedInputOutput ? (
             <p>Insufficient liquidity for this trade.</p>
           ) : showApproveFlow ? (
-            <RowBetween>
-              <ButtonConfirmed
-                onClick={approveCallback}
-                disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
-                width="48%"
-                altDisabledStyle={approval === ApprovalState.PENDING} // show solid button while waiting
-                confirmed={approval === ApprovalState.APPROVED}
+            <div className={'flex justify-between gap-4'}>
+              <ButtonYellow
+                onPress={approveCallback}
+                isDisabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
+                className={'flex-1'}
+                // altDisabledStyle={approval === ApprovalState.PENDING} // show solid button while waiting
+                // confirmed={approval === ApprovalState.APPROVED}
               >
                 {approval === ApprovalState.PENDING ? (
                   <AutoRow gap="6px" justify="center">
@@ -329,19 +328,16 @@ export default function Swap() {
                 ) : (
                   'Approve ' + currencies[Field.INPUT]?.symbol
                 )}
-              </ButtonConfirmed>
-              <ButtonError
-                onClick={handleSwap}
-                width="48%"
-                id="swap-button"
-                disabled={!isValid || approval !== ApprovalState.APPROVED || priceImpactSeverity > 3}
-                error={isValid && priceImpactSeverity > 2}
+              </ButtonYellow>
+              <ButtonYellow
+                className={'flex-1'}
+                onPress={handleSwap}
+                isDisabled={!isValid || approval !== ApprovalState.APPROVED || priceImpactSeverity > 3}
+                // error={isValid && priceImpactSeverity > 2}
               >
-                <Text fontSize={16} fontWeight={500}>
-                  {priceImpactSeverity > 3 ? `Price Impact High` : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
-                </Text>
-              </ButtonError>
-            </RowBetween>
+                {priceImpactSeverity > 3 ? `Price Impact High` : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
+              </ButtonYellow>
+            </div>
           ) : (
             <ButtonYellow
               className={'w-full max-w-[240px]'}
@@ -355,7 +351,6 @@ export default function Swap() {
                 })
               }}
               isDisabled={disabled}
-              // error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
             >
               {swapInputError
                 ? swapInputError
