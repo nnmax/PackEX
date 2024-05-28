@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { isEqual } from 'lodash-es'
 import { getAllPools, AllPoolListData } from '@/api'
 import { usePoolAllList } from '@/state/user/hooks'
-import GearIcon from '@/components/Icons/GearIcon'
+// import GearIcon from '@/components/Icons/GearIcon'
 import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
@@ -29,18 +29,18 @@ const PoolAll = () => {
       })
   }, [updatePoolAllList])
 
-  function GearIconLogo() {
-    return (
-      <div
-        onClick={() => {
-          setOpen(true)
-        }}
-        className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer'}
-      >
-        <GearIcon className={'h-full w-full rounded-full'} />
-      </div>
-    )
-  }
+  // function GearIconLogo() {
+  //   return (
+  //     <div
+  //       onClick={() => {
+  //         setOpen(true)
+  //       }}
+  //       className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer'}
+  //     >
+  //       <GearIcon className={'h-full w-full rounded-full'} />
+  //     </div>
+  //   )
+  // }
 
   return (
     <PoolLayout activeTab={'all'}>
@@ -66,7 +66,7 @@ const PoolAll = () => {
               <Cell>
                 <div className={'flex items-center justify-center'}>
                   <div className={'flex items-center relative'}>
-                    {item.id === 1 && <GearIconLogo />}
+                    {/* {item.id === 1 && <GearIconLogo />} */}
                     <img className={'relative h-6 w-6 rounded-full'} src={item.token0LogoUri} alt="logo0" />
                     <img className={'relative h-6 w-6 rounded-full mr-4'} src={item.token1LogoUri} alt="logo1" />
                   </div>

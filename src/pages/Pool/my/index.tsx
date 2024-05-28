@@ -7,7 +7,7 @@ import clsx from 'clsx'
 import { isEqual } from 'lodash-es'
 import { getMyPools, MyPoolListData } from '@/api'
 import { usePoolMyList } from '@/state/user/hooks'
-import GearIcon from '@/components/Icons/GearIcon'
+// import GearIcon from '@/components/Icons/GearIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
 const PoolMy = () => {
@@ -31,18 +31,18 @@ const PoolMy = () => {
       })
   }, [updatePoolMyList])
 
-  function GearIconLogo() {
-    return (
-      <div
-        onClick={() => {
-          setOpen(true)
-        }}
-        className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer mr-3'}
-      >
-        <GearIcon className={'h-full w-full rounded-full'} />
-      </div>
-    )
-  }
+  // function GearIconLogo() {
+  //   return (
+  //     <div
+  //       onClick={() => {
+  //         setOpen(true)
+  //       }}
+  //       className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer mr-3'}
+  //     >
+  //       <GearIcon className={'h-full w-full rounded-full'} />
+  //     </div>
+  //   )
+  // }
 
   return (
     <PoolLayout activeTab={'my'}>
@@ -64,7 +64,7 @@ const PoolMy = () => {
                 <Cell>
                   <div className={'flex justify-center'}>
                     <div className={'relative flex items-center'}>
-                      {item.id === 1 && <GearIconLogo />}
+                      {/* {item.id === 1 && <GearIconLogo />} */}
                       <span className={'text-xs mr-2'}>{item.token0Name}</span> /
                       <span className={'text-xs ml-2'}>{item.token1Name}</span>
                     </div>
