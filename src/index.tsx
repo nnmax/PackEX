@@ -67,7 +67,7 @@ createRoot(document.getElementById('root')!).render(
         <Updaters />
         <ThemeProvider>
           <App />
-          <ToastContainer draggable transition={Bounce} />
+          <ToastContainer draggable transition={Bounce} autoClose={3000} />
         </ThemeProvider>
       </Providers>
     </BrowserRouter>

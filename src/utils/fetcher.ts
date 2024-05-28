@@ -17,11 +17,11 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       ...rest?.headers,
     },
   })
-    .then<CommonResponse<ResponseData>>(async (response) => {
+    .then<CommonResponse<ResponseData>>((response) => {
       if (response.ok) {
         return response.json()
       }
-      const errorMessage = await response.text()
+      const errorMessage = response.statusText
       toast.error(errorMessage)
       throw new Error(errorMessage)
     })
