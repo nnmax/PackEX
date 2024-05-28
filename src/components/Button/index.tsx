@@ -317,12 +317,6 @@ const BaseButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function
   )
 })
 
-export const ButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
-  const { className, ...restProps } = props
-
-  return <BaseButtonYellow {...restProps} ref={ref} className={clsx(className, 'bg-lemonYellow text-[#020202]')} />
-})
-
 export const ButtonYellowLight = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
   const { className, ...restProps } = props
 
@@ -333,4 +327,14 @@ export const ButtonYellowLight = forwardRef<HTMLButtonElement, AriaButtonProps>(
       className={clsx(className, 'text-lemonYellow border border-lemonYellow')}
     />
   )
+})
+
+export const ButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
+  const { className, isDisabled, ...restProps } = props
+
+  if (isDisabled) {
+    return <ButtonYellowLight isDisabled className={className} {...restProps} ref={ref} />
+  }
+
+  return <BaseButtonYellow {...restProps} ref={ref} className={clsx(className, 'bg-lemonYellow text-[#020202]')} />
 })

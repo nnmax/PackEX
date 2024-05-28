@@ -87,13 +87,17 @@ const PoolMy = () => {
                   <div className={'flex items-center justify-center gap-6'}>
                     <Link
                       to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
-                      className={'text-lemonYellow w-[60px] h-6 border rounded-sm border-lemonYellow'}
+                      className={
+                        'text-lemonYellow w-[60px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
+                      }
                     >
                       {'+ADD'}
                     </Link>
                     <Link
                       to={`/pool/remove/${item.token0Contract}/${item.token1Contract}`}
-                      className={'text-lemonYellow w-[88px] h-6 border rounded-sm border-lemonYellow'}
+                      className={
+                        'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
+                      }
                     >
                       {'—REMOVE'}
                     </Link>
