@@ -31,12 +31,12 @@ export const initialState: TransactionState = {}
 export default createReducer(initialState, (builder) =>
   builder
     .addCase(addTransaction, (transactions, { payload: { chainId, from, hash, approval, summary } }) => {
-      if (transactions[chainId]?.[hash]) {
-        throw Error('Attempted to add existing transaction.')
-      }
-      const txs = transactions[chainId] ?? {}
-      txs[hash] = { hash, approval, summary, from, addedTime: now() }
-      transactions[chainId] = txs
+      // if (transactions[chainId]?.[hash]) {
+      //   throw Error('Attempted to add existing transaction.')
+      // }
+      // const txs = transactions[chainId] ?? {}
+      // txs[hash] = { hash, approval, summary, from, addedTime: now() }
+      // transactions[chainId] = txs
     })
     .addCase(clearAllTransactions, (transactions, { payload: { chainId } }) => {
       if (!transactions[chainId]) return

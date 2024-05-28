@@ -1,5 +1,5 @@
-import { Currency, CurrencyAmount, JSBI, Trade } from '@nnmax/uniswap-sdk-v2'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
+import { useCallback, useContext, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from '../../components/AddressInputPanel'
@@ -10,7 +10,6 @@ import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { AutoRow } from '../../components/Row'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
 import { ArrowWrapper } from '../../components/swap/styleds'
-import ProgressSteps from '../../components/ProgressSteps'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
@@ -27,11 +26,11 @@ import { useUserDeadline, useUserInfo, useUserSlippageTolerance } from '../../st
 import { LinkStyledButton } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
-import Loader from '../../components/Loader'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
+import { toast } from 'react-toastify'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -75,7 +74,7 @@ export default function Swap() {
       }
 
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
-  const isValid = !swapInputError
+
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
   const handleTypeInput = useCallback(
@@ -92,18 +91,14 @@ export default function Swap() {
   )
 
   // modal and loading
-  const [{ showConfirm, tradeToConfirm, swapErrorMessage, attemptingTxn, txHash }, setSwapState] = useState<{
+  const [{ showConfirm, activeStep }, setSwapState] = useState<{
     showConfirm: boolean
-    tradeToConfirm: Trade | undefined
-    attemptingTxn: boolean
-    swapErrorMessage: string | undefined
-    txHash: string | undefined
+    activeStep: number
+    showCompleted: boolean
   }>({
     showConfirm: false,
-    tradeToConfirm: undefined,
-    attemptingTxn: false,
-    swapErrorMessage: undefined,
-    txHash: undefined,
+    activeStep: 0,
+    showCompleted: false,
   })
 
   const formattedAmounts = {
@@ -121,16 +116,6 @@ export default function Swap() {
 
   // check whether the user has approved the router on the input token
   const [approval, approveCallback, approveGas] = useApproveCallbackFromTrade(trade, allowedSlippage)
-
-  // check if user has gone through approval process, used to show two step buttons, reset on token change
-  const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
-
-  // mark when a user has submitted an approval, reset onTokenSelection for input field
-  useEffect(() => {
-    if (approval === ApprovalState.PENDING) {
-      setApprovalSubmitted(true)
-    }
-  }, [approval, approvalSubmitted])
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
@@ -154,56 +139,39 @@ export default function Swap() {
     return undefined
   }, [approveGas, swapGas])
 
-  const handleSwap = useCallback(() => {
+  // warnings on slippage
+  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
+
+  const handleSwap = useCallback(async () => {
     if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
       return
     }
     if (!swapCallback) {
       return
     }
-    setSwapState({ attemptingTxn: true, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: undefined })
+    setSwapState((prev) => ({ ...prev, activeStep: approval === ApprovalState.APPROVED ? 1 : 0, showConfirm: true }))
+    if (approval !== ApprovalState.APPROVED) {
+      await approveCallback()
+    }
     swapCallback()
-      .then((hash) => {
-        setSwapState({ attemptingTxn: false, tradeToConfirm, showConfirm, swapErrorMessage: undefined, txHash: hash })
+      .then(() => {
+        toast('SWAP COMPLETED!')
       })
       .catch((error) => {
-        setSwapState({
-          attemptingTxn: false,
-          tradeToConfirm,
-          showConfirm,
-          swapErrorMessage: error.message,
-          txHash: undefined,
-        })
+        toast.error(error.message)
       })
-  }, [tradeToConfirm, priceImpactWithoutFee, showConfirm, swapCallback])
-
-  // warnings on slippage
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
-
-  // show approve flow when: no error on inputs, not approved or pending, or approved in current session
-  // never show if price impact is above threshold in non expert mode
-  const showApproveFlow =
-    !swapInputError &&
-    (approval === ApprovalState.NOT_APPROVED ||
-      approval === ApprovalState.PENDING ||
-      (approvalSubmitted && approval === ApprovalState.APPROVED)) &&
-    !(priceImpactSeverity > 3)
+      .finally(() => {
+        setSwapState((prev) => ({ ...prev, activeStep: 0, showConfirm: false }))
+      })
+  }, [approval, approveCallback, priceImpactWithoutFee, swapCallback])
 
   const handleConfirmDismiss = useCallback(() => {
-    setSwapState({ showConfirm: false, tradeToConfirm, attemptingTxn, swapErrorMessage, txHash })
-    // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onUserInput(Field.INPUT, '')
-    }
-  }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash])
-
-  const handleAcceptChanges = useCallback(() => {
-    setSwapState({ tradeToConfirm: trade, swapErrorMessage, txHash, attemptingTxn, showConfirm })
-  }, [attemptingTxn, showConfirm, swapErrorMessage, trade, txHash])
+    setSwapState((prev) => ({ ...prev, showCompleted: false, showConfirm: false, activeStep: 0 }))
+    onUserInput(Field.INPUT, '')
+  }, [onUserInput])
 
   const handleInputSelect = useCallback(
     (inputCurrency: Currency) => {
-      setApprovalSubmitted(false) // reset 2 step UI for approvals
       onCurrencySelection(Field.INPUT, inputCurrency)
     },
     [onCurrencySelection],
@@ -218,24 +186,16 @@ export default function Swap() {
     [onCurrencySelection],
   )
 
-  const disabled = !isValid || priceImpactSeverity > 3 || !!swapCallbackError
-
   return (
     <div className={'flex flex-col items-center'}>
-      <ConfirmSwapModal
-        isOpen={showConfirm}
-        trade={trade}
-        originalTrade={tradeToConfirm}
-        onAcceptChanges={handleAcceptChanges}
-        attemptingTxn={attemptingTxn}
-        txHash={txHash}
-        recipient={recipient}
-        allowedSlippage={allowedSlippage}
-        onConfirm={handleSwap}
-        swapErrorMessage={swapErrorMessage}
-        onDismiss={handleConfirmDismiss}
-      />
-
+      {trade && (
+        <ConfirmSwapModal
+          activeStep={activeStep}
+          isOpen={showConfirm}
+          trade={trade}
+          onOpenChange={handleConfirmDismiss}
+        />
+      )}
       <div
         className={'flex w-full relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
         style={{
@@ -260,7 +220,6 @@ export default function Swap() {
         <Button
           aria-label={'Switch'}
           onPress={() => {
-            setApprovalSubmitted(false) // reset 2 step UI for approvals
             onSwitchTokens()
           }}
           className={
@@ -309,57 +268,25 @@ export default function Swap() {
               {wrapInputError ?? (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
             </ButtonYellowLight>
           ) : noRoute && userHasSpecifiedInputOutput ? (
-            <p>Insufficient liquidity for this trade.</p>
-          ) : showApproveFlow ? (
-            <div className={'flex justify-between gap-4'}>
-              <ButtonYellow
-                onPress={approveCallback}
-                isDisabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
-                className={'flex-1'}
-                // altDisabledStyle={approval === ApprovalState.PENDING} // show solid button while waiting
-                // confirmed={approval === ApprovalState.APPROVED}
-              >
-                {approval === ApprovalState.PENDING ? (
-                  <AutoRow gap="6px" justify="center">
-                    Approving <Loader stroke="white" />
-                  </AutoRow>
-                ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
-                  'Approved'
-                ) : (
-                  'Approve ' + currencies[Field.INPUT]?.symbol
-                )}
-              </ButtonYellow>
-              <ButtonYellow
-                className={'flex-1'}
-                onPress={handleSwap}
-                isDisabled={!isValid || approval !== ApprovalState.APPROVED || priceImpactSeverity > 3}
-                // error={isValid && priceImpactSeverity > 2}
-              >
-                {priceImpactSeverity > 3 ? `Price Impact High` : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
-              </ButtonYellow>
-            </div>
+            <p className={'text-[#FF2323] p-2 border border-[#FF2323] rounded-sm text-center'}>
+              Insufficient liquidity for this trade.
+            </p>
           ) : (
             <ButtonYellow
+              isError={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
               className={'w-full max-w-[240px]'}
-              onPress={() => {
-                setSwapState({
-                  tradeToConfirm: trade,
-                  attemptingTxn: false,
-                  swapErrorMessage: undefined,
-                  showConfirm: true,
-                  txHash: undefined,
-                })
-              }}
-              isDisabled={disabled}
+              onPress={handleSwap}
+              isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
             >
               {swapInputError
                 ? swapInputError
-                : priceImpactSeverity > 3
-                  ? `Price Impact Too High`
-                  : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
+                : swapCallbackError
+                  ? swapCallbackError
+                  : priceImpactSeverity > 3
+                    ? `Price Impact Too High`
+                    : `Confirm`}
             </ButtonYellow>
           )}
-          {showApproveFlow && <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />}
         </div>
       </div>
     </div>

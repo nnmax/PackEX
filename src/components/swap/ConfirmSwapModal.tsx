@@ -1,109 +1,51 @@
-import { currencyEquals, Trade } from '@nnmax/uniswap-sdk-v2'
-import { useCallback, useMemo } from 'react'
-import TransactionConfirmationModal, {
-  ConfirmationModalContent,
-  TransactionErrorContent,
-} from '../TransactionConfirmationModal'
-import SwapModalFooter from './SwapModalFooter'
-import SwapModalHeader from './SwapModalHeader'
-
-/**
- * Returns true if the trade requires a confirmation of details before we can submit it
- * @param tradeA trade A
- * @param tradeB trade B
- */
-function tradeMeaningfullyDiffers(tradeA: Trade, tradeB: Trade): boolean {
-  return (
-    tradeA.tradeType !== tradeB.tradeType ||
-    !currencyEquals(tradeA.inputAmount.currency, tradeB.inputAmount.currency) ||
-    !tradeA.inputAmount.equalTo(tradeB.inputAmount) ||
-    !currencyEquals(tradeA.outputAmount.currency, tradeB.outputAmount.currency) ||
-    !tradeA.outputAmount.equalTo(tradeB.outputAmount)
-  )
-}
+import { Trade } from '@nnmax/uniswap-sdk-v2'
+import AriaModal from '@/components/AriaModal'
+import { Heading } from 'react-aria-components'
+import CurrencyLogo from '@/components/CurrencyLogo'
+import Steps from '@/components/Steps'
 
 export default function ConfirmSwapModal({
   trade,
-  originalTrade,
-  onAcceptChanges,
-  allowedSlippage,
-  onConfirm,
-  onDismiss,
-  recipient,
-  swapErrorMessage,
+  onOpenChange,
   isOpen,
-  attemptingTxn,
-  txHash,
+  activeStep,
 }: {
   isOpen: boolean
-  trade: Trade | undefined
-  originalTrade: Trade | undefined
-  attemptingTxn: boolean
-  txHash: string | undefined
-  recipient: string | null
-  allowedSlippage: number
-  onAcceptChanges: () => void
-  onConfirm: () => void
-  swapErrorMessage: string | undefined
-  onDismiss: () => void
+  trade: Trade
+  onOpenChange: () => void
+  activeStep: number
 }) {
-  const showAcceptChanges = useMemo(
-    () => Boolean(trade && originalTrade && tradeMeaningfullyDiffers(trade, originalTrade)),
-    [originalTrade, trade],
-  )
-
-  const modalHeader = useCallback(() => {
-    return trade ? (
-      <SwapModalHeader
-        trade={trade}
-        allowedSlippage={allowedSlippage}
-        recipient={recipient}
-        showAcceptChanges={showAcceptChanges}
-        onAcceptChanges={onAcceptChanges}
-      />
-    ) : null
-  }, [allowedSlippage, onAcceptChanges, recipient, showAcceptChanges, trade])
-
-  const modalBottom = useCallback(() => {
-    return trade ? (
-      <SwapModalFooter
-        onConfirm={onConfirm}
-        trade={trade}
-        disabledConfirm={showAcceptChanges}
-        swapErrorMessage={swapErrorMessage}
-        allowedSlippage={allowedSlippage}
-      />
-    ) : null
-  }, [allowedSlippage, onConfirm, showAcceptChanges, swapErrorMessage, trade])
-
-  // text to show while loading
-  const pendingText = `Swapping ${trade?.inputAmount?.toSignificant(6)} ${
-    trade?.inputAmount?.currency?.symbol
-  } for ${trade?.outputAmount?.toSignificant(6)} ${trade?.outputAmount?.currency?.symbol}`
-
-  const confirmationContent = useCallback(
-    () =>
-      swapErrorMessage ? (
-        <TransactionErrorContent onDismiss={onDismiss} message={swapErrorMessage} />
-      ) : (
-        <ConfirmationModalContent
-          title="Confirm Swap"
-          onDismiss={onDismiss}
-          topContent={modalHeader}
-          bottomContent={modalBottom}
-        />
-      ),
-    [onDismiss, modalBottom, modalHeader, swapErrorMessage],
-  )
-
   return (
-    <TransactionConfirmationModal
-      isOpen={isOpen}
-      onDismiss={onDismiss}
-      attemptingTxn={attemptingTxn}
-      hash={txHash}
-      content={confirmationContent}
-      pendingText={pendingText}
-    />
+    <AriaModal isOpen={isOpen} onOpenChange={onOpenChange}>
+      <div className={'flex justify-center mb-4'}>
+        <span className={'loading'} />
+      </div>
+      <Heading slot={'title'} className={'text-sm'}>
+        {'PREVIEW SWAP'}
+      </Heading>
+      <hr className={'mb-6 mt-1.5 h-px w-full border-none bg-[#6A6A6A]'} />
+      <dl className={'flex flex-col gap-8'}>
+        <div>
+          <dt className={'mb-4 text-xs text-[#9E9E9E]'}>{'YOU PAY'}</dt>
+          <dd className={'flex items-center justify-between'}>
+            <span
+              className={'text-base'}
+            >{`${trade.inputAmount.toSignificant(6)} ${trade.inputAmount.currency.symbol}`}</span>
+            <CurrencyLogo currency={trade.inputAmount.currency} size={'20px'} />
+          </dd>
+        </div>
+        <div>
+          <dt className={'mb-4 text-xs text-[#9E9E9E]'}>{'YOU RECEIVE'}</dt>
+          <dd className={'flex items-center justify-between'}>
+            <span
+              className={'text-base'}
+            >{`${trade.inputAmount.toSignificant(6)} ${trade.inputAmount.currency.symbol}`}</span>
+            <CurrencyLogo currency={trade.outputAmount.currency} size={'20px'} />
+          </dd>
+        </div>
+      </dl>
+      <hr className={'mb-4 mt-6 h-px w-full border-none bg-[#6A6A6A]'} />
+      <Steps steps={['APPROVE OLE SPENDING', 'CONFIRM SWAP IN WALLET']} activeStep={activeStep} />
+    </AriaModal>
   )
 }

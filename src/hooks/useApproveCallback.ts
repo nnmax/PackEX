@@ -11,6 +11,7 @@ import { computeSlippageAdjustedAmounts } from '../utils/prices'
 import { calculateGasMargin } from '../utils'
 import { useTokenContract } from './useContract'
 import { useActiveWeb3React } from './index'
+import { toast } from 'react-toastify'
 
 export enum ApprovalState {
   UNKNOWN,
@@ -51,7 +52,7 @@ export function useApproveCallback(
   const getGas = useCallback(
     async function getGas() {
       if (approvalState !== ApprovalState.NOT_APPROVED) {
-        console.error('approve was called unnecessarily')
+        // console.error('approve was called unnecessarily')
         return
       }
       if (!token) {
@@ -109,7 +110,7 @@ export function useApproveCallback(
         })
       })
       .catch((error: Error) => {
-        console.debug('Failed to approve token', error)
+        toast.error('Failed to approve token')
         throw error
       })
   }, [addTransaction, amountToApprove, getGas, spender, token, tokenContract])

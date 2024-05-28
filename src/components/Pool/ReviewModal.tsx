@@ -1,7 +1,7 @@
 import AriaModal from '@/components/AriaModal'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import DoubleCurrencyLogo from '@/components/DoubleLogo'
-import Steps from '@/components/Pool/Steps'
+import Steps from '@/components/Steps'
 import { ApprovalState } from '@/hooks/useApproveCallback'
 import { Field } from '@/state/mint/actions'
 import { Currency, CurrencyAmount, Fraction, Percent, TokenAmount } from '@nnmax/uniswap-sdk-v2'

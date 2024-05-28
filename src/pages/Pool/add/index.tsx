@@ -146,6 +146,10 @@ export default function PoolAdd() {
     }
 
     await estimate(...args, value ? { value } : {})
+      .catch((err) => {
+        console.dir(err)
+        return BigNumber.from(500000)
+      })
       .then((estimatedGasLimit) =>
         method(...args, {
           ...(value ? { value } : {}),
@@ -196,7 +200,10 @@ export default function PoolAdd() {
     setTxHash('')
   }, [onFieldAInput, txHash])
 
+  const [submitting, setSubmitting] = useState(false)
+
   const handleConfirm = useCallback(async () => {
+    setSubmitting(true)
     try {
       if (approvalA !== ApprovalState.APPROVED) {
         await approveACallback()
@@ -209,8 +216,10 @@ export default function PoolAdd() {
       await onAdd()
       toast.success('Transaction submitted')
     } catch (error) {
-      console.error(error)
+      console.dir(error)
       toast.error(isString(error) ? error : (error as any).message ?? 'An unknown error occurred. Please try again.')
+    } finally {
+      setSubmitting(false)
     }
   }, [approvalA, approvalB, approveACallback, approveBCallback, onAdd])
 
@@ -317,7 +326,7 @@ export default function PoolAdd() {
                 {account ? (
                   isValid ? (
                     <ButtonYellow onPress={handleConfirm} className={'w-full max-w-[240px]'}>
-                      {'Confirm'}
+                      {submitting ? <span className={'loading loading-dots'} /> : 'Confirm'}
                     </ButtonYellow>
                   ) : (
                     <ButtonYellowLight className={'w-full max-w-[240px]'} isDisabled>

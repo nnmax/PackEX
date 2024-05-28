@@ -305,6 +305,10 @@ export function ButtonRadio({ active, ...rest }: { active?: boolean } & ButtonPr
   }
 }
 
+interface AriaButtonPropsWithError extends AriaButtonProps {
+  isError?: boolean
+}
+
 const BaseButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function BaseButtonYellow(props, ref) {
   const { className, ...restProps } = props
 
@@ -317,23 +321,29 @@ const BaseButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function
   )
 })
 
-export const ButtonYellowLight = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
-  const { className, ...restProps } = props
+export const ButtonYellowLight = forwardRef<HTMLButtonElement, AriaButtonPropsWithError>(
+  function ButtonYellow(props, ref) {
+    const { className, isError, ...restProps } = props
 
-  return (
-    <BaseButtonYellow
-      {...restProps}
-      ref={ref}
-      className={clsx(className, 'text-lemonYellow border border-lemonYellow')}
-    />
-  )
-})
+    return (
+      <BaseButtonYellow
+        {...restProps}
+        ref={ref}
+        className={clsx(
+          className,
+          isError ? 'text-[#FF2323] border-[#FF2323]' : 'text-lemonYellow border-lemonYellow',
+          'border',
+        )}
+      />
+    )
+  },
+)
 
-export const ButtonYellow = forwardRef<HTMLButtonElement, AriaButtonProps>(function ButtonYellow(props, ref) {
-  const { className, isDisabled, ...restProps } = props
+export const ButtonYellow = forwardRef<HTMLButtonElement, AriaButtonPropsWithError>(function ButtonYellow(props, ref) {
+  const { className, isDisabled, isError, ...restProps } = props
 
-  if (isDisabled) {
-    return <ButtonYellowLight isDisabled className={className} {...restProps} ref={ref} />
+  if (isDisabled || isError) {
+    return <ButtonYellowLight isDisabled isError={isError} className={className} {...restProps} ref={ref} />
   }
 
   return <BaseButtonYellow {...restProps} ref={ref} className={clsx(className, 'bg-lemonYellow text-[#020202]')} />
