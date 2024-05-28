@@ -30,7 +30,7 @@ export default function FormCard(props: {
 }) {
   const { onSubmit, loading, type, showConnectWalletButton, onWalletToggle } = props
 
-  const [amount, setAmount] = useState<number>(0)
+  const [amount, setAmount] = useState(NaN)
 
   const { search } = useLocation()
   const data = QueryString.parse(search, {
