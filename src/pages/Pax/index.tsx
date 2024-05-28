@@ -88,10 +88,10 @@ export default function PaxPage() {
       <section className={'flex flex-col gap-6'}>
         <h2 className={'text-[30px]'}>WHAT IS $PAX</h2>
         <p className={'leading-8'}>
-          $PAX is the only token of PackEX Protocol, there is no solid maximum supply, but there is Burning-Economics to
-          balance the total supply. We uphold the spirit of blockchain and follow the principle of fair launch. 14,400
-          tokens will be mined in the first 30 days, then the number of tokens that will be mined per day in the next 30
-          days is halved, and so on. When the number of tokens mined per day reaches 60, it will remain unchanged.
+          $PAX is the only token of PackEX Protocol, there is no solid maximum supply, but we have burning-economics to
+          balance the total supply. We uphold the spirit of blockchain and follow the principles of fair launch. 14,400
+          tokens will be mined in the first 30 days, then the number of tokens mined per day in the next 30 days will be
+          halved, and so on. When the number of tokens mined per day reaches 60, it will not be changed.
         </p>
         <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
           <span className={'text-lemonYellow mr-2'}>Contract: </span>
