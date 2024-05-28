@@ -80,7 +80,7 @@ export default function CurrencyInputPanel({
       )}
       <div className={'flex justify-between gap-1'}>
         <NumberField
-          value={Number(value)}
+          value={value === '' || value === null || value === undefined ? NaN : Number(value)}
           minValue={0}
           isDisabled={!currency}
           onChange={(changedValue) => onUserInput(changedValue.toString())}
