@@ -47,7 +47,7 @@ const DataTable = (props: DataTableProps) => {
               <PnL value={item.changeToday} />
             </Cell>
             <Cell>
-              <div className={'flex items-center justify-center gap-10'}>
+              <div className={'flex items-center gap-10'}>
                 {item.swapFlag === 1 ? (
                   <Link
                     to={`/swap?inputCurrency=${item.tokenContract}&outputCurrency=${process.env.REACT_APP_USDB_ADDRESS}`}
