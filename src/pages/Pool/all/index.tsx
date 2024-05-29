@@ -81,7 +81,9 @@ const PoolAll = () => {
               <Cell>
                 <Link
                   to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
-                  className={'text-lemonYellow inline-block w-[60px] h-6 border rounded-sm border-lemonYellow'}
+                  className={
+                    'text-lemonYellow inline-block w-[60px] h-6 leading-5 border rounded-sm border-lemonYellow'
+                  }
                 >
                   {'+ADD'}
                 </Link>
