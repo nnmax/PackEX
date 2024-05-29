@@ -2,7 +2,6 @@ import { enterInvitationCode } from '@/api'
 import { PaxRewardRatio, PaxTableData, useFetchPaxInfo } from '@/api/get-pax-info'
 import { useFetchPaxInvite } from '@/api/get-pax-invite'
 import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
-import DoubleCurrencyLogo from '@/components/DoubleLogo'
 import OTP from '@/components/OTPInput'
 import { useActiveWeb3React } from '@/hooks'
 import copy from 'copy-to-clipboard'
@@ -14,10 +13,10 @@ import clsx from 'clsx'
 import { last } from 'lodash-es'
 import { forwardRef, useState } from 'react'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
-import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
 import Tooltip from '@/components/Tooltip'
+import Clock from '@/components/Icons/Clock'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
@@ -52,13 +51,6 @@ export default function PaxPage() {
       })
   }
 
-  const handleAdd = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    if (!userInfo) {
-      event.preventDefault()
-      toggleWalletModal()
-    }
-  }
-
   const handleCopy = () => {
     if (!userInfo || !userInfo.invitationCode) return
     const copied = copy(userInfo.invitationCode.toString())
@@ -77,13 +69,11 @@ export default function PaxPage() {
         '--padding-right': `${boxTwoWidth / 2 + 37}px`,
       }}
     >
-      <section className={'flex flex-col gap-6'}>
-        <h2 className={'text-[30px]'}>WHAT IS $PAX</h2>
-        <p className={'leading-8'}>
-          $PAX is the only token of PackEX Protocol, there is no solid maximum supply, but we have burning-economics to
-          balance the total supply. We uphold the spirit of blockchain and follow the principles of fair launch. 14,400
-          tokens will be mined in the first 30 days, then the number of tokens mined per day in the next 30 days will be
-          halved, and so on. When the number of tokens mined per day reaches 60, it will not be changed.
+      <Section>
+        <H2>WHAT IS $PAX</H2>
+        <p className={'leading-8 mb-10'}>
+          $PAX is the only token of PackEX Protocol, it's non- transferable and it's the only proof of profit-sharing
+          from PackEX Protocol. It has no pre-sale, no solid maximum supply, 100 $PAX will be launched every day.
         </p>
         <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
           <span className={'text-lemonYellow mr-2'}>Contract: </span>
@@ -100,11 +90,11 @@ export default function PaxPage() {
             +ADD $PAX TO YOUR WALLET
           </ButtonYellow>
         </div>
-      </section>
+      </Section>
 
-      <section className={'flex flex-col gap-6'}>
-        <h2 className={'text-[30px]'}>HOW TO MINT $PAX</h2>
-        <p className={'leading-8'}>
+      <Section>
+        <H2>HOW TO MINT $PAX</H2>
+        <p className={'leading-8 mb-6'}>
           There're 4 different ways to mint $PAX (as there are more features on PackEX Protocol in the future, you will
           have more ways to mint $PAX):
         </p>
@@ -114,45 +104,27 @@ export default function PaxPage() {
           <li>3. Hold higher-value migrated assets</li>
           <li>4. Invite more users who can mint more $PAX</li>
         </ul>
-        <h3 className={'text-lemonYellow text-[22px]'}>Note:</h3>
-        <p className={'leading-8'}>
-          We encourage using $PAX more to contribute to PackEX rather than leaving it idle, so as long as the $PAX
-          balance of any non-contract address exceeds the value of $1,000, it will be burned 1/1000 by the contract
-          automatically at 0:00 UTC everyday.
-        </p>
-      </section>
+      </Section>
 
-      <section className={'flex flex-col gap-6'}>
-        <h2 className={'text-[30px]'}>The rewards of providing liquidity for $PAX:</h2>
+      <Section>
+        <H2>THE REWARDS FOR $PAX HOLDERS:</H2>
         <ul className={'leading-8'}>
           <li>1. Points, Gold and Blast tokens received from Blast network</li>
-          <li>2. All the native yields for ETH and USDB that are belongs to PackEX</li>
-          <li>3. Fees earned in all liquidity pools</li>
-          <li>4. New $PAX to be distributed</li>
+          <li>2. Gas fee earned from Blast network </li>
+          <li>3. All the native yields for ETH and USDB that are belongs to PackEX</li>
+          <li>4. Fees earned in all liquidity pools</li>
+          <li>5. Withdrawal fees earned from users (minus the portion spent)</li>
         </ul>
-        <p className={'leading-8'}>
-          Since the team has distributed all profits from the PackEX Protocol to the users providing liquidity to $PAX
-          and has not reserved or sold any tokens in advance, 1% of $PAX mined in each block will be allocated to the
-          team in order to keep it on track.
+        <p className={'leading-8 mt-6'}>
+          Since the team has distributed all profits from PackEX Protocol to the $PAX holders and has not reserved or
+          sold any tokens in advance, 5% of $PAX mined in each block will be allocated to the team in order to keep it
+          on track.
         </p>
-        <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
-          <DoubleCurrencyLogo />
-          <span>PAX / USDB</span>
-          <Link
-            to={`/pool/add/${infoData?.paxContract}/${process.env.REACT_APP_USDB_ADDRESS}`}
-            onClick={handleAdd}
-            className={
-              'ml-7 w-[180px] bg-lemonYellow text-[#020202] flex h-9 px-2 items-center justify-center self-center rounded-md text-xs'
-            }
-          >
-            +ADD LIQUIDITY
-          </Link>
-        </div>
-      </section>
+      </Section>
 
-      <section className={'flex flex-col gap-6'}>
-        <h2 className={'text-[30px]'}>$PAX MINTED</h2>
-        <div className={'flex justify-center -mb-4'}>
+      <Section>
+        <H2>$PAX MINTED</H2>
+        <div className={'flex justify-center mb-2'}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -183,7 +155,7 @@ export default function PaxPage() {
             </text>
           </svg>
         </div>
-        <div aria-hidden className={'w-full mb-[23px] pl-[--padding-left] pr-[--padding-right]'}>
+        <div aria-hidden className={'w-full mb-[47px] pl-[--padding-left] pr-[--padding-right]'}>
           <div aria-hidden className={'border-t-4 border-lemonYellow w-full'} />
         </div>
         <div className={'flex justify-between px-5'}>
@@ -211,10 +183,13 @@ export default function PaxPage() {
                 <span className={'text-[#9E9E9E]'}>{infoData?.totalMinted ?? 0}</span>
               </p>
               <p className={'flex gap-6 mt-8'}>
-                <span className={'w-[140px]'}>Unclaim</span>
+                <span className={'w-[140px]'}>UNCLAIMED</span>
                 <span className={'text-[#9E9E9E]'}>{infoData?.unclaimed ?? 0}</span>
               </p>
-              <ButtonYellow className={'w-20 mt-6 ml-[164px]'}>Claim</ButtonYellow>
+              <p className="flex gap-3 items-center text-xs mt-8 text-white">
+                <Clock className={'text-2xl'} />
+                The $PAX minted will be claimed automatically at 0:00 UTC every day.
+              </p>
             </div>
           </div>
           <div className={'w-80 ml-6 flex flex-col'}>
@@ -225,7 +200,7 @@ export default function PaxPage() {
             </p>
           </div>
         </div>
-        <div className={'flex gap-5'}>
+        <div className={'flex gap-5 mt-[60px]'}>
           <div className={'border flex-1 border-lemonYellow rounded py-8 px-4 overflow-hidden'}>
             <h3 className={'text-lemonYellow'} id={'leaderboard-id'}>
               Leaderboard
@@ -251,7 +226,7 @@ export default function PaxPage() {
             <MyTable data={inviteData?.invite ?? []} />
           </div>
         </div>
-      </section>
+      </Section>
     </div>
   )
 }
@@ -403,3 +378,19 @@ const SocialBox = forwardRef<
     </div>
   )
 })
+
+function Section({ children }: { children: React.ReactNode }) {
+  return <section className={'flex flex-col'}>{children}</section>
+}
+
+function H2({ children }: { children: React.ReactNode }) {
+  return (
+    <h2
+      className={
+        'text-[30px] mb-[52px] relative before:absolute before:h-1 before:w-20 before:bg-lemonYellow before:left-0 before:top-full before:translate-y-4'
+      }
+    >
+      {children}
+    </h2>
+  )
+}
