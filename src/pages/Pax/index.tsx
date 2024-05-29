@@ -171,7 +171,7 @@ export default function PaxPage() {
               )
                 .filter((_, index, array) => index !== array.length - 1)
                 .map((item, index) => (
-                  <div key={index} className={boxClasses} data-ratio={item.ratio} ref={boxOneRef}>
+                  <div key={index} className={boxClasses} ref={boxOneRef}>
                     <span className={'text-xs mt-4'}>{item.name}</span>
                     <span className={'text-lemonYellow mt-8'}>[ {item.amount} ]</span>
                   </div>
@@ -233,16 +233,12 @@ export default function PaxPage() {
 
 const inputClasses = 'border border-lemonYellow rounded h-9 w-9 text-center bg-transparent'
 const verticalLineClasses = clsx`
-  before:content-[attr(data-ratio)]
   before:absolute
   before:left-1/2
   before:-top-2
   before:-translate-y-full
   before:h-10
   before:px-2
-  before:text-sm
-  before:text-lemonYellow
-  before:leading-10
   before:border-l-4
 before:border-lemonYellow
 `
@@ -256,7 +252,6 @@ function MyTable(props: { data: PaxTableData[] }) {
 
   return (
     <div className={'h-[600px] overflow-y-auto'}>
-      {/* <ResizableTableContainer> */}
       <Table aria-labelledby={'invite-id'} className={'text-center w-full mt-6 [&_th]:px-4 [&_td]:px-4'}>
         <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
           <Column>RANK</Column>
@@ -277,7 +272,6 @@ function MyTable(props: { data: PaxTableData[] }) {
           )}
         </TableBody>
       </Table>
-      {/* </ResizableTableContainer> */}
     </div>
   )
 }
@@ -336,7 +330,6 @@ const SocialBox = forwardRef<
 
   return (
     <div
-      data-ratio={'1/6'}
       ref={ref}
       className={clsx(
         verticalLineClasses,

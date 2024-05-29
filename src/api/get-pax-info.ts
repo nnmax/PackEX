@@ -11,7 +11,6 @@ export type PaxTableData = {
 
 export type PaxRewardRatio = {
   name: string
-  ratio: string
   amount: number
 }
 
