@@ -6,6 +6,7 @@ import Web3Status from '../Web3Status'
 import XLogo from '@/assets/images/X-logo.svg'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import { useUserInfo } from '@/state/user/hooks'
+import clsx from 'clsx'
 
 export default function AppBar() {
   const [userInfo] = useUserInfo()
@@ -35,6 +36,20 @@ export default function AppBar() {
           </LinkTab>
           <LinkTab to={'/asset'} onClick={handleClick}>
             {'Assets'}
+          </LinkTab>
+          <LinkTab
+            to={'#'}
+            aria-hidden
+            tabIndex={-1}
+            className={clsx(
+              'pointer-events-none flex justify-center',
+              'before:absolute before:top-4 before:w-max before:content-["Comeing_Soon"] before:text-[8px] before:text-[#9E9E9E]',
+            )}
+            onClick={(e) => {
+              e.preventDefault()
+            }}
+          >
+            {'Earn'}
           </LinkTab>
           <LinkTab to={'/pax'}>{'$PAX'}</LinkTab>
         </NavTabs>
