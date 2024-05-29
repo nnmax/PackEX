@@ -105,7 +105,8 @@
       "react/jsx-pascal-case": "off",
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off",
-      "react-compiler/react-compiler": "error"
+      "react-compiler/react-compiler": "error",
+      "react/jsx-key": "error"
     }
   },
   "browserslist": {

@@ -43,18 +43,16 @@ export function useWETHContract(withSignerIfPossible?: boolean): Contract | null
 
 export function useENSRegistrarContract(withSignerIfPossible?: boolean): Contract | null {
   // const { chainId } = useActiveWeb3React()
-  let address: string | undefined
+  // let address: string | undefined
   // if (chainId) {
   //   switch (chainId) {
-  //     case ChainId.MAINNET:
-  //     case ChainId.GÖRLI:
-  //     case ChainId.ROPSTEN:
-  //     case ChainId.RINKEBY:
+  //     case ChainId.BLAST:
+  //     case ChainId.BLAST_TESTNET:
   //       address = '0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e'
   //       break
   //   }
   // }
-  return useContract(address, ENS_ABI, withSignerIfPossible)
+  return useContract('0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e', ENS_ABI, withSignerIfPossible)
 }
 
 export function useENSResolverContract(address: string | undefined, withSignerIfPossible?: boolean): Contract | null {

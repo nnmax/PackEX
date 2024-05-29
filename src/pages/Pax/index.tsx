@@ -5,24 +5,19 @@ import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
 import DoubleCurrencyLogo from '@/components/DoubleLogo'
 import OTP from '@/components/OTPInput'
 import { useActiveWeb3React } from '@/hooks'
+import copy from 'copy-to-clipboard'
+import useENS from '@/hooks/useENS'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import { useUserInfo } from '@/state/user/hooks'
+import { shortenAddress } from '@/utils'
 import clsx from 'clsx'
 import { last } from 'lodash-es'
 import { forwardRef, useState } from 'react'
-import {
-  Button,
-  Cell,
-  Column,
-  ResizableTableContainer,
-  Row,
-  Table,
-  TableBody,
-  TableHeader,
-} from 'react-aria-components'
+import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
+import Tooltip from '@/components/Tooltip'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
@@ -66,15 +61,12 @@ export default function PaxPage() {
 
   const handleCopy = () => {
     if (!userInfo || !userInfo.invitationCode) return
-
-    navigator.clipboard
-      .writeText(userInfo.invitationCode.toString())
-      .then(() => {
-        toast.success('Copied!')
-      })
-      .catch(() => {
-        toast.error('Failed to copy!')
-      })
+    const copied = copy(userInfo.invitationCode.toString())
+    if (copied) {
+      toast.success('Copied!')
+    } else {
+      toast.error('Failed to copy!')
+    }
   }
 
   return (
@@ -206,8 +198,8 @@ export default function PaxPage() {
                 }))
               )
                 .filter((_, index, array) => index !== array.length - 1)
-                .map((item) => (
-                  <div className={boxClasses} data-ratio={item.ratio} ref={boxOneRef}>
+                .map((item, index) => (
+                  <div key={index} className={boxClasses} data-ratio={item.ratio} ref={boxOneRef}>
                     <span className={'text-xs mt-4'}>{item.name}</span>
                     <span className={'text-lemonYellow mt-8'}>[ {item.amount} ]</span>
                   </div>
@@ -289,34 +281,51 @@ function MyTable(props: { data: PaxTableData[] }) {
 
   return (
     <div className={'h-[600px] overflow-y-auto'}>
-      <ResizableTableContainer>
-        <Table aria-labelledby={'invite-id'} className={'text-center w-full mt-6 [&_th]:px-4 [&_td]:px-4'}>
-          <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
-            <Column width="10%">RANK</Column>
-            <Column isRowHeader width="60%">
-              NAME
-            </Column>
-            <Column width="30%">$PAX</Column>
-          </TableHeader>
-          <TableBody
-            items={data}
-            renderEmptyState={() => <p className={'mt-36 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}
-          >
-            {(item) => (
-              <Row id={item.rank} className={'h-[60px]'}>
-                <Cell>{item.rank}</Cell>
-                <Cell className="truncate">
-                  <span title={item.address}>{item.address}</span>
-                </Cell>
-                <Cell className="truncate">
-                  <span title={item.totalAmount.toString()}>{item.totalAmount}</span>
-                </Cell>
-              </Row>
-            )}
-          </TableBody>
-        </Table>
-      </ResizableTableContainer>
+      {/* <ResizableTableContainer> */}
+      <Table aria-labelledby={'invite-id'} className={'text-center w-full mt-6 [&_th]:px-4 [&_td]:px-4'}>
+        <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
+          <Column>RANK</Column>
+          <Column isRowHeader>NAME</Column>
+          <Column>$PAX</Column>
+        </TableHeader>
+        <TableBody items={data} renderEmptyState={() => <p className={'mt-36 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}>
+          {(item) => (
+            <Row id={item.rank} className={'h-[60px]'}>
+              <Cell>{item.rank}</Cell>
+              <Cell>
+                <ShortenAddressOrENSName address={item.address} />
+              </Cell>
+              <Cell>
+                <span title={item.totalAmount.toString()}>{item.totalAmount}</span>
+              </Cell>
+            </Row>
+          )}
+        </TableBody>
+      </Table>
+      {/* </ResizableTableContainer> */}
     </div>
+  )
+}
+
+function ShortenAddressOrENSName(props: { address: string }) {
+  const { address } = props
+  const { name } = useENS(address)
+  if (name) return <span>{name}</span>
+  return (
+    <Tooltip title={address}>
+      <Button
+        className={'cursor-copy'}
+        onPress={() => {
+          if (copy(address)) {
+            toast.success('Copied!')
+          } else {
+            toast.error('Failed to copy!')
+          }
+        }}
+      >
+        {shortenAddress(address)}
+      </Button>
+    </Tooltip>
   )
 }
 
