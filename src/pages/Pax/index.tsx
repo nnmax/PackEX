@@ -70,7 +70,7 @@ export default function PaxPage() {
       }}
     >
       <Section>
-        <H2>WHAT IS $PAX</H2>
+        <H2>WHAT IS $PAX?</H2>
         <p className={'leading-8 mb-10'}>
           $PAX is the only token of PackEX Protocol, it's non- transferable and it's the only proof of profit-sharing
           from PackEX Protocol. It has no pre-sale, no solid maximum supply, 100 $PAX will be launched every day.
@@ -93,7 +93,7 @@ export default function PaxPage() {
       </Section>
 
       <Section>
-        <H2>HOW TO MINT $PAX</H2>
+        <H2>HOW TO MINT $PAX?</H2>
         <p className={'leading-8 mb-6'}>
           There're 4 different ways to mint $PAX (as there are more features on PackEX Protocol in the future, you will
           have more ways to mint $PAX):
