@@ -57,10 +57,10 @@ const PoolMy = () => {
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
-        <TableBody items={poolMyList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody items={poolMyList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>
           {(item) => (
             <Fragment key={item.id}>
-              <Row id={item.id} className={'[&>td]:px-3'}>
+              <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>
                 <Cell>
                   <div className={'flex justify-center'}>
                     <div className={'relative flex items-center'}>

@@ -24,9 +24,9 @@ const DataTable = (props: DataTableProps) => {
         <Column>{'CHANGE (TODAY)'}</Column>
         <Column> </Column>
       </TableHeader>
-      <TableBody items={assetsList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+      <TableBody items={assetsList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>
         {(item) => (
-          <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:max-w-[100px]'}>
+          <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
             <Cell>
               <div className={'flex items-center gap-4'}>
                 {/* <TokenLogo /> */}
@@ -47,7 +47,7 @@ const DataTable = (props: DataTableProps) => {
               <PnL value={item.changeToday} />
             </Cell>
             <Cell>
-              <div className={'flex items-center gap-10'}>
+              <div className={'flex items-center justify-start gap-10'}>
                 {item.swapFlag === 1 ? (
                   <Link
                     to={`/swap?inputCurrency=${item.tokenContract}&outputCurrency=${process.env.REACT_APP_USDB_ADDRESS}`}

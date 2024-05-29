@@ -60,9 +60,9 @@ const PoolAll = () => {
           <Column>{'APY'}</Column>
           <Column>{'ACTION'}</Column>
         </TableHeader>
-        <TableBody items={poolAllList} className={'[&>tr]:h-14 [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody items={poolAllList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>
           {(item) => (
-            <Row id={item.id} className={'[&>td]:px-3'}>
+            <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>
               <Cell>
                 <div className={'flex items-center justify-center'}>
                   <div className={'flex items-center relative'}>
@@ -81,9 +81,7 @@ const PoolAll = () => {
               <Cell>
                 <Link
                   to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
-                  className={
-                    'text-lemonYellow flex items-center justify-center w-[60px] h-6 border rounded-sm border-lemonYellow'
-                  }
+                  className={'text-lemonYellow inline-block w-[60px] h-6 border rounded-sm border-lemonYellow'}
                 >
                   {'+ADD'}
                 </Link>
