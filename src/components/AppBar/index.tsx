@@ -57,7 +57,9 @@ export default function AppBar() {
         <div className={'ml-auto flex items-center gap-6'}>
           <a
             href={'https://twitter.com/packex_io'}
+            target={'_blank'}
             className={'flex h-7 w-7 items-center justify-center rounded border border-white/50'}
+            rel="noreferrer"
           >
             <img src={XLogo} alt="" />
           </a>
