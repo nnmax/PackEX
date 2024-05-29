@@ -7,16 +7,10 @@ import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
 import Logo from '../Logo'
+import clsx from 'clsx'
 
 const getTokenLogoURL = (address: string) =>
   `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`
-
-const StyledEthereumLogo = styled.img<{ size: string }>`
-  width: ${({ size }) => size};
-  height: ${({ size }) => size};
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.075);
-  border-radius: 24px;
-`
 
 const StyledLogo = styled(Logo)<{ size: string }>`
   width: ${({ size }) => size};
@@ -52,11 +46,22 @@ export default function CurrencyLogo({
   }, [currency, uriLocations])
 
   if (src) {
-    return <img width={size} height={size} alt={''} style={style} className={className} />
+    return <img width={size} height={size} alt={''} style={style} className={clsx(className, 'rounded-full')} />
   }
 
   if (currency === ETHER) {
-    return <StyledEthereumLogo src={EthereumLogo} size={size} style={style} className={className} />
+    return (
+      <img
+        src={EthereumLogo}
+        style={{
+          width: size,
+          height: size,
+          ...style,
+        }}
+        alt={''}
+        className={clsx(className, 'shadow-[0px_6px_10px_rgba(0,0,0,0.075)] rounded-full')}
+      />
+    )
   }
 
   return (
@@ -65,7 +70,7 @@ export default function CurrencyLogo({
       srcs={srcs}
       alt={`${currency?.symbol ?? 'token'} logo`}
       style={style}
-      className={className}
+      className={clsx(className, 'rounded-full')}
     />
   )
 }

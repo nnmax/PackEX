@@ -19,13 +19,14 @@ import {
 } from '../../constants'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import Dialog from '@/components/Dialog'
 import { connectBTCWallet, connectWallet, disconnectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
 import okxLogo from '../../assets/images/okx.svg'
 import unisatLogo from '../../assets/images/unisat.svg'
 import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
 import { isString } from 'lodash-es'
+import AriaModal from '@/components/AriaModal'
+import { Heading } from 'react-aria-components'
 
 export default function WalletModal() {
   // important that these are destructed from the account-specific web3-react context
@@ -236,16 +237,18 @@ export function WalletModalWrapper(props: { open: boolean; onClose: () => void; 
   const { open, onClose, children } = props
 
   return (
-    <Dialog open={open} onClose={onClose} panelClassName={'!max-w-[432px] !px-4 !py-8'}>
-      <Dialog.Title className={'text-md mb-[18px] pl-4'}>{'Connect Wallet'}</Dialog.Title>
-      <Dialog.Description className={'pl-4 text-xs leading-5'}>
+    <AriaModal isOpen={open} onClose={onClose} padding="56px">
+      <Heading slot="title" className={'text-md mb-[18px] pl-4'}>
+        {'Connect Wallet'}
+      </Heading>
+      <p className={'pl-4 text-xs leading-5'}>
         {"Choose how you want to connect. lf you don't have a wallet, you can select a provider and create one."}
-      </Dialog.Description>
+      </p>
 
       <ul className={'mt-[22px]'} role={'menu'}>
         {children}
       </ul>
-    </Dialog>
+    </AriaModal>
   )
 }
 
