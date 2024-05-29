@@ -269,7 +269,7 @@ export default function Swap() {
             </ButtonYellowLight>
           ) : noRoute && userHasSpecifiedInputOutput ? (
             <p className={'text-[#FF2323] p-2 border border-[#FF2323] rounded-sm text-center'}>
-              Insufficient liquidity for this trade.
+              Insufficient liquidity
             </p>
           ) : (
             <ButtonYellow

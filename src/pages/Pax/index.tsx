@@ -117,10 +117,10 @@ export default function PaxPage() {
           have more ways to mint $PAX):
         </p>
         <ul className={'leading-8'}>
-          <li>1. Swap higher value on PackEX.</li>
-          <li>2. Liquidity added to the pools is traded at higher values.</li>
-          <li>3. Hold higher-value migrated assets.</li>
-          <li>4. Invite more users who can mint more $PAX.</li>
+          <li>1. Swap higher value on PackEX</li>
+          <li>2. Liquidity added to the pools is traded at higher values</li>
+          <li>3. Hold higher-value migrated assets</li>
+          <li>4. Invite more users who can mint more $PAX</li>
         </ul>
         <h3 className={'text-lemonYellow text-[22px]'}>Note:</h3>
         <p className={'leading-8'}>
