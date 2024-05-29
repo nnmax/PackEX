@@ -7,7 +7,6 @@ import ArrowDown from '@/components/Icons/ArrowDown'
 import { useActiveWeb3React } from '../../hooks'
 import clsx from 'clsx'
 import { Button, Input, Label, ListBox, ListBoxItem, NumberField, Text } from 'react-aria-components'
-import Dialog from '@/components/Dialog'
 import IconamoonSearchLight from '@/components/Icons/IconamoonSearchLight'
 import { FixedSizeList } from 'react-window'
 import { useAllTokens, useToken } from '@/hooks/Tokens'
@@ -17,6 +16,7 @@ import { useTokenComparator } from '@/components/SearchModal/sorting'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import { isSet } from 'lodash-es'
+import AriaModal from '@/components/AriaModal'
 
 const selectButtonClasses =
   'flex items-center min-w-32 self-end justify-between rounded-sm bg-[#0f0f0f] px-2 py-1 text-sm text-white relative before:absolute before:right-0 before:top-1/2 before:-translate-y-1/2 before:w-0.5 before:h-[18px] before:bg-[#242424] before:[clip-path:polygon(0_2px,100%_0,100%_100%,0_calc(100%-2px))]'
@@ -212,7 +212,7 @@ function ChooseModal(props: {
   }
 
   return (
-    <Dialog open={open} onClose={onClose} panelClassName={'!max-w-[480px]'}>
+    <AriaModal isOpen={open} onClose={onClose} padding="56px">
       <div className={'relative h-9 rounded-md bg-[#B8B8B8]'}>
         <span className={'text-xl'}>
           <IconamoonSearchLight className={'absolute left-2 top-2 text-[#696969]'} />
@@ -237,7 +237,7 @@ function ChooseModal(props: {
         otherCurrency={otherSelectedCurrency}
         selectedCurrency={selectedCurrency}
       />
-    </Dialog>
+    </AriaModal>
   )
 }
 
