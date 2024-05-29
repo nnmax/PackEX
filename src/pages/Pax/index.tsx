@@ -116,9 +116,9 @@ export default function PaxPage() {
           <li>5. Withdrawal fees earned from users (minus the portion spent)</li>
         </ul>
         <p className={'leading-8 mt-6'}>
-          Since the team has distributed all profits from PackEX Protocol to the $PAX holders and has not reserved or
-          sold any tokens in advance, 5% of $PAX mined in each block will be allocated to the team in order to keep it
-          on track.
+          Since the team has distributed all the profits from PackEX Protocol to the $PAX holders and has not reserved
+          or sold any tokens in advance, 5% of $PAX mined from each block will be allocated to the team in order to keep
+          it on track.
         </p>
       </Section>
 
