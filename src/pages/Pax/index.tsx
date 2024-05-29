@@ -112,7 +112,7 @@ export default function PaxPage() {
           <li>1. Points, Gold and Blast tokens received from Blast network</li>
           <li>2. Gas fee earned from Blast network </li>
           <li>3. All the native yields for ETH and USDB that are belongs to PackEX</li>
-          <li>4. Fees earned in all liquidity pools</li>
+          <li>4. Fees earned from all the liquidity pools</li>
           <li>5. Withdrawal fees earned from users (minus the portion spent)</li>
         </ul>
         <p className={'leading-8 mt-6'}>
