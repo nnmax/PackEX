@@ -108,6 +108,5 @@ export const MESSAGE_KEY = 'packex.message'
 export const BTC_SIGNATURE_KEY = 'packex.btc.signature'
 export const BTC_MESSAGE_KEY = 'packex.btc.message'
 export const CURRENT_BTC_WALLET = 'packex.btc.wallet'
-export const USER_KEY = 'packex.user'
 
 export const API_BASE = '/packex'

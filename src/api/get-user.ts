@@ -7,6 +7,5 @@ export default function getUser() {
   return fetcher<ConnectWalletData>('/get-current-login-user', {
     method: 'GET',
     disabledErrorToast: true,
-    disabled401: true,
   })
 }

@@ -5,11 +5,10 @@ import { API_BASE } from '@/constants'
 
 interface FetcherOptions<ResponseData> extends RequestInit {
   disabledErrorToast?: boolean | ((response: CommonResponse<ResponseData>) => boolean)
-  disabled401?: boolean
 }
 
-export default function fetcher<ResponseData = unknown>(input: string, options?: FetcherOptions<ResponseData>) {
-  const { disabledErrorToast, disabled401, ...rest } = options || {}
+export default function fetcher<ResponseData = unknown>(input: string, options?: FetcherOptions<ResponseData | null>) {
+  const { disabledErrorToast, ...rest } = options || {}
   return fetch(API_BASE + input, {
     ...rest,
     headers: {
@@ -28,17 +27,17 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       if (data.code === 200) {
         return data.data
       }
-      if (data.code === 401 && !disabled401) {
+      if (data.code === 401) {
         disconnectWallet().catch(() => {})
-        throw data
       }
-      if (disabledErrorToast === true || (typeof disabledErrorToast === 'function' && disabledErrorToast(data))) {
-        throw data
+      if (
+        data.code === 401 ||
+        disabledErrorToast === true ||
+        (typeof disabledErrorToast === 'function' && disabledErrorToast(data))
+      ) {
+        return data.data
       }
-      if (!disabledErrorToast) {
-        toast.error(data.prompt)
-        throw data
-      }
+      toast.error(data.prompt)
       return data.data
     })
     .catch((error) => {

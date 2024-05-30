@@ -39,10 +39,9 @@ function useInitialUserInfo() {
           updateUserInfo(userInfo)
         }
       })
-      .catch((err) => {
-        if ('code' in err && err.code === 401) {
+      .catch(() => {
+        if (isMounted) {
           updateUserInfo(null)
-          history.replace('/swap')
         }
       })
 

@@ -212,7 +212,7 @@ function ChooseModal(props: {
   }
 
   return (
-    <AriaModal isOpen={open} onClose={onClose} padding="56px">
+    <AriaModal isOpen={open} onClose={onClose} padding="56px" aria-label="Choose Tokens">
       <div className={'relative h-9 rounded-md bg-[#B8B8B8]'}>
         <span className={'text-xl'}>
           <IconamoonSearchLight className={'absolute left-2 top-2 text-[#696969]'} />

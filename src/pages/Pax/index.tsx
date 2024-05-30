@@ -151,7 +151,7 @@ export default function PaxPage() {
               DAILY REWARDS
             </text>
             <text x="215" y="28" fill="#FFC300" fontSize="16">
-              {infoData?.dailyRewards ?? 0}
+              {userInfo && infoData ? infoData.dailyRewards : '-'}
             </text>
           </svg>
         </div>
@@ -173,18 +173,18 @@ export default function PaxPage() {
                 .map((item, index) => (
                   <div key={index} className={boxClasses} ref={boxOneRef}>
                     <span className={'text-xs mt-4'}>{item.name}</span>
-                    <span className={'text-lemonYellow mt-8'}>[ {item.amount} ]</span>
+                    <span className={'text-lemonYellow mt-8'}>[ {userInfo ? item.amount : '-'} ]</span>
                   </div>
                 ))}
             </div>
             <div className={'mt-10 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}>
               <p className={'flex gap-6'}>
                 <span className={'w-[140px]'}>TOTAL MINTED</span>
-                <span className={'text-[#9E9E9E]'}>{infoData?.totalMinted ?? 0}</span>
+                <span className={'text-[#9E9E9E]'}>{userInfo && infoData ? infoData.totalMinted : '-'}</span>
               </p>
               <p className={'flex gap-6 mt-8'}>
                 <span className={'w-[140px]'}>UNCLAIMED</span>
-                <span className={'text-[#9E9E9E]'}>{infoData?.unclaimed ?? 0}</span>
+                <span className={'text-[#9E9E9E]'}>{userInfo && infoData ? infoData.unclaimed : '-'}</span>
               </p>
               <p className="flex gap-3 items-center text-xs mt-8 text-white">
                 <Clock className={'text-2xl'} />

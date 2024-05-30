@@ -12,6 +12,7 @@ interface AriaModalProps extends ModalOverlayProps {
   padding?: string
   showRhombus?: boolean
   showCloseButton?: boolean
+  'aria-label'?: string
 }
 
 const DIALOG_MASK_BG_COLOR = '#000000'
@@ -31,6 +32,7 @@ export default function AriaModal(props: AriaModalProps) {
     padding,
     showRhombus = true,
     showCloseButton = true,
+    'aria-label': ariaLabel,
     ...restProps
   } = props
 
@@ -62,7 +64,7 @@ export default function AriaModal(props: AriaModalProps) {
           'relative top-[192px] w-full max-w-[480px] rounded-lg bg-[#1D252E] px-4 py-8 outline-none data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:zoom-in-75 data-[exiting]:zoom-out-75',
         )}
       >
-        <Dialog className={clsx(contentClassName, 'focus-visible:outline-none')}>
+        <Dialog aria-label={ariaLabel} className={clsx(contentClassName, 'focus-visible:outline-none')}>
           {showCloseButton && (
             <Button autoFocus className={'absolute right-5 top-5 h-6 w-6'} onPress={onClose}>
               <span className="icon-[pixelarticons--close] text-2xl" />

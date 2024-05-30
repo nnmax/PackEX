@@ -15,7 +15,6 @@ import {
   MESSAGE_KEY,
   SIGNATURE_KEY,
   SUPPORTED_WALLETS,
-  USER_KEY,
 } from '../../constants'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
@@ -129,11 +128,9 @@ export default function WalletModal() {
         }
         window.localStorage.setItem(SIGNATURE_KEY, signatureawait)
         window.localStorage.setItem(MESSAGE_KEY, connectWalletResponse)
-        window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse2))
         updateUserInfo(connectWalletResponse2)
       }
     } else {
-      window.localStorage.setItem(USER_KEY, JSON.stringify(connectWalletResponse))
       updateUserInfo(connectWalletResponse)
     }
     setPendingWallet(undefined)
