@@ -22,6 +22,8 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
         return response.json()
       }
       const errorMessage = response.statusText
+      console.debug('fetcher statusText:', errorMessage)
+      console.debug('fetcher response:', response)
       toast.error(errorMessage)
       throw new Error(errorMessage)
     })

@@ -188,7 +188,7 @@ export default function PaxPage() {
               </p>
               <p className="flex gap-3 items-center text-xs mt-8 text-white">
                 <Clock className={'text-2xl'} />
-                The $PAX minted will be claimed automatically at 0:00 UTC every day.
+                $PAX minted will be claimed automatically at 0:00 UTC every day.
               </p>
             </div>
           </div>
