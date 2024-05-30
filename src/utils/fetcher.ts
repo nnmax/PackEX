@@ -17,13 +17,10 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       ...rest?.headers,
     },
   })
-    .then<CommonResponse<ResponseData>>((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-      const errorMessage = response.statusText
-      console.debug('fetcher statusText:', errorMessage)
-      console.debug('fetcher response:', response)
+    .then<CommonResponse<ResponseData>>(async (response) => {
+      if (response.ok) return response.json()
+      const parsed = await response.json().catch(() => ({}))
+      const errorMessage = response.statusText || parsed.error || 'Request failed'
       toast.error(errorMessage)
       throw new Error(errorMessage)
     })
