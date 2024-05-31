@@ -25,6 +25,7 @@ import Wallet from '@/components/Icons/Wallet'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import ReviewModal from '@/components/Pool/ReviewModal'
+import SuccessModal from '@/components/Pool/SuccessModal'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -56,7 +57,8 @@ export default function PoolAdd() {
 
   const isValid = !error
 
-  const [modalOpen, setModalOpen] = useState(false)
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [successModalOpen, setSuccessModalOpen] = useState(false)
 
   // txn values
   const [deadline] = useUserDeadline() // custom from users settings
@@ -192,7 +194,7 @@ export default function PoolAdd() {
   ])
 
   const handleDismiss = useCallback(() => {
-    setModalOpen(false)
+    setReviewModalOpen(false)
     // if there was a tx hash, we want to clear the input
     if (txHash) {
       onFieldAInput('')
@@ -204,6 +206,7 @@ export default function PoolAdd() {
 
   const handleConfirm = useCallback(async () => {
     setSubmitting(true)
+    setReviewModalOpen(true)
     try {
       if (approvalA !== ApprovalState.APPROVED) {
         await approveACallback()
@@ -214,12 +217,13 @@ export default function PoolAdd() {
       }
 
       await onAdd()
-      toast.success('Transaction submitted')
+      setSuccessModalOpen(true)
     } catch (error) {
       console.dir(error)
       toast.error(isString(error) ? error : (error as any).message ?? 'An unknown error occurred. Please try again.')
     } finally {
       setSubmitting(false)
+      setReviewModalOpen(false)
     }
   }, [approvalA, approvalB, approveACallback, approveBCallback, onAdd])
 
@@ -235,7 +239,7 @@ export default function PoolAdd() {
         {'Add'}
       </Button>
       <ReviewModal
-        modalOpen={modalOpen}
+        modalOpen={reviewModalOpen}
         onDismiss={handleDismiss}
         price={price}
         currencies={currencies}
@@ -247,6 +251,7 @@ export default function PoolAdd() {
         txHash={txHash}
         liquidityMinted={liquidityMinted}
       />
+      <SuccessModal isOpen={successModalOpen} onOpenChange={setSuccessModalOpen} />
       <div className={'flex w-full justify-center'}>
         <div className={'px-16 py-8'}>
           <div className={'flex flex-col items-center'}>

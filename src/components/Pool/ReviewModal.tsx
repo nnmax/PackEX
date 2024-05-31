@@ -61,7 +61,7 @@ export default function ReviewModal(props: {
         <span>POOL TOKENS</span>
       </p>
       <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>PAIR</p>
-      <p>
+      <p className={'flex items-center gap-2'}>
         <DoubleCurrencyLogo
           size={20}
           margin
