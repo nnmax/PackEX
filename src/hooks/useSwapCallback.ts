@@ -95,12 +95,12 @@ export function useSwapCallback(
   state: SwapCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
-  gas: BigNumber | undefined
+  gasLimit: BigNumber | undefined
 } {
   const { account, chainId, library } = useActiveWeb3React()
 
   const swapCalls = useSwapCallArguments(trade, allowedSlippage, deadline, recipientAddressOrName)
-  const [gas, setGas] = useState<BigNumber>()
+  const [gasLimit, setGasLimit] = useState<BigNumber>()
   const addTransaction = useTransactionAdder()
 
   const { address: recipientAddress } = useENS(recipientAddressOrName)
@@ -155,12 +155,12 @@ export function useSwapCallback(
     )
 
     if (!_successfulEstimation) {
-      setGas(undefined)
+      setGasLimit(undefined)
       const errorCalls = estimatedCalls.filter((call): call is FailedCall => 'error' in call)
       if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error
       throw new Error('Unexpected error. Please contact support: none of the calls threw an error')
     }
-    setGas(_successfulEstimation.gasEstimate)
+    setGasLimit(_successfulEstimation.gasEstimate)
     return _successfulEstimation
   }, [swapCalls])
 
@@ -170,20 +170,20 @@ export function useSwapCallback(
 
   return useMemo(() => {
     if (!trade || !library || !account || !chainId) {
-      return { state: SwapCallbackState.INVALID, gas, callback: null, error: 'Missing dependencies' }
+      return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Missing dependencies' }
     }
     if (!recipient) {
       if (recipientAddressOrName !== null) {
-        return { state: SwapCallbackState.INVALID, gas, callback: null, error: 'Invalid recipient' }
+        return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Invalid recipient' }
       } else {
-        return { state: SwapCallbackState.LOADING, gas, callback: null, error: null }
+        return { state: SwapCallbackState.LOADING, gasLimit, callback: null, error: null }
       }
     }
 
     return {
       state: SwapCallbackState.VALID,
       error: null,
-      gas,
+      gasLimit,
       callback: async function onSwap(): Promise<string> {
         const _successfulEstimation = await getSuccessfulEstimation()
 
@@ -242,6 +242,6 @@ export function useSwapCallback(
     recipient,
     recipientAddressOrName,
     trade,
-    gas,
+    gasLimit,
   ])
 }

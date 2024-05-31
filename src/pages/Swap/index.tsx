@@ -2,6 +2,7 @@ import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useContext, useMemo, useState } from 'react'
 import { ArrowDown } from 'react-feather'
 import { ThemeContext } from 'styled-components'
+import { formatUnits } from '@ethersproject/units'
 import AddressInputPanel from '../../components/AddressInputPanel'
 import Wallet from '@/components/Icons/Wallet'
 import { ButtonYellowLight, ButtonYellow } from '../../components/Button'
@@ -31,6 +32,7 @@ import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
 import { toast } from 'react-toastify'
+import useGasPrice from '@/hooks/useGasPrice'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -40,11 +42,10 @@ export default function Swap() {
 
   // toggle wallet when disconnected
   const toggleWalletModal = useWalletModalToggle()
-
   // get custom setting values for user
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
-
+  const gasPrice = useGasPrice()
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
   const {
@@ -124,20 +125,25 @@ export default function Swap() {
   const {
     callback: swapCallback,
     error: swapCallbackError,
-    gas: swapGas,
+    gasLimit: swapGasLimit,
   } = useSwapCallback(trade, allowedSlippage, deadline, recipient)
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
-  const totalGas = useMemo(() => {
-    if (approveGas && swapGas) {
-      return calculateGasMargin(approveGas.add(swapGas))
+  const transactionFeeInGwei = useMemo(() => {
+    let value = ''
+
+    if (approveGas && swapGasLimit && gasPrice) {
+      value = formatUnits(calculateGasMargin(approveGas.add(swapGasLimit)).mul(gasPrice), 'gwei')
     }
-    if (swapGas) {
-      return calculateGasMargin(swapGas)
+    if (swapGasLimit && gasPrice) {
+      value = formatUnits(calculateGasMargin(swapGasLimit).mul(gasPrice), 'gwei')
     }
-    return undefined
-  }, [approveGas, swapGas])
+    if (value.indexOf('.') !== -1) {
+      value = value.slice(0, value.indexOf('.') + 3)
+    }
+    return value
+  }, [approveGas, swapGasLimit, gasPrice])
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
@@ -241,7 +247,7 @@ export default function Swap() {
           className={'mt-1'}
         />
 
-        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} totalGas={totalGas} />
+        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInGwei} />
 
         {recipient !== null && !showWrap ? (
           <>

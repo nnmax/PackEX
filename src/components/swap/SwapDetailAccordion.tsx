@@ -7,10 +7,9 @@ import { useLastTruthy } from '@/hooks/useLast'
 import { ONE_BIPS } from '@/constants'
 import { useUserSlippageTolerance } from '@/state/user/hooks'
 import { Button } from 'react-aria-components'
-import { BigNumber } from '@ethersproject/bignumber'
 
-export default function SwapDetailAccordion(props: { price?: Price; trade?: Trade; totalGas?: BigNumber }) {
-  const { price, trade: tradeProp, totalGas } = props
+export default function SwapDetailAccordion(props: { price?: Price; trade?: Trade; transactionFee?: string }) {
+  const { price, trade: tradeProp, transactionFee } = props
   const [showDetail, setShowDetail] = useState(false)
   const [showInverted, setShowInverted] = useState(false)
   const formattedPrice = showInverted ? price?.toSignificant(6) : price?.invert()?.toSignificant(6)
@@ -49,7 +48,7 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
             })}
           >
             <Fa6SolidGasPump className={'text-xl'} />
-            <span>{`$ ${totalGas ?? '-'}`}</span>
+            <span>{`Gwei ${transactionFee || '-'}`}</span>
           </span>
           <ArrowDown
             className={clsx(
@@ -92,7 +91,7 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
             <span className={'text-xl text-[#9E9E9E]'}>
               <Fa6SolidGasPump />
             </span>
-            <span>{`$ ${totalGas ?? '-'}`}</span>
+            <span>{`Gwei ${transactionFee || '-'}`}</span>
           </span>
         </p>
       </div>
