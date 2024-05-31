@@ -33,6 +33,7 @@ import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
 import { toast } from 'react-toastify'
 import useGasPrice from '@/hooks/useGasPrice'
+import SuccessModal from '@/components/Pool/SuccessModal'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -56,6 +57,7 @@ export default function Swap() {
     inputError: swapInputError,
     inputErrorType,
   } = useDerivedSwapInfo()
+  const [successModalOpen, setSuccessModalOpen] = useState(false)
   const {
     wrapType,
     execute: onWrap,
@@ -161,7 +163,7 @@ export default function Swap() {
     }
     swapCallback()
       .then(() => {
-        toast('SWAP COMPLETED!')
+        setSuccessModalOpen(true)
       })
       .catch((error) => {
         toast.error(error.message)
@@ -192,6 +194,10 @@ export default function Swap() {
     [onCurrencySelection],
   )
 
+  const handleCloseSuccess = () => {
+    setSuccessModalOpen(false)
+  }
+
   return (
     <div className={'flex flex-col items-center'}>
       {trade && (
@@ -202,6 +208,8 @@ export default function Swap() {
           onOpenChange={handleConfirmDismiss}
         />
       )}
+
+      <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccess} content={'SWAP COMPLETED'} />
       <div
         className={'flex w-full relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
         style={{

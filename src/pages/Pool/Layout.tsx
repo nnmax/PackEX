@@ -6,7 +6,7 @@ export default function PoolLayout(props: { activeTab?: 'all' | 'my'; children: 
 
   return (
     <div className={'px-16 py-8'}>
-      <NavTabs>
+      <NavTabs className={'mb-4'}>
         <LinkTab to={'/pool/all'} isSelected={activeTab === 'all'}>
           {'ALL POOLS'}
         </LinkTab>

@@ -28,6 +28,7 @@ import Wallet from '@/components/Icons/Wallet'
 import AriaModal from '@/components/AriaModal'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
+import SuccessModal from '@/components/Pool/SuccessModal'
 
 const commonSpanStyles = {
   className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
@@ -57,6 +58,7 @@ export default function PoolRemove() {
   const isValid = !error
 
   const [loadingModalOpen, setLoadingModalOpen] = useState(false)
+  const [successModalOpen, setSuccessModalOpen] = useState(false)
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
@@ -333,7 +335,7 @@ export default function PoolRemove() {
         await onAttemptToApprove()
       }
       await onRemove()
-      toast.success('Transaction submitted')
+      setSuccessModalOpen(true)
     } catch (error) {
       console.error(error)
       toast.error(isString(error) ? error : (error as any).message ?? 'Error submitting transaction', {
@@ -349,6 +351,11 @@ export default function PoolRemove() {
       setTxHash('')
     }
   }, [approval, signatureData, onRemove, onAttemptToApprove, txHash, onUserInput])
+
+  const handleCloseSuccessModal = () => {
+    setSuccessModalOpen(false)
+    history.push('/pool/my')
+  }
 
   return (
     <div className={'py-4'}>
@@ -374,7 +381,7 @@ export default function PoolRemove() {
         <Heading slot="title">CONFIRMATION</Heading>
         <p className={'text-xs'}>CONFIRM TRANSACTION IN YOUR WALLET</p>
       </AriaModal>
-
+      <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
       <div className={'flex justify-center'}>
         <div
           className={'flex w-full justify-center relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}

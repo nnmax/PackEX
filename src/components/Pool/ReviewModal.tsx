@@ -61,7 +61,7 @@ export default function ReviewModal(props: {
         <span>POOL TOKENS</span>
       </p>
       <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>PAIR</p>
-      <p className={'flex items-center gap-2'}>
+      <div className={'flex items-center gap-2'}>
         <DoubleCurrencyLogo
           size={20}
           margin
@@ -71,7 +71,7 @@ export default function ReviewModal(props: {
         <span>
           {currencies[Field.CURRENCY_A]?.symbol} / {currencies[Field.CURRENCY_B]?.symbol}
         </span>
-      </p>
+      </div>
       <hr className={'mb-6 mt-6 h-px w-full border-none bg-[#6A6A6A]'} />
       <div className={'flex justify-between text-xs mb-6'}>
         <p className={'text-[#9E9E9E] flex'}>

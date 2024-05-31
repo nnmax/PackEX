@@ -227,6 +227,11 @@ export default function PoolAdd() {
     }
   }, [approvalA, approvalB, approveACallback, approveBCallback, onAdd])
 
+  const handleCloseSuccessModal = () => {
+    setSuccessModalOpen(false)
+    history.push('/pool/all')
+  }
+
   return (
     <div className={'py-4'}>
       <Button
@@ -251,7 +256,7 @@ export default function PoolAdd() {
         txHash={txHash}
         liquidityMinted={liquidityMinted}
       />
-      <SuccessModal isOpen={successModalOpen} onOpenChange={setSuccessModalOpen} />
+      <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
       <div className={'flex w-full justify-center'}>
         <div className={'px-16 py-8'}>
           <div className={'flex flex-col items-center'}>
