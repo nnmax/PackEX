@@ -7,6 +7,8 @@ import { useEffect } from 'react'
 export type GetPaxInviteData = {
   inviteCode: string
   invite: PaxTableData[]
+  unclaimed: number
+  totalMinted: number
 }
 
 function getPaxInvite() {

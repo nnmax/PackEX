@@ -180,11 +180,11 @@ export default function PaxPage() {
             <div className={'mt-10 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}>
               <p className={'flex gap-6'}>
                 <span className={'w-[140px]'}>TOTAL MINTED</span>
-                <span className={'text-[#9E9E9E]'}>{userInfo && infoData ? infoData.totalMinted : '-'}</span>
+                <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.totalMinted : '-'}</span>
               </p>
               <p className={'flex gap-6 mt-8'}>
                 <span className={'w-[140px]'}>UNCLAIMED</span>
-                <span className={'text-[#9E9E9E]'}>{userInfo && infoData ? infoData.unclaimed : '-'}</span>
+                <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.unclaimed : '-'}</span>
               </p>
               <p className="flex gap-3 items-center text-xs mt-8 text-white">
                 <Clock className={'text-2xl'} />

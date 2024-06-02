@@ -16,8 +16,6 @@ export type PaxRewardRatio = {
 
 export type GetPaxInfoData = {
   dailyRewards: number
-  unclaimed: number
-  totalMinted: number
   paxContract: string
   leaderBoard: PaxTableData[]
   paxRewardRatio: PaxRewardRatio[]
