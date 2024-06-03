@@ -332,13 +332,13 @@ const SocialBox = forwardRef<
       ref={ref}
       className={clsx(
         verticalLineClasses,
-        userInfo?.invitationCode ? 'h-32' : 'flex-1',
+        userInfo?.invitationCode ? 'h-32 mb-20' : 'flex-1',
         'relative border border-lemonYellow px-5 py-4 rounded flex flex-col',
       )}
     >
       <span className={'self-center'}>{data?.name ?? 'SOCIAL'}</span>
       {userInfo?.invitationCode ? (
-        <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.ratio} ]</p>
+        <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.ratio ?? '-'} ]</p>
       ) : (
         <>
           <OTP
