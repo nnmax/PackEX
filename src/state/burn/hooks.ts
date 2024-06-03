@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, JSBI, Pair, Percent, TokenAmount } from '@nnmax/uniswap-sdk-v2'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { usePair } from '../../data/Reserves'
 import { useTotalSupply } from '../../data/TotalSupply'
@@ -48,30 +48,36 @@ export function useDerivedBurnInfo(
 
   // liquidity values
   const totalSupply = useTotalSupply(pair?.liquidityToken)
-  const liquidityValueA =
-    pair &&
-    totalSupply &&
-    userLiquidity &&
-    tokenA &&
-    // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
-      ? new TokenAmount(tokenA, pair.getLiquidityValue(tokenA, totalSupply, userLiquidity, false).raw)
-      : undefined
-  const liquidityValueB =
-    pair &&
-    totalSupply &&
-    userLiquidity &&
-    tokenB &&
-    // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
-      ? new TokenAmount(tokenB, pair.getLiquidityValue(tokenB, totalSupply, userLiquidity, false).raw)
-      : undefined
+  const liquidityValueA = useMemo(
+    () =>
+      pair &&
+      totalSupply &&
+      userLiquidity &&
+      tokenA &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
+        ? new TokenAmount(tokenA, pair.getLiquidityValue(tokenA, totalSupply, userLiquidity, false).raw)
+        : undefined,
+    [pair, tokenA, totalSupply, userLiquidity],
+  )
+  const liquidityValueB = useMemo(
+    () =>
+      pair &&
+      totalSupply &&
+      userLiquidity &&
+      tokenB &&
+      // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
+      JSBI.greaterThanOrEqual(totalSupply.raw, userLiquidity.raw)
+        ? new TokenAmount(tokenB, pair.getLiquidityValue(tokenB, totalSupply, userLiquidity, false).raw)
+        : undefined,
+    [pair, tokenB, totalSupply, userLiquidity],
+  )
   const liquidityValues: { [Field.CURRENCY_A]?: TokenAmount; [Field.CURRENCY_B]?: TokenAmount } = {
     [Field.CURRENCY_A]: liquidityValueA,
     [Field.CURRENCY_B]: liquidityValueB,
   }
 
-  let percentToRemove: Percent = new Percent('0', '100')
+  let percentToRemove: Percent = useMemo(() => new Percent('0', '100'), [])
   // user specified a %
   if (independentField === Field.LIQUIDITY_PERCENT) {
     percentToRemove = new Percent(typedValue, '100')
@@ -101,21 +107,24 @@ export function useDerivedBurnInfo(
     [Field.LIQUIDITY]?: TokenAmount
     [Field.CURRENCY_A]?: TokenAmount
     [Field.CURRENCY_B]?: TokenAmount
-  } = {
-    [Field.LIQUIDITY_PERCENT]: percentToRemove,
-    [Field.LIQUIDITY]:
-      userLiquidity && percentToRemove && percentToRemove.greaterThan('0')
-        ? new TokenAmount(userLiquidity.token, percentToRemove.multiply(userLiquidity.raw).quotient)
-        : undefined,
-    [Field.CURRENCY_A]:
-      tokenA && percentToRemove && percentToRemove.greaterThan('0') && liquidityValueA
-        ? new TokenAmount(tokenA, percentToRemove.multiply(liquidityValueA.raw).quotient)
-        : undefined,
-    [Field.CURRENCY_B]:
-      tokenB && percentToRemove && percentToRemove.greaterThan('0') && liquidityValueB
-        ? new TokenAmount(tokenB, percentToRemove.multiply(liquidityValueB.raw).quotient)
-        : undefined,
-  }
+  } = useMemo(
+    () => ({
+      [Field.LIQUIDITY_PERCENT]: percentToRemove,
+      [Field.LIQUIDITY]:
+        userLiquidity && percentToRemove && percentToRemove.greaterThan('0')
+          ? new TokenAmount(userLiquidity.token, percentToRemove.multiply(userLiquidity.raw).quotient)
+          : undefined,
+      [Field.CURRENCY_A]:
+        tokenA && percentToRemove && percentToRemove.greaterThan('0') && liquidityValueA
+          ? new TokenAmount(tokenA, percentToRemove.multiply(liquidityValueA.raw).quotient)
+          : undefined,
+      [Field.CURRENCY_B]:
+        tokenB && percentToRemove && percentToRemove.greaterThan('0') && liquidityValueB
+          ? new TokenAmount(tokenB, percentToRemove.multiply(liquidityValueB.raw).quotient)
+          : undefined,
+    }),
+    [liquidityValueA, liquidityValueB, percentToRemove, tokenA, tokenB, userLiquidity],
+  )
 
   let error: string | undefined
   if (!account) {
@@ -126,7 +135,7 @@ export function useDerivedBurnInfo(
     error = error ?? 'Enter an amount'
   }
 
-  return { pair, parsedAmounts, error }
+  return useMemo(() => ({ pair, parsedAmounts, error }), [error, pair, parsedAmounts])
 }
 
 export function useBurnActionHandlers(): {

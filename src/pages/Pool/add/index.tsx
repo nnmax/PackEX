@@ -52,10 +52,10 @@ export default function PoolAdd() {
     poolTokenPercentage,
     liquidityMinted,
     error,
+    fieldAError,
+    fieldBError,
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
-
-  const isValid = !error
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
@@ -269,9 +269,11 @@ export default function PoolAdd() {
               <SlippageSetting className={'self-end'} />
 
               <CurrencyInputPanel
+                errorRhombus={false}
                 label={'ADD'}
                 value={formattedAmounts[Field.CURRENCY_A]}
                 onUserInput={onFieldAInput}
+                error={fieldAError}
                 onMax={() => {
                   onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
                 }}
@@ -289,7 +291,9 @@ export default function PoolAdd() {
                 <img src={AddIcon} alt="" aria-hidden />
               </div>
               <CurrencyInputPanel
+                errorRhombus={false}
                 label={'ADD'}
+                error={fieldBError}
                 value={formattedAmounts[Field.CURRENCY_B]}
                 onUserInput={onFieldBInput}
                 onMax={() => {
@@ -334,8 +338,12 @@ export default function PoolAdd() {
               )}
               <div className={'flex justify-center mt-8'}>
                 {account ? (
-                  <ButtonPrimary onPress={handleConfirm} className={'w-full max-w-60'} isDisabled={!isValid}>
-                    {submitting ? <span className={'loading loading-dots'} /> : 'Confirm'}
+                  <ButtonPrimary
+                    onPress={handleConfirm}
+                    className={'w-full max-w-60'}
+                    isDisabled={!!error || !!fieldAError || !!fieldBError}
+                  >
+                    {submitting ? <span className={'loading loading-dots'} /> : error ?? 'Confirm'}
                   </ButtonPrimary>
                 ) : (
                   <ButtonPrimary onPress={toggleWalletModal} className={'w-full max-w-60'}>

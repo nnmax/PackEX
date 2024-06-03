@@ -35,11 +35,10 @@ interface CurrencyInputPanelProps {
   pair?: Pair | null
   hideInput?: boolean
   otherCurrency?: Token | null
-  id?: string
-  showCommonBases?: boolean
   className?: string
   rhombus?: 'top' | 'bottom'
-  insufficientBalance?: boolean
+  errorRhombus?: boolean
+  error?: string
 }
 
 export default function CurrencyInputPanel({
@@ -55,8 +54,9 @@ export default function CurrencyInputPanel({
   otherCurrency,
   className,
   rhombus,
-  insufficientBalance,
+  error,
   disableCurrencySelect,
+  errorRhombus = true,
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
@@ -78,12 +78,12 @@ export default function CurrencyInputPanel({
   return (
     <div
       className={clsx('relative flex flex-col rounded-md bg-[#242424] p-6', className, {
-        'border border-[#FF2323] rhombus-bg-[#FF2323]': insufficientBalance,
+        'border border-[#FF2323] rhombus-bg-[#FF2323]': errorRhombus && error,
         'before:top-rhombus': rhombus === 'top',
         'after:bottom-rhombus': rhombus === 'bottom',
       })}
     >
-      {insufficientBalance && (
+      {error && (
         <div
           aria-hidden
           className={clsx('absolute z-[1] rhombus-bg-[--body-bg] rhombus-w-[calc(50%-2px)]', {
@@ -134,7 +134,7 @@ export default function CurrencyInputPanel({
       </div>
       {!hideBalance && (
         <div className={'my-1.5 flex items-center justify-between text-xs'}>
-          <span className={'text-[#FF2323]'}>{insufficientBalance ? 'INSUFFICIENT FUNDS' : ''}</span>
+          <span className={'text-[#FF2323]'}>{error ?? ''}</span>
           <div>
             <span>
               {'BALANCE: ' + (!!currency && selectedCurrencyBalance ? selectedCurrencyBalance.toSignificant(6) : ' -')}

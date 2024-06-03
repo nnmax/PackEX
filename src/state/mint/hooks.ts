@@ -32,6 +32,8 @@ export function useDerivedMintInfo(
   liquidityMinted?: TokenAmount
   poolTokenPercentage?: Percent
   error?: string
+  fieldAError?: string
+  fieldBError?: string
 } {
   const { account, chainId } = useActiveWeb3React()
 
@@ -66,7 +68,10 @@ export function useDerivedMintInfo(
   }
 
   // amounts
-  const independentAmount: CurrencyAmount | undefined = tryParseAmount(typedValue, currencies[independentField])
+  const independentAmount: CurrencyAmount | undefined = useMemo(
+    () => tryParseAmount(typedValue, currencies[independentField]),
+    [currencies, independentField, typedValue],
+  )
   const dependentAmount: CurrencyAmount | undefined = useMemo(() => {
     if (noLiquidity) {
       if (otherTypedValue && currencies[dependentField]) {
@@ -134,6 +139,9 @@ export function useDerivedMintInfo(
   }, [liquidityMinted, totalSupply])
 
   let error: string | undefined
+  let fieldAError: string | undefined
+  let fieldBError: string | undefined
+
   if (!account) {
     error = 'Connect Wallet'
   }
@@ -149,11 +157,11 @@ export function useDerivedMintInfo(
   const { [Field.CURRENCY_A]: currencyAAmount, [Field.CURRENCY_B]: currencyBAmount } = parsedAmounts
 
   if (currencyAAmount && currencyBalances?.[Field.CURRENCY_A]?.lessThan(currencyAAmount)) {
-    error = 'Insufficient ' + currencies[Field.CURRENCY_A]?.symbol + ' balance'
+    fieldAError = 'INSUFFICIENT FUNDS'
   }
 
   if (currencyBAmount && currencyBalances?.[Field.CURRENCY_B]?.lessThan(currencyBAmount)) {
-    error = 'Insufficient ' + currencies[Field.CURRENCY_B]?.symbol + ' balance'
+    fieldBError = 'INSUFFICIENT FUNDS'
   }
 
   return {
@@ -168,6 +176,8 @@ export function useDerivedMintInfo(
     liquidityMinted,
     poolTokenPercentage,
     error,
+    fieldAError,
+    fieldBError,
   }
 }
 

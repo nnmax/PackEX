@@ -220,7 +220,7 @@ export default function Swap() {
           onCurrencySelect={handleInputSelect}
           otherCurrency={currencies[Field.OUTPUT]}
           rhombus="top"
-          insufficientBalance={inputErrorType === InputErrorType.InsufficientBalance}
+          error={inputErrorType === InputErrorType.InsufficientBalance ? swapInputError : undefined}
         />
 
         <Button
