@@ -1,8 +1,5 @@
 import { Currency, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
-
-import styled from 'styled-components'
-
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
@@ -11,11 +8,6 @@ import clsx from 'clsx'
 
 const getTokenLogoURL = (address: string) =>
   `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`
-
-const StyledLogo = styled(Logo)<{ size: string }>`
-  width: ${({ size }) => size};
-  height: ${({ size }) => size};
-`
 
 export default function CurrencyLogo({
   currency,
@@ -65,11 +57,14 @@ export default function CurrencyLogo({
   }
 
   return (
-    <StyledLogo
-      size={size}
+    <Logo
       srcs={srcs}
       alt={`${currency?.symbol ?? 'token'} logo`}
-      style={style}
+      style={{
+        width: size,
+        height: size,
+        ...style,
+      }}
       className={clsx(className, 'rounded-full')}
     />
   )

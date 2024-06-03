@@ -10,7 +10,6 @@ const cracoConfig: CracoConfig = {
           runtimeModule: 'react-compiler-runtime',
         },
       ],
-      'babel-plugin-styled-components',
     ],
   },
   webpack: {

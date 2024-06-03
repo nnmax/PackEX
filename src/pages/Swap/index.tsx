@@ -1,16 +1,11 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
-import { useCallback, useContext, useMemo, useState } from 'react'
-import { ArrowDown } from 'react-feather'
-import { ThemeContext } from 'styled-components'
+import { useCallback, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
-import AddressInputPanel from '../../components/AddressInputPanel'
 import Wallet from '@/components/Icons/Wallet'
 import { ButtonYellowLight, ButtonYellow } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
-import { AutoRow } from '../../components/Row'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
-import { ArrowWrapper } from '../../components/swap/styleds'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
@@ -24,7 +19,6 @@ import {
   useSwapState,
 } from '../../state/swap/hooks'
 import { useUserDeadline, useUserInfo, useUserSlippageTolerance } from '../../state/user/hooks'
-import { LinkStyledButton } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import SlippageSetting from '@/components/SlippageSetting'
@@ -38,8 +32,6 @@ import SuccessModal from '@/components/Pool/SuccessModal'
 export default function Swap() {
   useDefaultsFromURLSearch()
   const [userInfo] = useUserInfo()
-
-  const theme = useContext(ThemeContext)
 
   // toggle wallet when disconnected
   const toggleWalletModal = useWalletModalToggle()
@@ -76,7 +68,7 @@ export default function Swap() {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
+  const { onSwitchTokens, onCurrencySelection, onUserInput } = useSwapActionHandlers()
 
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -256,20 +248,6 @@ export default function Swap() {
         />
 
         <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInGwei} />
-
-        {recipient !== null && !showWrap ? (
-          <>
-            <AutoRow justify="space-between" style={{ padding: '0 1rem' }}>
-              <ArrowWrapper clickable={false}>
-                <ArrowDown size="16" color={theme.text2} />
-              </ArrowWrapper>
-              <LinkStyledButton id="remove-recipient-button" onClick={() => onChangeRecipient(null)}>
-                - Remove send
-              </LinkStyledButton>
-            </AutoRow>
-            <AddressInputPanel id="recipient" value={recipient} onChange={onChangeRecipient} />
-          </>
-        ) : null}
 
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (

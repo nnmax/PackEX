@@ -8,11 +8,10 @@ import { useActiveWeb3React } from '../../hooks'
 import clsx from 'clsx'
 import { Button, Input, Label, ListBox, ListBoxItem, NumberField, Text } from 'react-aria-components'
 import IconamoonSearchLight from '@/components/Icons/IconamoonSearchLight'
-import { FixedSizeList } from 'react-window'
 import { useAllTokens, useToken } from '@/hooks/Tokens'
 import { isAddress } from '@/utils'
-import { filterTokens } from '@/components/SearchModal/filtering'
-import { useTokenComparator } from '@/components/SearchModal/sorting'
+import { filterTokens } from './filtering'
+import { useTokenComparator } from './sorting'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import { isSet } from 'lodash-es'
@@ -172,7 +171,6 @@ function ChooseModal(props: {
   const { open, onClose, onCurrencySelect, otherSelectedCurrency, selectedCurrency } = props
 
   const [searchQuery, setSearchQuery] = useState('')
-  const fixedList = useRef<FixedSizeList>()
 
   const isAddressSearch = isAddress(searchQuery)
   const searchToken = useToken(searchQuery)
@@ -206,7 +204,6 @@ function ChooseModal(props: {
     const input = event.target.value
     const checksummedInput = isAddress(input)
     setSearchQuery(checksummedInput || input)
-    fixedList.current?.scrollTo(0)
   }
 
   const handleCurrencySelect = (currency: Token) => {

@@ -1,5 +1,4 @@
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
-import 'inter-ui'
 import { ClickToComponent } from 'click-to-react-component'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -11,7 +10,6 @@ import ApplicationUpdater from './state/application/updater'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
 import TransactionUpdater from './state/transactions/updater'
-import ThemeProvider from './theme'
 import getLibrary from './utils/getLibrary'
 import './index.css'
 import { BrowserRouter, useHistory } from 'react-router-dom'
@@ -65,10 +63,8 @@ createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Providers>
         <Updaters />
-        <ThemeProvider>
-          <App />
-          <ToastContainer draggable transition={Bounce} autoClose={3000} />
-        </ThemeProvider>
+        <App />
+        <ToastContainer draggable transition={Bounce} autoClose={3000} />
       </Providers>
     </BrowserRouter>
   </StrictMode>,

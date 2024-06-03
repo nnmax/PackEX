@@ -1,10 +1,9 @@
 import { useState } from 'react'
-import { HelpCircle } from 'react-feather'
-import { ImageProps } from 'rebass'
+import HelpIcon from '@/assets/images/help-circle.svg'
 
 const BAD_SRCS: { [tokenAddress: string]: true } = {}
 
-export interface LogoProps extends Pick<ImageProps, 'style' | 'alt' | 'className'> {
+export interface LogoProps extends Pick<React.ImgHTMLAttributes<HTMLImageElement>, 'style' | 'alt' | 'className'> {
   srcs: string[]
 }
 
@@ -31,5 +30,5 @@ export default function Logo({ srcs, alt, ...rest }: LogoProps) {
     )
   }
 
-  return <HelpCircle {...rest} />
+  return <img {...rest} src={HelpIcon} alt="" />
 }

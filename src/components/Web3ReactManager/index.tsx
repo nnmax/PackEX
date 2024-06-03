@@ -1,21 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useWeb3React } from '@web3-react/core'
-import styled from 'styled-components'
 import { network } from '../../connectors'
 import { useEagerConnect, useInactiveListener } from '../../hooks'
 import { NetworkContextName } from '../../constants'
 import Loader from '../Loader'
-
-const MessageWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 20rem;
-`
-
-const Message = styled.h2`
-  color: ${({ theme }) => theme.secondary1};
-`
 
 export default function Web3ReactManager({ children }: { children: JSX.Element }) {
   const { active } = useWeb3React()
@@ -54,20 +42,18 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
   // if the account context isn't active, and there's an error on the network context, it's an irrecoverable error
   if (!active && networkError) {
     return (
-      <MessageWrapper>
-        <Message>
-          {'Oops! An unknown error occurred. Please refresh the page, or visit from another browser or device.'}
-        </Message>
-      </MessageWrapper>
+      <div className={'flex items-center justify-center h-80'}>
+        <h2>{'Oops! An unknown error occurred. Please refresh the page, or visit from another browser or device.'}</h2>
+      </div>
     )
   }
 
   // if neither context is active, spin
   if (!active && !networkActive) {
     return showLoader ? (
-      <MessageWrapper>
+      <div className={'flex items-center justify-center h-80'}>
         <Loader />
-      </MessageWrapper>
+      </div>
     ) : null
   }
 
