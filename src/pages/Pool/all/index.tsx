@@ -6,7 +6,7 @@ import { isEqual } from 'lodash-es'
 import { getAllPools, AllPoolListData } from '@/api'
 import { usePoolAllList } from '@/state/user/hooks'
 // import GearIcon from '@/components/Icons/GearIcon'
-import SortIcon from '@/components/Icons/sortIcon'
+// import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
 const PoolAll = () => {
@@ -52,7 +52,7 @@ const PoolAll = () => {
           <Column>
             <span className={'relative'}>
               {'TVL '}
-              <SortIcon className={'inline'} />
+              {/* <SortIcon className={'inline'} /> */}
             </span>
           </Column>
           <Column>{'VOLUME (24H)'}</Column>
