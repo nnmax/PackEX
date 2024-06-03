@@ -21,33 +21,39 @@ import Clock from '@/components/Icons/Clock'
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
-  const { library } = useActiveWeb3React()
+  const { connector } = useActiveWeb3React()
   const [userInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
   const inviteData = useFetchPaxInvite()
   const infoData = useFetchPaxInfo()
 
-  const handleWatchAsset = () => {
+  const handleWatchAsset = async () => {
     if (!userInfo) {
       toggleWalletModal()
       return
     }
-    if (!library || !infoData) return
+    if (!connector || !infoData) return
+
     const options = {
       address: infoData.paxContract,
       symbol: 'PAX',
-      decimals: 18,
-      image: 'https://packex.io/favicon.ico',
+      decimals: 8,
     }
-    library
-      .send('wallet_watchAsset', [
-        {
+    const provider = await connector.getProvider()
+    provider
+      .request({
+        method: 'wallet_watchAsset',
+        params: {
           type: 'ERC20',
           options,
         },
-      ])
-      .catch((e) => {
+      })
+      .catch((e: any) => {
         toast.error(e?.message || 'Failed to watch asset')
+        throw e
+      })
+      .then(() => {
+        toast.success('Successfully added $PAX to your wallet')
       })
   }
 
@@ -86,7 +92,7 @@ export default function PaxPage() {
               {infoData?.paxContract}
             </span>
           </div>
-          <ButtonPrimary className={'ml-7 w-full max-w-[288px]'} onPress={handleWatchAsset}>
+          <ButtonPrimary className={'ml-7 w-[288px]'} onPress={handleWatchAsset}>
             +ADD $PAX TO YOUR WALLET
           </ButtonPrimary>
         </div>
