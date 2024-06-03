@@ -164,16 +164,15 @@ export default function PaxPage() {
               {(
                 infoData?.paxRewardRatio ??
                 Array.from({ length: 4 }, () => ({
-                  amount: 0,
                   name: '-',
-                  ratio: 0,
+                  ratio: '-',
                 }))
               )
                 .filter((_, index, array) => index !== array.length - 1)
                 .map((item, index) => (
                   <div key={index} className={boxClasses} ref={boxOneRef}>
                     <span className={'text-xs mt-4'}>{item.name}</span>
-                    <span className={'text-lemonYellow mt-8'}>[ {userInfo ? item.amount : '-'} ]</span>
+                    <span className={'text-lemonYellow mt-8'}>[ {userInfo ? item.ratio : '-'} ]</span>
                   </div>
                 ))}
             </div>
@@ -339,7 +338,7 @@ const SocialBox = forwardRef<
     >
       <span className={'self-center'}>{data?.name ?? 'SOCIAL'}</span>
       {userInfo?.invitationCode ? (
-        <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.amount} ]</p>
+        <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.ratio} ]</p>
       ) : (
         <>
           <OTP
