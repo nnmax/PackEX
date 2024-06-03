@@ -2,7 +2,7 @@ import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
 import Wallet from '@/components/Icons/Wallet'
-import { ButtonYellowLight, ButtonYellow } from '../../components/Button'
+import { ButtonPrimary } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
@@ -251,24 +251,29 @@ export default function Swap() {
 
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (
-            <ButtonYellowLight onPress={toggleWalletModal} className={'text-xs w-full max-w-[240px]'}>
+            <ButtonPrimary onPress={toggleWalletModal} className={'text-xs w-full max-w-[240px]'}>
               <Wallet className={'text-xl mr-6'} />
               <span>Connect Wallet</span>
-            </ButtonYellowLight>
+            </ButtonPrimary>
           ) : showWrap ? (
-            <ButtonYellowLight isDisabled={Boolean(wrapInputError)} onPress={onWrap} className={'w-full max-w-[240px]'}>
+            <ButtonPrimary
+              isDisabled={!!wrapInputError}
+              isError={!!wrapInputError}
+              onPress={onWrap}
+              className={'w-full max-w-[240px]'}
+            >
               {wrapInputError ?? (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
-            </ButtonYellowLight>
+            </ButtonPrimary>
           ) : noRoute && userHasSpecifiedInputOutput ? (
             <p className={'text-[#FF2323] p-2 border border-[#FF2323] rounded-sm text-center'}>
               Insufficient liquidity
             </p>
           ) : (
-            <ButtonYellow
+            <ButtonPrimary
               isError={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
+              isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
               className={'w-full max-w-[240px]'}
               onPress={handleSwap}
-              isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
             >
               {swapInputError
                 ? swapInputError
@@ -277,7 +282,7 @@ export default function Swap() {
                   : priceImpactSeverity > 3
                     ? `Price Impact Too High`
                     : `Confirm`}
-            </ButtonYellow>
+            </ButtonPrimary>
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { Asset } from '@/api'
-import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
+import { ButtonPrimary } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import Wallet from '@/components/Icons/Wallet'
 import clsx from 'clsx'
@@ -127,14 +127,14 @@ export default function FormCard(props: {
         )}
       </div>
       {showConnectWalletButton ? (
-        <ButtonYellowLight onPress={onWalletToggle} className={'text-xs w-full max-w-60 mt-14'}>
+        <ButtonPrimary onPress={onWalletToggle} className={'text-xs w-full max-w-60 mt-14'}>
           <Wallet className={'text-xl mr-6'} />
           <span>Connect Wallet</span>
-        </ButtonYellowLight>
+        </ButtonPrimary>
       ) : (
-        <ButtonYellow type={'submit'} isDisabled={loading} className={clsx('mt-14 w-full max-w-60')}>
+        <ButtonPrimary type={'submit'} isDisabled={loading} className={clsx('mt-14 w-full max-w-60')}>
           {loading ? <span aria-label="Loading" className="loading loading-dots" /> : 'Confirm'}
-        </ButtonYellow>
+        </ButtonPrimary>
       )}
 
       {type === 'deposit' && (

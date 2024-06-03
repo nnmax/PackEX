@@ -1,7 +1,7 @@
 import { enterInvitationCode } from '@/api'
 import { PaxRewardRatio, PaxTableData, useFetchPaxInfo } from '@/api/get-pax-info'
 import { useFetchPaxInvite } from '@/api/get-pax-invite'
-import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
+import { ButtonPrimary } from '@/components/Button'
 import OTP from '@/components/OTPInput'
 import { useActiveWeb3React } from '@/hooks'
 import copy from 'copy-to-clipboard'
@@ -86,9 +86,9 @@ export default function PaxPage() {
               {infoData?.paxContract}
             </span>
           </div>
-          <ButtonYellow className={'ml-7 w-full max-w-[288px]'} onPress={handleWatchAsset}>
+          <ButtonPrimary className={'ml-7 w-full max-w-[288px]'} onPress={handleWatchAsset}>
             +ADD $PAX TO YOUR WALLET
-          </ButtonYellow>
+          </ButtonPrimary>
         </div>
       </Section>
 
@@ -354,9 +354,13 @@ const SocialBox = forwardRef<
           {invalid && (
             <span className={'text-xs text-[#FF3535] absolute self-center top-[100px]'}>Invalid invite code.</span>
           )}
-          <ButtonYellowLight className={'w-full mt-[44px]'} isDisabled>
+          <p
+            className={
+              'w-full mt-[44px] border text-lemonYellow border-lemonYellow flex h-9 px-2 items-center justify-center self-center rounded-md text-xs'
+            }
+          >
             Enter Invite Code to mint $PAX
-          </ButtonYellowLight>
+          </p>
           {!userInfo && (
             <>
               <span className={'self-center mt-8 text-[#FBFC02] text-xs'}>Already registered?</span>

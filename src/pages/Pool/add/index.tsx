@@ -20,7 +20,7 @@ import { useTransactionAdder } from '@/state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { ROUTER_ADDRESS } from '@/constants'
-import { ButtonYellow, ButtonYellowLight } from '@/components/Button'
+import { ButtonPrimary } from '@/components/Button'
 import Wallet from '@/components/Icons/Wallet'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
@@ -334,20 +334,14 @@ export default function PoolAdd() {
               )}
               <div className={'flex justify-center mt-8'}>
                 {account ? (
-                  isValid ? (
-                    <ButtonYellow onPress={handleConfirm} className={'w-full max-w-[240px]'}>
-                      {submitting ? <span className={'loading loading-dots'} /> : 'Confirm'}
-                    </ButtonYellow>
-                  ) : (
-                    <ButtonYellowLight className={'w-full max-w-[240px]'} isDisabled>
-                      {'Confirm'}
-                    </ButtonYellowLight>
-                  )
+                  <ButtonPrimary onPress={handleConfirm} className={'w-full max-w-60'} isDisabled={!isValid}>
+                    {submitting ? <span className={'loading loading-dots'} /> : 'Confirm'}
+                  </ButtonPrimary>
                 ) : (
-                  <ButtonYellowLight onPress={toggleWalletModal} className={'w-full max-w-[240px]'}>
+                  <ButtonPrimary onPress={toggleWalletModal} className={'w-full max-w-60'}>
                     <Wallet className={'text-xl mr-6'} />
                     <span>Connect Wallet</span>
-                  </ButtonYellowLight>
+                  </ButtonPrimary>
                 )}
               </div>
             </div>

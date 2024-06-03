@@ -1,5 +1,5 @@
 import AriaModal from '@/components/AriaModal'
-import { ButtonYellow } from '@/components/Button'
+import { ButtonPrimary } from '@/components/Button'
 import { Heading } from 'react-aria-components'
 
 export default function SuccessModal(props: { isOpen: boolean; onClose: () => void; content?: string }) {
@@ -15,9 +15,9 @@ export default function SuccessModal(props: { isOpen: boolean; onClose: () => vo
           SUCCESS!
         </Heading>
         <p className={'mt-4 text-white text-xs'}>{content}</p>
-        <ButtonYellow className={'!max-w-40 mt-8 w-full'} onPress={onClose}>
+        <ButtonPrimary className={'max-w-40 mt-8 w-full'} onPress={onClose}>
           OK
-        </ButtonYellow>
+        </ButtonPrimary>
       </div>
     </AriaModal>
   )
