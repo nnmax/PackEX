@@ -28,6 +28,8 @@ import { calculateGasMargin } from '@/utils'
 import { toast } from 'react-toastify'
 import useGasPrice from '@/hooks/useGasPrice'
 import SuccessModal from '@/components/Pool/SuccessModal'
+import { usePriceState } from '@/state/price/hooks'
+import { BigNumber } from '@ethersproject/bignumber'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -39,6 +41,7 @@ export default function Swap() {
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
   const gasPrice = useGasPrice()
+  const price = usePriceState()
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
   const {
@@ -124,20 +127,17 @@ export default function Swap() {
 
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
-  const transactionFeeInGwei = useMemo(() => {
-    let value = ''
-
-    if (approveGas && swapGasLimit && gasPrice) {
-      value = formatUnits(calculateGasMargin(approveGas.add(swapGasLimit)).mul(gasPrice), 'gwei')
+  const transactionFeeInUSD = useMemo(() => {
+    if (!swapGasLimit || !gasPrice || !price) return '-'
+    let value: BigNumber
+    if (approveGas) {
+      value = calculateGasMargin(approveGas.add(swapGasLimit)).mul(gasPrice)
+    } else {
+      value = calculateGasMargin(swapGasLimit).mul(gasPrice)
     }
-    if (swapGasLimit && gasPrice) {
-      value = formatUnits(calculateGasMargin(swapGasLimit).mul(gasPrice), 'gwei')
-    }
-    if (value.indexOf('.') !== -1) {
-      value = value.slice(0, value.indexOf('.') + 3)
-    }
-    return value
-  }, [approveGas, swapGasLimit, gasPrice])
+    const result = Math.round(Number(formatUnits(value, 18)) * Number(price) * Math.pow(10, 8)) / Math.pow(10, 8)
+    return result === 0 ? '< 0.00000001' : result.toString()
+  }, [swapGasLimit, gasPrice, price, approveGas])
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
@@ -247,7 +247,7 @@ export default function Swap() {
           className={'mt-1'}
         />
 
-        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInGwei} />
+        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInUSD} />
 
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (

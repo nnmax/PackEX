@@ -16,6 +16,7 @@ import { BrowserRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 import { BTCWalletProvider } from '@/hooks/useBTCWallet'
+import PriceUpdater from '@/state/price/updater'
 
 declare module '@uniswap/token-lists' {
   export interface TokenInfo {
@@ -36,6 +37,7 @@ function Updaters() {
       <ApplicationUpdater />
       <TransactionUpdater />
       <MulticallUpdater />
+      <PriceUpdater />
     </>
   )
 }

@@ -8,6 +8,7 @@ import mint from './mint/reducer'
 import lists from './lists/reducer'
 import burn from './burn/reducer'
 import multicall from './multicall/reducer'
+import price from './price/reducer'
 
 const store = configureStore({
   reducer: {
@@ -19,6 +20,7 @@ const store = configureStore({
     burn,
     multicall,
     lists,
+    price,
   },
   middleware: [...getDefaultMiddleware({ thunk: false })],
 })
