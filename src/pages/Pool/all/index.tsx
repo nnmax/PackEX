@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
 import { isEqual } from 'lodash-es'
-import { getAllPools, AllPoolListData } from '@/api'
+import { getAllPools, AllPoolListData, PoolAllItem } from '@/api'
 import { usePoolAllList } from '@/state/user/hooks'
 // import GearIcon from '@/components/Icons/GearIcon'
 // import SortIcon from '@/components/Icons/sortIcon'
@@ -80,7 +80,7 @@ const PoolAll = () => {
               <Cell>{`${item.apy} %`}</Cell>
               <Cell>
                 <Link
-                  to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
+                  to={getLinkHref(item)}
                   className={
                     'text-lemonYellow inline-block w-[60px] h-6 leading-5 border rounded-sm border-lemonYellow'
                   }
@@ -178,3 +178,13 @@ const PoolAll = () => {
 }
 
 export default PoolAll
+
+function getLinkHref(item: PoolAllItem) {
+  if (item.token0Name.toLowerCase() === 'weth') {
+    return `/pool/add/eth/${item.token1Contract}`
+  }
+  if (item.token1Name.toLowerCase() === 'weth') {
+    return `/pool/add/${item.token0Contract}/eth`
+  }
+  return `/pool/add/${item.token0Contract}/${item.token1Contract}`
+}

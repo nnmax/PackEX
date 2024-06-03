@@ -18,7 +18,7 @@ import {
 } from '../../constants'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import { connectBTCWallet, connectWallet, disconnectWallet } from '@/api'
+import { connectBTCWallet, connectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
 import okxLogo from '../../assets/images/okx.svg'
 import unisatLogo from '../../assets/images/unisat.svg'
@@ -38,7 +38,7 @@ export default function WalletModal() {
   useEffect(() => {
     if (error instanceof UnsupportedChainIdError) {
       deactivate()
-      disconnectWallet().catch(() => {})
+      // disconnectWallet().catch(() => {})
     }
   }, [error, deactivate])
 

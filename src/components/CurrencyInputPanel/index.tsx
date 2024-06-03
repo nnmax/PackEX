@@ -155,6 +155,7 @@ export default function CurrencyInputPanel({
           onCurrencySelect={onCurrencySelect}
           otherSelectedCurrency={otherCurrency}
           selectedCurrency={currency}
+          showETH
         />
       )}
     </div>
@@ -167,8 +168,9 @@ function ChooseModal(props: {
   selectedCurrency?: Token | null
   onCurrencySelect: (currency: Token) => void
   otherSelectedCurrency?: Token | null
+  showETH?: boolean
 }) {
-  const { open, onClose, onCurrencySelect, otherSelectedCurrency, selectedCurrency } = props
+  const { open, onClose, onCurrencySelect, otherSelectedCurrency, selectedCurrency, showETH } = props
 
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -244,7 +246,7 @@ function ChooseModal(props: {
           onKeyDown={handleEnter}
         />
       </div>
-      <SuggestedTokens onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} />
+      <SuggestedTokens onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} showETH={showETH} />
       <hr className={'mb-2 mt-4 h-0.5 w-full border-none bg-[#494949]'} />
 
       <CurrencyList
@@ -252,13 +254,18 @@ function ChooseModal(props: {
         onCurrencySelect={handleCurrencySelect}
         otherCurrency={otherSelectedCurrency}
         selectedCurrency={selectedCurrency}
+        showETH={showETH}
       />
     </AriaModal>
   )
 }
 
-function SuggestedTokens(props: { selectedCurrency?: Token | null; onSelect: (currency: Token) => void }) {
-  const { onSelect, selectedCurrency } = props
+function SuggestedTokens(props: {
+  selectedCurrency?: Token | null
+  onSelect: (currency: Token) => void
+  showETH?: boolean
+}) {
+  const { onSelect, selectedCurrency, showETH } = props
   const value = selectedCurrency instanceof Token ? selectedCurrency.address : ''
   const allTokens = useAllTokens()
   const options = Object.values(allTokens).filter((token) => token.commonFlag)
@@ -269,16 +276,32 @@ function SuggestedTokens(props: { selectedCurrency?: Token | null; onSelect: (cu
       value={value}
       onChange={(changedValue) => {
         if (changedValue !== value) {
-          onSelect(options.find((option) => option.address === changedValue) as Token)
+          if (changedValue === 'eth') {
+            onSelect(ETHER as Token)
+          } else {
+            onSelect(options.find((option) => option.address === changedValue) as Token)
+          }
         }
       }}
     >
+      {showETH && (
+        <ToggleButton
+          className={'flex h-8 items-center gap-1 rounded bg-[#0F0F0F] px-1 py-1.5'}
+          value={'eth'}
+          key={'eth'}
+          disabled={selectedCurrency === ETHER}
+        >
+          <CurrencyLogo currency={ETHER} style={{ marginRight: 8 }} />
+          <span>{ETHER.symbol}</span>
+        </ToggleButton>
+      )}
       {options.map((token) => {
         return (
           <ToggleButton
             className={'flex h-8 items-center gap-1 rounded bg-[#0F0F0F] px-1 py-1.5'}
             value={token.address}
             key={token.address}
+            disabled={selectedCurrency === token}
           >
             <CurrencyLogo currency={token} style={{ marginRight: 8 }} />
             <span>{token.symbol}</span>
