@@ -75,7 +75,7 @@ const PoolMy = () => {
                     <div className={'flex items-center justify-start'}>
                       <img className={'h-6 w-6 rounded-ful'} src={item.token0LogoUri} alt="logo0" />{' '}
                       <span className={'text-xs ml-2 mr-2'}>{item.token0Amount}</span> /
-                      <img className={'h-6 w-6 rounded-ful ml-2'} src={item.token0LogoUri} alt="logo1" />{' '}
+                      <img className={'h-6 w-6 rounded-ful ml-2'} src={item.token1LogoUri} alt="logo1" />{' '}
                       <span className={'text-xs ml-2'}>{item.token1Amount}</span>
                     </div>
                   </div>
