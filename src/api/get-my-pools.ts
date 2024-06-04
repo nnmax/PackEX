@@ -18,7 +18,7 @@ export interface PoolMyItem {
   token0Amount: number | null
   token1Amount: number | null
   poolShare: number | null
-  feeEarned: number | null
+  paxEarnedToday: number | null
   lpTokenAmount: number | null
 }
 

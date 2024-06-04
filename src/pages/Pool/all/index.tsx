@@ -77,7 +77,7 @@ const PoolAll = () => {
               <Cell>{item.tvl}</Cell>
               <Cell>{item.volume24h}</Cell>
               <Cell>{item.volume7d}</Cell>
-              <Cell>{`${item.apy} %`}</Cell>
+              <Cell>{`${item.apr} %`}</Cell>
               <Cell>
                 <Link
                   to={getLinkHref(item)}

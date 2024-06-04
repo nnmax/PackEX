@@ -81,7 +81,7 @@ const PoolMy = () => {
                   </div>
                 </Cell>
                 <Cell>{`${item.poolShare} %`}</Cell>
-                <Cell>{item.feeEarned}</Cell>
+                <Cell>{item.paxEarnedToday}</Cell>
                 <Cell>{item.lpTokenAmount}</Cell>
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
