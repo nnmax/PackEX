@@ -11,25 +11,33 @@ interface ButtonPrimaryProps extends Omit<AriaButtonProps, 'children'> {
   children?: React.ReactNode
 }
 
-const ButtonBase = forwardRef<HTMLButtonElement, AriaButtonProps>(function BaseButtonYellow(props, ref) {
-  const { className, ...restProps } = props
+interface ButtonBaseProps extends Omit<ButtonPrimaryProps, 'isError'> {}
+
+const ButtonBase = forwardRef<HTMLButtonElement, ButtonBaseProps>(function BaseButtonYellow(props, ref) {
+  const { className, children, isLoading, isDisabled, ...restProps } = props
 
   return (
     <AriaButton
       {...restProps}
+      isDisabled={isDisabled || isLoading}
       ref={ref}
       className={clsx(className, 'flex h-9 px-2 items-center justify-center self-center rounded-md text-xs')}
-    />
+    >
+      {isLoading && (
+        <span className={'loading loading-dots absolute left-1/2 -translate-x-1/2 flex'} aria-label="Loading" />
+      )}
+      <span className={clsx('flex items-center', isLoading && 'text-transparent')}>{children}</span>
+    </AriaButton>
   )
 })
 
-export const ButtonPrimary = forwardRef<HTMLButtonElement, ButtonPrimaryProps>(function ButtonYellow(props, ref) {
-  const { className, isDisabled, isError, isLoading, children, ...restProps } = props
+export const ButtonPrimary = forwardRef<HTMLButtonElement, ButtonPrimaryProps>(function ButtonPrimary(props, ref) {
+  const { className, isDisabled, isError, children, ...restProps } = props
 
   return (
     <ButtonBase
       {...restProps}
-      isDisabled={isDisabled || isLoading}
+      isDisabled={isDisabled}
       ref={ref}
       className={clsx(
         className,
@@ -40,10 +48,29 @@ export const ButtonPrimary = forwardRef<HTMLButtonElement, ButtonPrimaryProps>(f
             : 'bg-lemonYellow text-[#020202]',
       )}
     >
-      {isLoading && (
-        <span className={'loading loading-dots absolute left-1/2 -translate-x-1/2 flex'} aria-label="Loading" />
+      {children}
+    </ButtonBase>
+  )
+})
+
+export const ButtonSecondary = forwardRef<HTMLButtonElement, ButtonPrimaryProps>(function ButtonSecondary(props, ref) {
+  const { className, isDisabled, isError, children, ...restProps } = props
+
+  return (
+    <ButtonBase
+      {...restProps}
+      isDisabled={isDisabled}
+      ref={ref}
+      className={clsx(
+        className,
+        isError
+          ? 'text-[#FF2323] border-[#FF2323] border'
+          : isDisabled
+            ? 'text-[#888] border-[#888] border'
+            : 'text-lemonYellow border border-lemonYellow',
       )}
-      <span className={clsx('flex items-center', isLoading && 'text-transparent')}>{children}</span>
+    >
+      {children}
     </ButtonBase>
   )
 })

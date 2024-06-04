@@ -1,10 +1,9 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
-import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
@@ -28,6 +27,8 @@ import { usePriceState } from '@/state/price/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useGasPrice } from 'wagmi'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
+import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
+import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN } from '@/constants'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -51,6 +52,7 @@ export default function Swap() {
     inputErrorType,
   } = useDerivedSwapInfo()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
+  const [priceImpactWarningModalOpen, setPriceImpactWarningModalOpen] = useState(false)
   const {
     wrapType,
     execute: onWrap,
@@ -73,18 +75,12 @@ export default function Swap() {
 
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
-  const handleTypeInput = useCallback(
-    (value: string) => {
-      onUserInput(Field.INPUT, value)
-    },
-    [onUserInput],
-  )
-  const handleTypeOutput = useCallback(
-    (value: string) => {
-      onUserInput(Field.OUTPUT, value)
-    },
-    [onUserInput],
-  )
+  const handleTypeInput = (value: string) => {
+    onUserInput(Field.INPUT, value)
+  }
+  const handleTypeOutput = (value: string) => {
+    onUserInput(Field.OUTPUT, value)
+  }
 
   // modal and loading
   const [{ showConfirm, activeStep }, setSwapState] = useState<{
@@ -140,12 +136,8 @@ export default function Swap() {
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
 
-  const handleSwap = useCallback(async () => {
-    if (
-      !swapCallback ||
-      !isSupportedChainId ||
-      (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee))
-    ) {
+  const handleSwap = async () => {
+    if (!swapCallback) {
       return
     }
 
@@ -159,29 +151,37 @@ export default function Swap() {
       })
       .finally(() => {
         setSwapState((prev) => ({ ...prev, activeStep: 0, showConfirm: false }))
+        setPriceImpactWarningModalOpen(false)
       })
-  }, [approval, approveCallback, isSupportedChainId, priceImpactWithoutFee, swapCallback])
+  }
 
-  const handleConfirmDismiss = useCallback(() => {
+  const handleConfirm = () => {
+    if (!swapCallback || !isSupportedChainId || !priceImpactWithoutFee) {
+      return
+    }
+
+    if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
+      setPriceImpactWarningModalOpen(true)
+      return
+    }
+
+    handleSwap()
+  }
+
+  const handleConfirmDismiss = () => {
     setSwapState((prev) => ({ ...prev, showCompleted: false, showConfirm: false, activeStep: 0 }))
     onUserInput(Field.INPUT, '')
-  }, [onUserInput])
+  }
 
-  const handleInputSelect = useCallback(
-    (inputCurrency: Currency) => {
-      onCurrencySelection(Field.INPUT, inputCurrency)
-    },
-    [onCurrencySelection],
-  )
+  const handleInputSelect = (inputCurrency: Currency) => {
+    onCurrencySelection(Field.INPUT, inputCurrency)
+  }
 
-  const handleMaxInput = useCallback(() => {
+  const handleMaxInput = () => {
     maxAmountInput && onUserInput(Field.INPUT, maxAmountInput.toExact())
-  }, [maxAmountInput, onUserInput])
+  }
 
-  const handleOutputSelect = useCallback(
-    (outputCurrency: Currency) => onCurrencySelection(Field.OUTPUT, outputCurrency),
-    [onCurrencySelection],
-  )
+  const handleOutputSelect = (outputCurrency: Currency) => onCurrencySelection(Field.OUTPUT, outputCurrency)
 
   const handleCloseSuccess = () => {
     setSuccessModalOpen(false)
@@ -199,6 +199,11 @@ export default function Swap() {
       )}
 
       <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccess} content={'SWAP COMPLETED'} />
+      <PriceImpactWarningModal
+        isOpen={priceImpactWarningModalOpen}
+        onClose={() => setPriceImpactWarningModalOpen(false)}
+        onContinue={handleSwap}
+      />
       <div
         className={'flex w-full relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
         style={{
@@ -242,7 +247,12 @@ export default function Swap() {
           className={'mt-1'}
         />
 
-        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInUSD} />
+        <SwapDetailAccordion
+          priceImpactSeverity={priceImpactSeverity}
+          trade={trade}
+          price={trade?.executionPrice}
+          transactionFee={transactionFeeInUSD}
+        />
 
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (
@@ -265,7 +275,7 @@ export default function Swap() {
               isError={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
               isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
               className={'w-full max-w-[240px]'}
-              onPress={handleSwap}
+              onPress={handleConfirm}
             >
               {swapInputError
                 ? swapInputError

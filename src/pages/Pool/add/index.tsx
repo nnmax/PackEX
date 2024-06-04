@@ -9,7 +9,7 @@ import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mint/hooks'
 import { useCurrency } from '@/hooks/Tokens'
-import { ChainId, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, Currency, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
 import { useCallback, useState } from 'react'
 import { maxAmountSpend } from '@/utils/maxAmountSpend'
@@ -26,6 +26,7 @@ import SuccessModal from '@/components/Pool/SuccessModal'
 import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
+import { currencyId } from '@/utils/currencyId'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -232,6 +233,14 @@ export default function PoolAdd() {
     history.push('/pool/all')
   }
 
+  const handleCurrencyASelect = (currencyA: Currency) => {
+    history.push(`/pool/add/${currencyId(currencyA)}/${currencyIdB}`)
+  }
+
+  const handleCurrencyBSelect = (currencyB: Currency) => {
+    history.push(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
+  }
+
   return (
     <div className={'py-4'}>
       <Button
@@ -279,7 +288,8 @@ export default function PoolAdd() {
                 }}
                 showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
                 currency={currencies[Field.CURRENCY_A]}
-                disableCurrencySelect
+                disableCurrencySelect={currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_A] !== ETHER}
+                onCurrencySelect={handleCurrencyASelect}
                 rhombus={'top'}
                 className={'mt-6'}
               />
@@ -301,7 +311,8 @@ export default function PoolAdd() {
                 }}
                 showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
                 currency={currencies[Field.CURRENCY_B]}
-                disableCurrencySelect
+                disableCurrencySelect={currencies[Field.CURRENCY_B] && currencies[Field.CURRENCY_B] !== ETHER}
+                onCurrencySelect={handleCurrencyBSelect}
                 rhombus={'bottom'}
                 className={'mt-1'}
               />

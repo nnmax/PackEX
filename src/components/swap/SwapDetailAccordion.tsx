@@ -2,14 +2,19 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import ArrowDown from '@/components/Icons/ArrowDown'
 import { Price, Trade } from '@nnmax/uniswap-sdk-v2'
-import { computeTradePriceBreakdown } from '@/utils/prices'
+import { computeTradePriceBreakdown, warningSeverity } from '@/utils/prices'
 import { useLastTruthy } from '@/hooks/useLast'
-import { ONE_BIPS } from '@/constants'
+import { ALLOWED_PRICE_IMPACT_HIGH, ONE_BIPS } from '@/constants'
 import { useUserSlippageTolerance } from '@/state/user/hooks'
 import { Button } from 'react-aria-components'
 
-export default function SwapDetailAccordion(props: { price?: Price; trade?: Trade; transactionFee: string }) {
-  const { price, trade: tradeProp, transactionFee } = props
+export default function SwapDetailAccordion(props: {
+  price?: Price
+  trade?: Trade
+  transactionFee: string
+  priceImpactSeverity: ReturnType<typeof warningSeverity>
+}) {
+  const { price, trade: tradeProp, transactionFee, priceImpactSeverity } = props
   const [showDetail, setShowDetail] = useState(false)
   const [showInverted, setShowInverted] = useState(false)
   const formattedPrice = showInverted ? price?.toSignificant(6) : price?.invert()?.toSignificant(6)
@@ -58,7 +63,13 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
           />
         </Button>
       </div>
-      {/* <p className={'mt-3 flex h-6 items-center bg-[#FF2323] px-2 text-white'}>{'HIGH PRICE IMPACT -2.54%'}</p> */}
+      {!!priceImpactWithoutFee &&
+        !priceImpactWithoutFee?.lessThan(ALLOWED_PRICE_IMPACT_HIGH) &&
+        priceImpactSeverity <= 3 && (
+          <p className={'mt-3 flex h-6 items-center bg-[#FF2323] px-2 text-white'}>
+            {`HIGH PRICE IMPACT ~${priceImpactWithoutFee.toFixed(0)}%`}
+          </p>
+        )}
       <div
         className={clsx(
           'flex flex-col gap-4 overflow-hidden text-white transition-all duration-300',

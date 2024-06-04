@@ -1,6 +1,6 @@
 import fetcher from '@/utils/fetcher'
 
-interface PoolMy {
+export interface PoolMyItem {
   id: number
   poolName: string | null
   poolContract: string
@@ -9,10 +9,10 @@ interface PoolMy {
   volume7d: number | null
   apy: number | null
   createTime: string | null
-  token0Name: string | null
+  token0Name: string
   token0Contract: string
   token0LogoUri: string
-  token1Name: string | null
+  token1Name: string
   token1Contract: string
   token1LogoUri: string
   token0Amount: number | null
@@ -22,10 +22,8 @@ interface PoolMy {
   lpTokenAmount: number | null
 }
 
-export type PoolMyItem = PoolMy
-
 export type MyPoolListData = {
-  myPools: PoolMy[]
+  myPools: PoolMyItem[]
 }
 
 export default function getMyPools() {
