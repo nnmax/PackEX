@@ -57,7 +57,7 @@ const PoolAll = () => {
           </Column>
           <Column>{'VOLUME (24H)'}</Column>
           <Column>{'VOLUME (7D)'}</Column>
-          <Column>{'APY'}</Column>
+          <Column>{'APR'}</Column>
           <Column>{'ACTION'}</Column>
         </TableHeader>
         <TableBody items={poolAllList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>

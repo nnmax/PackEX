@@ -53,7 +53,7 @@ const PoolMy = () => {
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>{'AMOUNT'}</Column>
           <Column>{'POOL SHARE'}</Column>
-          <Column>{'FEE EARNED'}</Column>
+          <Column>{'PAX EARNED (TODAY)'}</Column>
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
