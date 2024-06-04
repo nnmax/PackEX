@@ -10,11 +10,10 @@ import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLef
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/burn/actions'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
-import { ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
 import { usePairContract } from '@/hooks/useContract'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { useCurrency } from '@/hooks/Tokens'
-import { useActiveWeb3React } from '@/hooks'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from '@/state/burn/hooks'
@@ -29,6 +28,8 @@ import AriaModal from '@/components/AriaModal'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import SuccessModal from '@/components/Pool/SuccessModal'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
 
 const commonSpanStyles = {
   className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
@@ -42,7 +43,9 @@ export default function PoolRemove() {
     currencyIdB: string
   }>()
   const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
-  const { account, chainId, library } = useActiveWeb3React()
+  const provider = useEthersProvider()
+  const { address: account } = useAccount()
+  const chainId: ChainId = useChainId()
   const [tokenA, tokenB] = useMemo(
     () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
     [currencyA, currencyB, chainId],
@@ -87,7 +90,7 @@ export default function PoolRemove() {
   const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
 
   const onAttemptToApprove = useCallback(async () => {
-    if (!pairContract || !pair || !library) throw new Error('missing dependencies')
+    if (!pairContract || !pair || !provider) throw new Error('missing dependencies')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
     // try to gather a signature for permission
@@ -131,7 +134,7 @@ export default function PoolRemove() {
       message,
     })
 
-    await library
+    await provider
       .send('eth_signTypedData_v4', [account, data])
       .then(splitSignature)
       .then((signature) => {
@@ -150,7 +153,7 @@ export default function PoolRemove() {
         }
         return
       })
-  }, [account, approveCallback, chainId, deadline, library, pair, pairContract, parsedAmounts])
+  }, [account, approveCallback, chainId, deadline, provider, pair, pairContract, parsedAmounts])
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -165,12 +168,12 @@ export default function PoolRemove() {
   const addTransaction = useTransactionAdder()
 
   const onRemove = useCallback(async () => {
-    if (!chainId || !library || !account) throw new Error('missing dependencies')
+    if (!chainId || !provider || !account) throw new Error('missing dependencies')
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
-    const router = getRouterContract(chainId, library, account)
+    const router = getRouterContract(chainId, provider, account)
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -309,7 +312,7 @@ export default function PoolRemove() {
     currencyA,
     currencyB,
     deadline,
-    library,
+    provider,
     parsedAmounts,
     signatureData,
     tokenA,

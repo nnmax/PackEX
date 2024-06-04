@@ -6,9 +6,9 @@ import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLef
 import QueryString from 'qs'
 import { Asset } from '@/api'
 import withdrawToken from '@/api/withdraw-token'
-import { useActiveWeb3React } from '@/hooks'
 import { toast } from 'react-toastify'
 import FormCard from '../components/FormCard'
+import { useSendTransaction } from 'wagmi'
 
 enum FormField {
   Amount = 'amount',
@@ -18,7 +18,7 @@ enum FormField {
 export default function Withdraw() {
   const [isOpen, setOpen] = useState<boolean>(false)
   const { search } = useLocation()
-  const { library } = useActiveWeb3React()
+  const { sendTransactionAsync } = useSendTransaction()
   const [loading, setLoading] = useState<boolean>(false)
 
   const data = QueryString.parse(search, {
@@ -27,7 +27,6 @@ export default function Withdraw() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!library) throw new Error('Library is not ready')
     setLoading(true)
     const formData = Object.fromEntries(new FormData(event.currentTarget)) as Record<FormField, string>
     const { contractMethod } = await withdrawToken({
@@ -42,16 +41,13 @@ export default function Withdraw() {
       throw error
     })
 
-    await library
-      .getSigner()
-      .sendTransaction({
-        chainId: contractMethod.chainId,
-        to: contractMethod.destination,
-        value: contractMethod.value,
-        data: contractMethod.callData,
-      })
-      .then((tx) => {
-        console.log('Submitted a transaction:', tx)
+    await sendTransactionAsync({
+      chainId: contractMethod.chainId,
+      to: contractMethod.destination,
+      value: BigInt(contractMethod.value),
+      data: contractMethod.callData,
+    })
+      .then(() => {
         setOpen(true)
       })
       .catch((error) => {

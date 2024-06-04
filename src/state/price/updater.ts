@@ -1,16 +1,16 @@
-import { useActiveWeb3React } from '@/hooks'
 import useInterval from '@/hooks/useInterval'
 import useIsWindowVisible from '@/hooks/useIsWindowVisible'
 import { AppDispatch } from '@/state'
 import { updatePrice } from '@/state/price/actions'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useAccount } from 'wagmi'
 
 export default function PriceUpdater(): null {
   const isWindowVisible = useIsWindowVisible()
   const [rateLimited, setRateLimited] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
-  const { library } = useActiveWeb3React()
+  const { isConnected } = useAccount()
 
   const fetchPrice = () => {
     if (!isWindowVisible || rateLimited) return
@@ -37,7 +37,7 @@ export default function PriceUpdater(): null {
       })
   }
 
-  useInterval(fetchPrice, library ? 1000 * 30 : null)
+  useInterval(fetchPrice, isConnected ? 1000 * 30 : null)
 
   return null
 }

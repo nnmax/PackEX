@@ -6,8 +6,9 @@ import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, getRouterContract, isAddress, shortenAddress } from '../utils'
 import isZero from '../utils/isZero'
-import { useActiveWeb3React } from './index'
 import useENS from './useENS'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
 
 export enum SwapCallbackState {
   INVALID,
@@ -45,15 +46,17 @@ function useSwapCallArguments(
   deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): SwapCall[] {
-  const { account, chainId, library } = useActiveWeb3React()
+  const provider = useEthersProvider()
+  const { address: account } = useAccount()
+  const chainId = useChainId()
 
   const { address: recipientAddress } = useENS(recipientAddressOrName)
   const recipient = recipientAddressOrName === null ? account : recipientAddress
 
   return useMemo(() => {
-    if (!trade || !recipient || !library || !account || !chainId) return []
+    if (!trade || !recipient || !provider || !account || !chainId) return []
 
-    const contract = getRouterContract(chainId, library, account)
+    const contract = getRouterContract(chainId, provider, account)
     if (!contract) {
       return []
     }
@@ -81,7 +84,7 @@ function useSwapCallArguments(
     }
 
     return swapMethods.map((parameters) => ({ parameters, contract }))
-  }, [account, allowedSlippage, chainId, deadline, library, recipient, trade])
+  }, [account, allowedSlippage, chainId, deadline, provider, recipient, trade])
 }
 
 // returns a function that will execute a swap, if the parameters are all valid
@@ -97,7 +100,9 @@ export function useSwapCallback(
   error: string | null
   gasLimit: BigNumber | undefined
 } {
-  const { account, chainId, library } = useActiveWeb3React()
+  const provider = useEthersProvider()
+  const { address: account } = useAccount()
+  const chainId = useChainId()
 
   const swapCalls = useSwapCallArguments(trade, allowedSlippage, deadline, recipientAddressOrName)
   const [gasLimit, setGasLimit] = useState<BigNumber>()
@@ -169,7 +174,7 @@ export function useSwapCallback(
   }, [getSuccessfulEstimation])
 
   return useMemo(() => {
-    if (!trade || !library || !account || !chainId) {
+    if (!trade || !provider || !account || !chainId) {
       return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Missing dependencies' }
     }
     if (!recipient) {
@@ -238,7 +243,7 @@ export function useSwapCallback(
     addTransaction,
     chainId,
     getSuccessfulEstimation,
-    library,
+    provider,
     recipient,
     recipientAddressOrName,
     trade,

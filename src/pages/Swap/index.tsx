@@ -25,11 +25,10 @@ import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
-import { toast } from 'react-toastify'
-import useGasPrice from '@/hooks/useGasPrice'
 import SuccessModal from '@/components/Pool/SuccessModal'
 import { usePriceState } from '@/state/price/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
+import { useGasPrice } from 'wagmi'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -40,7 +39,7 @@ export default function Swap() {
   // get custom setting values for user
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
-  const gasPrice = useGasPrice()
+  const { data: gasPrice } = useGasPrice()
   const price = usePriceState()
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
@@ -157,9 +156,6 @@ export default function Swap() {
       .then(() => {
         setSuccessModalOpen(true)
       })
-      .catch((error) => {
-        toast.error(error.message)
-      })
       .finally(() => {
         setSwapState((prev) => ({ ...prev, activeStep: 0, showConfirm: false }))
       })
@@ -225,9 +221,7 @@ export default function Swap() {
 
         <Button
           aria-label={'Switch'}
-          onPress={() => {
-            onSwitchTokens()
-          }}
+          onPress={onSwitchTokens}
           className={
             'absolute top-[148px] left-1/2 z-[1] flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-md border-4 border-[#0f0f0f] bg-[#242424]'
           }

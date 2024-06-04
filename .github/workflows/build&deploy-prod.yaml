@@ -15,7 +15,7 @@ env:
   CONTAINER_NAME: app
   PROXY_PASS: https://api.packex.io
   SERVER_NAME: packex.io
-  APP_ENV: prod
+  REACT_APP_APP_ENV: prod
 
 jobs:
   deploy:
@@ -42,12 +42,12 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           PROXY_PASS: ${{env.PROXY_PASS}}
           SERVER_NAME: ${{env.SERVER_NAME}}
-          APP_ENV: ${{env.APP_ENV}}
+          REACT_APP_APP_ENV: ${{env.REACT_APP_APP_ENV}}
         run: |
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg APP_ENV --build-arg PROXY_PASS --build-arg SERVER_NAME -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker build --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest --build-arg REACT_APP_APP_ENV --build-arg PROXY_PASS --build-arg SERVER_NAME -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 

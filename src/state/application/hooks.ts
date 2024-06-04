@@ -1,11 +1,11 @@
 import { useCallback } from 'react'
-import { useActiveWeb3React } from '../../hooks'
 import { addPopup, PopupContent, toggleWalletModal, toggleBTCWalletModal } from './actions'
 import { useSelector, useDispatch } from 'react-redux'
 import { AppState } from '../index'
+import { useChainId } from 'wagmi'
 
 export function useBlockNumber(): number | undefined {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
 
   return useSelector((state: AppState) => state.application.blockNumber[chainId ?? -1])
 }

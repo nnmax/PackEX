@@ -9,9 +9,8 @@ import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mint/hooks'
 import { useWalletModalToggle } from '@/state/application/hooks'
-import { useActiveWeb3React } from '@/hooks'
 import { useCurrency } from '@/hooks/Tokens'
-import { ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
 import { useCallback, useState } from 'react'
 import { maxAmountSpend } from '@/utils/maxAmountSpend'
@@ -26,6 +25,8 @@ import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import ReviewModal from '@/components/Pool/ReviewModal'
 import SuccessModal from '@/components/Pool/SuccessModal'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -33,8 +34,9 @@ export default function PoolAdd() {
     currencyIdA: string
     currencyIdB: string
   }>()
-  const { account, chainId, library } = useActiveWeb3React()
-
+  const { address: account } = useAccount()
+  const chainId: ChainId = useChainId()
+  const provider = useEthersProvider()
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
 
@@ -99,8 +101,8 @@ export default function PoolAdd() {
   const addTransaction = useTransactionAdder()
 
   const onAdd = useCallback(async () => {
-    if (!chainId || !library || !account) return
-    const router = getRouterContract(chainId, library, account)
+    if (!chainId || !provider || !account) return
+    const router = getRouterContract(chainId, provider, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB) {
@@ -188,7 +190,7 @@ export default function PoolAdd() {
     currencyA,
     currencyB,
     deadline,
-    library,
+    provider,
     noLiquidity,
     parsedAmounts,
   ])

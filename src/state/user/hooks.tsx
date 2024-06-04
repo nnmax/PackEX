@@ -3,8 +3,6 @@ import { flatMap } from 'lodash-es'
 import { useCallback, useMemo, useRef } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from '../../constants'
-
-import { useActiveWeb3React } from '../../hooks'
 import { useAllTokens } from '../../hooks/Tokens'
 import { AppDispatch, AppState } from '../index'
 import {
@@ -24,6 +22,7 @@ import {
   updatePaxInvite,
   updatePaxInfo,
 } from './actions'
+import { useAccount, useChainId } from 'wagmi'
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -128,7 +127,7 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
 }
 
 export function useUserAddedTokens(): Token[] {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const serializedTokensMap = useSelector<AppState, AppState['user']['tokens']>(({ user: { tokens } }) => tokens)
 
   return useMemo(() => {
@@ -168,11 +167,15 @@ export function toV2LiquidityToken([tokenA, tokenB]: [Token, Token]): Token {
  * Returns all the pairs of tokens that are tracked by the user for the current chain ID.
  */
 export function useTrackedTokenPairs(): [Token, Token][] {
-  const { chainId } = useActiveWeb3React()
+  const chainId: ChainId = useChainId()
   const tokens = useAllTokens()
 
   // pinned pairs
-  const pinnedPairs = useMemo(() => (chainId ? PINNED_PAIRS[chainId] ?? [] : []), [chainId])
+  const pinnedPairs = useMemo(() => {
+    if (!chainId) return []
+
+    return PINNED_PAIRS[chainId] ?? []
+  }, [chainId])
 
   // pairs for every token against every base
   const generatedPairs: [Token, Token][] = useMemo(
@@ -232,18 +235,15 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 }
 
 export function useUserInfo(): [AppState['user']['userInfo'], (data: AppState['user']['userInfo']) => void] {
-  const { account } = useActiveWeb3React()
+  const { isConnected } = useAccount()
   const userInfo = useSelector<AppState, AppState['user']['userInfo']>((state) => state.user.userInfo)
   const dispatch = useDispatch<AppDispatch>()
 
-  const updateUser = useCallback(
-    (data: AppState['user']['userInfo']) => {
-      dispatch(updateUserInfo(data))
-    },
-    [dispatch],
-  )
+  const updateUser = (data: AppState['user']['userInfo']) => {
+    dispatch(updateUserInfo(data))
+  }
 
-  return useMemo(() => [account ? userInfo : null, updateUser], [account, updateUser, userInfo])
+  return [isConnected ? userInfo : null, updateUser]
 }
 
 export function useAssetList() {

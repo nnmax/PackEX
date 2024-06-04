@@ -1,4 +1,3 @@
-import { useWeb3React } from '@web3-react/core'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { shortenAddress } from '../../utils'
 import WalletModal, { BTCWalletModal } from '../WalletModal'
@@ -8,15 +7,16 @@ import Wallet from '@/components/Icons/Wallet'
 import MaterialSymbolsLogout from '@/components/Icons/MaterialSymbolsLogout'
 import { disconnectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
+import { useDisconnect } from 'wagmi'
 
 function Web3StatusInner() {
-  const { deactivate } = useWeb3React()
+  const { disconnect } = useDisconnect()
   const [userInfo] = useUserInfo()
 
   const toggleWalletModal = useWalletModalToggle()
 
   const handleDisconnect = () => {
-    deactivate()
+    disconnect()
     disconnectWallet()
   }
 

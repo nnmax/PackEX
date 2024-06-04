@@ -3,7 +3,6 @@ import { PaxRewardRatio, PaxTableData, useFetchPaxInfo } from '@/api/get-pax-inf
 import { useFetchPaxInvite } from '@/api/get-pax-invite'
 import { ButtonPrimary } from '@/components/Button'
 import OTP from '@/components/OTPInput'
-import { useActiveWeb3React } from '@/hooks'
 import copy from 'copy-to-clipboard'
 import useENS from '@/hooks/useENS'
 import { useWalletModalToggle } from '@/state/application/hooks'
@@ -17,11 +16,14 @@ import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
 import Tooltip from '@/components/Tooltip'
 import Clock from '@/components/Icons/Clock'
+import { useConnectorClient } from 'wagmi'
+import { watchAsset } from 'viem/actions'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
-  const { connector } = useActiveWeb3React()
+  const { data: connectorClient } = useConnectorClient()
+
   const [userInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
   const inviteData = useFetchPaxInvite()
@@ -32,22 +34,17 @@ export default function PaxPage() {
       toggleWalletModal()
       return
     }
-    if (!connector || !infoData) return
+    if (!connectorClient || !infoData) return
 
     const options = {
       address: infoData.paxContract,
       symbol: 'PAX',
       decimals: 8,
     }
-    const provider = await connector.getProvider()
-    provider
-      .request({
-        method: 'wallet_watchAsset',
-        params: {
-          type: 'ERC20',
-          options,
-        },
-      })
+    watchAsset(connectorClient, {
+      type: 'ERC20',
+      options,
+    })
       .catch((e: any) => {
         toast.error(e?.message || 'Failed to watch asset')
         throw e

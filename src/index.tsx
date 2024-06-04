@@ -1,22 +1,21 @@
-import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
 import { ClickToComponent } from 'click-to-react-component'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Provider } from 'react-redux'
-import { NetworkContextName } from './constants'
 import App from './pages/App'
 import store from './state'
 import ApplicationUpdater from './state/application/updater'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
-import TransactionUpdater from './state/transactions/updater'
-import getLibrary from './utils/getLibrary'
 import './index.css'
 import { BrowserRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 import { BTCWalletProvider } from '@/hooks/useBTCWallet'
 import PriceUpdater from '@/state/price/updater'
+import { WagmiProvider } from 'wagmi'
+import wagmiConfig from '@/constants/wagmiConfig'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 declare module '@uniswap/token-lists' {
   export interface TokenInfo {
@@ -24,7 +23,7 @@ declare module '@uniswap/token-lists' {
   }
 }
 
-const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
+// const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 
 if ('ethereum' in window) {
   ;(window.ethereum as any).autoRefreshOnNetworkChange = false
@@ -35,18 +34,19 @@ function Updaters() {
     <>
       <ListsUpdater />
       <ApplicationUpdater />
-      <TransactionUpdater />
       <MulticallUpdater />
       <PriceUpdater />
     </>
   )
 }
 
+const queryClient = new QueryClient()
+
 function Providers({ children }: { children: React.ReactNode }) {
   const history = useHistory()
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3ProviderNetwork getLibrary={getLibrary}>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
         <I18nProvider locale={'en-US'}>
           <RouterProvider navigate={history.push}>
             <BTCWalletProvider>
@@ -54,8 +54,8 @@ function Providers({ children }: { children: React.ReactNode }) {
             </BTCWalletProvider>
           </RouterProvider>
         </I18nProvider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   )
 }
 

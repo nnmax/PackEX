@@ -1,15 +1,13 @@
-import { Currency, CurrencyAmount, Pair, Token, Trade } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, Currency, CurrencyAmount, Pair, Token, Trade } from '@nnmax/uniswap-sdk-v2'
 import { flatMap } from 'lodash-es'
 import { useMemo } from 'react'
-
 import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
 import { PairState, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-
-import { useActiveWeb3React } from './index'
+import { useChainId } from 'wagmi'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
-  const { chainId } = useActiveWeb3React()
+  const chainId: ChainId = useChainId()
 
   const bases: Token[] = useMemo(() => (chainId ? BASES_TO_CHECK_TRADES_AGAINST[chainId] : []), [chainId])
 

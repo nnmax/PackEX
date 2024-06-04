@@ -3,13 +3,12 @@ import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { PairState, usePair } from '../../data/Reserves'
 import { useTotalSupply } from '../../data/TotalSupply'
-
-import { useActiveWeb3React } from '../../hooks'
 import { wrappedCurrency, wrappedCurrencyAmount } from '../../utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
+import { useAccount, useChainId } from 'wagmi'
 
 const ZERO = JSBI.BigInt(0)
 
@@ -35,7 +34,8 @@ export function useDerivedMintInfo(
   fieldAError?: string
   fieldBError?: string
 } {
-  const { account, chainId } = useActiveWeb3React()
+  const { address: account } = useAccount()
+  const chainId = useChainId()
 
   const { independentField, typedValue, otherTypedValue } = useMintState()
 

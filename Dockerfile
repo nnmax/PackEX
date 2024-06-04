@@ -19,8 +19,8 @@ FROM base AS builder
 
 WORKDIR /app
 
-ARG APP_ENV=dev
-ENV APP_ENV=$APP_ENV
+ARG REACT_APP_APP_ENV=dev
+ENV REACT_APP_APP_ENV=$REACT_APP_APP_ENV
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY .yarn ./.yarn
@@ -29,7 +29,7 @@ COPY src ./src
 COPY lib ./lib
 COPY yarn.lock .env .env.production craco.config.ts package.json .yarnrc.yml tsconfig.json tailwind.config.js ./
 
-RUN yarn build:$APP_ENV
+RUN yarn build:$REACT_APP_APP_ENV
 
 FROM nginx:alpine
 
