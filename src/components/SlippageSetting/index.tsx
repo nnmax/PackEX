@@ -1,9 +1,9 @@
-import { Tab } from '@headlessui/react'
 import SettingSvg from '@/assets/images/settings-logo.svg'
 import Tooltip from '@/components/Tooltip'
 import { useUserSlippageTolerance } from '@/state/user/hooks'
 import { useState } from 'react'
 import clsx from 'clsx'
+import { TabList, Tabs, Tab, TabPanel } from 'react-aria-components'
 
 const tabClasses =
   'flex w-24 items-center justify-center transition-colors aria-selected:bg-lemonYellow aria-selected:text-black'
@@ -44,45 +44,47 @@ function SettingPanel() {
   }
 
   return (
-    <Tab.Group defaultIndex={0}>
+    <Tabs>
       <div className={'flex items-center gap-4'}>
         <span>{'Max.Slippage'}</span>
-        <Tab.List
+        <TabList
           className={'flex h-7 w-[130px] rounded border border-lemonYellow text-center text-xs text-lemonYellow'}
         >
-          <Tab className={tabClasses}>{'Auth'}</Tab>
-          <Tab className={tabClasses}>{'Custom'}</Tab>
-        </Tab.List>
+          <Tab id="auto" className={tabClasses}>
+            {'Auto'}
+          </Tab>
+          <Tab id="custom" className={tabClasses}>
+            {'Custom'}
+          </Tab>
+        </TabList>
       </div>
-      <Tab.Panels>
-        <Tab.Panel className={tabPanelClasses}>
-          <p className={'text-sm'}>{`${slippage / 100}%`}</p>
-        </Tab.Panel>
-        <Tab.Panel className={tabPanelClasses}>
-          <div className={'flex gap-4'}>
-            <div className={'relative h-7 w-[70px] rounded-sm bg-[#0f0f0f]'}>
-              <input
-                type={'number'}
-                value={slippageInput}
-                min={0}
-                max={MAX}
-                className={'h-full w-full bg-transparent py-2 pl-2.5 pr-3 reset-input-number'}
-                onBlur={() => parseCustomSlippage((slippage / 100).toFixed(2))}
-                onChange={(e) => parseCustomSlippage(e.target.value)}
-              />
-              <span className={'absolute right-2.5 top-1/2 -translate-y-1/2'}>{'%'}</span>
-            </div>
+      <TabPanel id="auto" className={tabPanelClasses}>
+        <p className={'text-sm'}>{`${slippage / 100}%`}</p>
+      </TabPanel>
+      <TabPanel id="custom" className={tabPanelClasses}>
+        <div className={'flex gap-4'}>
+          <div className={'relative h-7 w-[70px] rounded-sm bg-[#0f0f0f]'}>
             <input
-              type={'range'}
-              className={'flex-1'}
+              type={'number'}
               value={slippageInput}
-              onChange={(e) => parseCustomSlippage(e.target.value)}
               min={0}
               max={MAX}
+              className={'h-full w-full bg-transparent py-2 pl-2.5 pr-3 reset-input-number'}
+              onBlur={() => parseCustomSlippage((slippage / 100).toFixed(2))}
+              onChange={(e) => parseCustomSlippage(e.target.value)}
             />
+            <span className={'absolute right-2.5 top-1/2 -translate-y-1/2'}>{'%'}</span>
           </div>
-        </Tab.Panel>
-      </Tab.Panels>
-    </Tab.Group>
+          <input
+            type={'range'}
+            className={'flex-1'}
+            value={slippageInput}
+            onChange={(e) => parseCustomSlippage(e.target.value)}
+            min={0}
+            max={MAX}
+          />
+        </div>
+      </TabPanel>
+    </Tabs>
   )
 }

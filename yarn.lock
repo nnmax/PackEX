@@ -2758,21 +2758,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@headlessui/react@npm:^2.0.2":
-  version: 2.0.3
-  resolution: "@headlessui/react@npm:2.0.3"
-  dependencies:
-    "@floating-ui/react": "npm:^0.26.13"
-    "@react-aria/focus": "npm:^3.16.2"
-    "@react-aria/interactions": "npm:^3.21.1"
-    "@tanstack/react-virtual": "npm:3.5.0"
-  peerDependencies:
-    react: ^18
-    react-dom: ^18
-  checksum: 10c0/5584b3291f79ae94f8789650244388220b28e049248897cdd54778250e8aa8802589676c2ccbf4e9af8edcfaa6d532f92754d24863b11b5cf99a59d1ed7fe79c
-  languageName: node
-  linkType: hard
-
 "@humanwhocodes/config-array@npm:^0.11.14":
   version: 0.11.14
   resolution: "@humanwhocodes/config-array@npm:0.11.14"
@@ -3684,7 +3669,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/focus@npm:^3.16.2, @react-aria/focus@npm:^3.17.0":
+"@react-aria/focus@npm:^3.17.0":
   version: 3.17.0
   resolution: "@react-aria/focus@npm:3.17.0"
   dependencies:
@@ -3779,7 +3764,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/interactions@npm:^3.21.1, @react-aria/interactions@npm:^3.21.2":
+"@react-aria/interactions@npm:^3.21.2":
   version: 3.21.2
   resolution: "@react-aria/interactions@npm:3.21.2"
   dependencies:
@@ -5288,25 +5273,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/react-virtual@npm:3.5.0":
-  version: 3.5.0
-  resolution: "@tanstack/react-virtual@npm:3.5.0"
-  dependencies:
-    "@tanstack/virtual-core": "npm:3.5.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/0e0389dcae02cb3a6dc31644be6fedc9c635f66b747136149b065351ef23995e131b01c85348875a8c8c7bade28a2bb8bbc9c7b66a995051d6be08aec60d07c4
-  languageName: node
-  linkType: hard
-
-"@tanstack/virtual-core@npm:3.5.0":
-  version: 3.5.0
-  resolution: "@tanstack/virtual-core@npm:3.5.0"
-  checksum: 10c0/21a12049df81ce282054e8406cb74dd21d867aac077f31568ffdb08acd9aa171ae0666ceb43654895e73907acf5db02c7d651a66960da8acceeb2e034885e605
-  languageName: node
-  linkType: hard
-
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -6163,7 +6129,6 @@ __metadata:
     "@ethersproject/experimental": "npm:^5.0.1"
     "@ethersproject/units": "npm:^5.7.0"
     "@floating-ui/react": "npm:^0.26.13"
-    "@headlessui/react": "npm:^2.0.2"
     "@iconify/json": "npm:^2.2.207"
     "@iconify/tailwind": "npm:^1.0.1"
     "@nnmax/uniswap-sdk-v2": "npm:^1.0.4"
