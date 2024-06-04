@@ -26,6 +26,7 @@ import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
 import { isString } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
 import { Heading } from 'react-aria-components'
+import { toast } from 'react-toastify'
 
 export default function WalletModal() {
   // important that these are destructed from the account-specific web3-react context
@@ -87,6 +88,8 @@ export default function WalletModal() {
               }
               return false
             })
+        } else {
+          toast.error(error.message)
         }
         return false
       })
