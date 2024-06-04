@@ -1,12 +1,15 @@
 import { Asset } from '@/api'
-import { ButtonPrimary } from '@/components/Button'
+import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
-import Wallet from '@/components/Icons/Wallet'
+import useBTCWallet from '@/hooks/useBTCWallet'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
+import { useBTCWalletModalToggle } from '@/state/application/hooks'
 import clsx from 'clsx'
 import QueryString from 'qs'
 import { useState } from 'react'
 import { Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
 import { useLocation } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 enum FormField {
   Amount = 'amount',
@@ -25,12 +28,14 @@ export default function FormCard(props: {
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
   loading?: boolean
   type: 'deposit' | 'withdraw'
-  showConnectWalletButton?: boolean
-  onWalletToggle?: () => void
 }) {
-  const { onSubmit, loading, type, showConnectWalletButton, onWalletToggle } = props
+  const { onSubmit, loading, type } = props
 
   const [amount, setAmount] = useState(NaN)
+  const toggleBTCWalletModal = useBTCWalletModalToggle()
+  const { address: btcAddress } = useBTCWallet()
+  const { address: ethAddress } = useAccount()
+  const isSupportedChainId = useIsSupportedChainId()
 
   const { search } = useLocation()
   const data = QueryString.parse(search, {
@@ -126,15 +131,35 @@ export default function FormCard(props: {
           </div>
         )}
       </div>
-      {showConnectWalletButton ? (
-        <ButtonPrimary onPress={onWalletToggle} className={'text-xs w-full max-w-60 mt-14'}>
-          <Wallet className={'text-xl mr-6'} />
-          <span>Connect Wallet</span>
-        </ButtonPrimary>
+
+      {type === 'deposit' ? (
+        btcAddress ? (
+          <ButtonPrimary
+            isLoading={loading}
+            type={'submit'}
+            isDisabled={loading}
+            className={clsx('mt-14 w-full max-w-60')}
+          >
+            {'Confirm'}
+          </ButtonPrimary>
+        ) : (
+          <ConnectWalletButton onPress={toggleBTCWalletModal} className={'mt-14'} />
+        )
+      ) : ethAddress ? (
+        isSupportedChainId ? (
+          <ButtonPrimary
+            isLoading={loading}
+            type={'submit'}
+            isDisabled={loading}
+            className={clsx('mt-14 w-full max-w-60')}
+          >
+            {'Confirm'}
+          </ButtonPrimary>
+        ) : (
+          <SwitchChainButton />
+        )
       ) : (
-        <ButtonPrimary type={'submit'} isDisabled={loading} className={clsx('mt-14 w-full max-w-60')}>
-          {loading ? <span aria-label="Loading" className="loading loading-dots" /> : 'Confirm'}
-        </ButtonPrimary>
+        <ConnectWalletButton className={'mt-14'} />
       )}
 
       {type === 'deposit' && (

@@ -8,7 +8,6 @@ import AddIcon from '@/assets/images/add.png'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mint/hooks'
-import { useWalletModalToggle } from '@/state/application/hooks'
 import { useCurrency } from '@/hooks/Tokens'
 import { ChainId, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
@@ -19,14 +18,14 @@ import { useTransactionAdder } from '@/state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { ROUTER_ADDRESS } from '@/constants'
-import { ButtonPrimary } from '@/components/Button'
-import Wallet from '@/components/Icons/Wallet'
+import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import ReviewModal from '@/components/Pool/ReviewModal'
 import SuccessModal from '@/components/Pool/SuccessModal'
 import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -39,8 +38,6 @@ export default function PoolAdd() {
   const provider = useEthersProvider()
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
-
-  const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState()
@@ -58,6 +55,7 @@ export default function PoolAdd() {
     fieldBError,
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+  const isSupportedChainId = useIsSupportedChainId()
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
@@ -340,18 +338,20 @@ export default function PoolAdd() {
               )}
               <div className={'flex justify-center mt-8'}>
                 {account ? (
-                  <ButtonPrimary
-                    onPress={handleConfirm}
-                    className={'w-full max-w-60'}
-                    isDisabled={!!error || !!fieldAError || !!fieldBError}
-                  >
-                    {submitting ? <span className={'loading loading-dots'} /> : error ?? 'Confirm'}
-                  </ButtonPrimary>
+                  isSupportedChainId ? (
+                    <ButtonPrimary
+                      onPress={handleConfirm}
+                      className={'w-full max-w-60'}
+                      isDisabled={!!error || !!fieldAError || !!fieldBError}
+                      isLoading={submitting}
+                    >
+                      {'Confirm'}
+                    </ButtonPrimary>
+                  ) : (
+                    <SwitchChainButton />
+                  )
                 ) : (
-                  <ButtonPrimary onPress={toggleWalletModal} className={'w-full max-w-60'}>
-                    <Wallet className={'text-xl mr-6'} />
-                    <span>Connect Wallet</span>
-                  </ButtonPrimary>
+                  <ConnectWalletButton />
                 )}
               </div>
             </div>

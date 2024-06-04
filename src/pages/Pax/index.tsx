@@ -16,42 +16,56 @@ import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
 import Tooltip from '@/components/Tooltip'
 import Clock from '@/components/Icons/Clock'
-import { useConnectorClient } from 'wagmi'
+import { useChainId, useConnectorClient, useSwitchChain } from 'wagmi'
 import { watchAsset } from 'viem/actions'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
   const { data: connectorClient } = useConnectorClient()
+  const isSupportedChainId = useIsSupportedChainId()
 
   const [userInfo] = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
   const inviteData = useFetchPaxInvite()
   const infoData = useFetchPaxInfo()
+  const { switchChain } = useSwitchChain()
+  const chainId = useChainId()
+  const [watchingAsset, setWatchingAsset] = useState(false)
 
   const handleWatchAsset = async () => {
     if (!userInfo) {
       toggleWalletModal()
       return
     }
+
     if (!connectorClient || !infoData) return
 
-    const options = {
-      address: infoData.paxContract,
-      symbol: 'PAX',
-      decimals: 8,
-    }
-    watchAsset(connectorClient, {
-      type: 'ERC20',
-      options,
-    })
-      .catch((e: any) => {
-        toast.error(e?.message || 'Failed to watch asset')
-        throw e
-      })
-      .then(() => {
+    setWatchingAsset(true)
+
+    try {
+      if (!isSupportedChainId) {
+        await switchChain({
+          chainId,
+        })
+      }
+
+      watchAsset(connectorClient, {
+        type: 'ERC20',
+        options: {
+          address: infoData.paxContract,
+          symbol: 'PAX',
+          decimals: 8,
+        },
+      }).then(() => {
         toast.success('Successfully added $PAX to your wallet')
       })
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setWatchingAsset(false)
+    }
   }
 
   const handleCopy = () => {
@@ -89,7 +103,7 @@ export default function PaxPage() {
               {infoData?.paxContract}
             </span>
           </div>
-          <ButtonPrimary className={'ml-7 w-[288px]'} onPress={handleWatchAsset}>
+          <ButtonPrimary className={'ml-7 w-[288px]'} onPress={handleWatchAsset} isLoading={watchingAsset}>
             +ADD $PAX TO YOUR WALLET
           </ButtonPrimary>
         </div>

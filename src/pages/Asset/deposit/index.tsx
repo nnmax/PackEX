@@ -1,13 +1,8 @@
 import { Link } from 'react-router-dom'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import FormCard from '../components/FormCard'
-import { useBTCWalletModalToggle } from '@/state/application/hooks'
-import useBTCWallet from '@/hooks/useBTCWallet'
 
 export default function Deposit() {
-  const toggleBTCWalletModal = useBTCWalletModalToggle()
-  const { address } = useBTCWallet()
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const formData = Object.fromEntries(new FormData(event.currentTarget))
@@ -22,12 +17,7 @@ export default function Deposit() {
         {'Deposit'}
       </Link>
 
-      <FormCard
-        type="deposit"
-        onSubmit={handleSubmit}
-        showConnectWalletButton={!address}
-        onWalletToggle={toggleBTCWalletModal}
-      />
+      <FormCard type="deposit" onSubmit={handleSubmit} />
     </div>
   )
 }

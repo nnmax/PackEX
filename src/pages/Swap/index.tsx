@@ -1,15 +1,13 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
-import Wallet from '@/components/Icons/Wallet'
-import { ButtonPrimary } from '../../components/Button'
+import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
-import { useWalletModalToggle } from '../../state/application/hooks'
 import { Field } from '../../state/swap/actions'
 import {
   InputErrorType,
@@ -29,18 +27,19 @@ import SuccessModal from '@/components/Pool/SuccessModal'
 import { usePriceState } from '@/state/price/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useGasPrice } from 'wagmi'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
   const [userInfo] = useUserInfo()
 
-  // toggle wallet when disconnected
-  const toggleWalletModal = useWalletModalToggle()
   // get custom setting values for user
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
   const { data: gasPrice } = useGasPrice()
   const price = usePriceState()
+  const isSupportedChainId = useIsSupportedChainId()
+
   // swap state
   const { independentField, typedValue, recipient } = useSwapState()
   const {
@@ -142,12 +141,14 @@ export default function Swap() {
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
 
   const handleSwap = useCallback(async () => {
-    if (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee)) {
+    if (
+      !swapCallback ||
+      !isSupportedChainId ||
+      (priceImpactWithoutFee && !confirmPriceImpactWithoutFee(priceImpactWithoutFee))
+    ) {
       return
     }
-    if (!swapCallback) {
-      return
-    }
+
     setSwapState((prev) => ({ ...prev, activeStep: approval === ApprovalState.APPROVED ? 1 : 0, showConfirm: true }))
     if (approval !== ApprovalState.APPROVED) {
       await approveCallback()
@@ -159,7 +160,7 @@ export default function Swap() {
       .finally(() => {
         setSwapState((prev) => ({ ...prev, activeStep: 0, showConfirm: false }))
       })
-  }, [approval, approveCallback, priceImpactWithoutFee, swapCallback])
+  }, [approval, approveCallback, isSupportedChainId, priceImpactWithoutFee, swapCallback])
 
   const handleConfirmDismiss = useCallback(() => {
     setSwapState((prev) => ({ ...prev, showCompleted: false, showConfirm: false, activeStep: 0 }))
@@ -245,10 +246,7 @@ export default function Swap() {
 
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (
-            <ButtonPrimary onPress={toggleWalletModal} className={'text-xs w-full max-w-[240px]'}>
-              <Wallet className={'text-xl mr-6'} />
-              <span>Connect Wallet</span>
-            </ButtonPrimary>
+            <ConnectWalletButton />
           ) : showWrap ? (
             <ButtonPrimary
               isDisabled={!!wrapInputError}
@@ -262,7 +260,7 @@ export default function Swap() {
             <p className={'text-[#FF2323] p-2 border border-[#FF2323] rounded-sm text-center'}>
               Insufficient liquidity
             </p>
-          ) : (
+          ) : isSupportedChainId ? (
             <ButtonPrimary
               isError={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
               isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
@@ -277,6 +275,8 @@ export default function Swap() {
                     ? `Price Impact Too High`
                     : `Confirm`}
             </ButtonPrimary>
+          ) : (
+            <SwitchChainButton />
           )}
         </div>
       </div>

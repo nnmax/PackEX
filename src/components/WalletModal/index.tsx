@@ -15,7 +15,7 @@ import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
 import { isString } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
 import { Heading } from 'react-aria-components'
-import { Connector, useChainId, useConnect, useSignMessage } from 'wagmi'
+import { Connector, ConnectorAlreadyConnectedError, useChainId, useConnect, useSignMessage } from 'wagmi'
 
 export default function WalletModal() {
   const [pendingWallet, setPendingWallet] = useState<Connector>()
@@ -67,6 +67,10 @@ export default function WalletModal() {
       setPendingWallet(undefined)
       toggleWalletModal()
     } catch (error) {
+      console.error(error)
+      if (error instanceof ConnectorAlreadyConnectedError) {
+        toggleWalletModal()
+      }
       setPendingWallet(undefined)
     }
   }

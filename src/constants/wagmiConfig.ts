@@ -63,7 +63,7 @@ function injectedWithFallback() {
 }
 
 const wagmiConfig = createConfig({
-  chains: [blast, blastSepolia],
+  chains: [IS_PROD ? blast : blastSepolia],
   connectors: [injectedWithFallback(), coinbaseWalletWithIcon(), walletConnectWithIcon()],
   transports: {
     [blast.id]: http(),

@@ -15,21 +15,20 @@ import { usePairContract } from '@/hooks/useContract'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { useCurrency } from '@/hooks/Tokens'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
-import { useWalletModalToggle } from '@/state/application/hooks'
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from '@/state/burn/hooks'
 import { ROUTER_ADDRESS } from '@/constants'
 import { useTransactionAdder } from '@/state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import useDebouncedChangeHandler from '@/utils/useDebouncedChangeHandler'
 import CurrencyLogo from '@/components/CurrencyLogo'
-import { ButtonPrimary } from '@/components/Button'
-import Wallet from '@/components/Icons/Wallet'
+import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import AriaModal from '@/components/AriaModal'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import SuccessModal from '@/components/Pool/SuccessModal'
 import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 
 const commonSpanStyles = {
   className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
@@ -38,6 +37,7 @@ const commonSpanStyles = {
 export default function PoolRemove() {
   const history = useHistory()
   const inputId = useId()
+  const isSupportedChainId = useIsSupportedChainId()
   const { currencyIdA, currencyIdB } = useParams<{
     currencyIdA: string
     currencyIdB: string
@@ -50,9 +50,6 @@ export default function PoolRemove() {
     () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
     [currencyA, currencyB, chainId],
   )
-
-  // toggle wallet when disconnected
-  const toggleWalletModal = useWalletModalToggle()
 
   // burn state
   const { independentField, typedValue } = useBurnState()
@@ -462,14 +459,20 @@ export default function PoolRemove() {
           </div>
           <div className={'flex justify-center mt-8'}>
             {account ? (
-              <ButtonPrimary onPress={handleConfirm} className={'w-full max-w-60'} isDisabled={!isValid}>
-                {loadingModalOpen ? <span className={'loading loading-dots'} /> : 'Confirm'}
-              </ButtonPrimary>
+              isSupportedChainId ? (
+                <ButtonPrimary
+                  isLoading={loadingModalOpen}
+                  onPress={handleConfirm}
+                  className={'w-full max-w-60'}
+                  isDisabled={!isValid}
+                >
+                  {'Confirm'}
+                </ButtonPrimary>
+              ) : (
+                <SwitchChainButton />
+              )
             ) : (
-              <ButtonPrimary onPress={toggleWalletModal} className={'w-full max-w-60'}>
-                <Wallet className={'text-xl mr-6'} />
-                <span>Connect Wallet</span>
-              </ButtonPrimary>
+              <ConnectWalletButton />
             )}
           </div>
         </div>
