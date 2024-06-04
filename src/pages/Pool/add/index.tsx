@@ -8,10 +8,8 @@ import AddIcon from '@/assets/images/add.png'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mint/hooks'
-import { useWalletModalToggle } from '@/state/application/hooks'
-import { useActiveWeb3React } from '@/hooks'
 import { useCurrency } from '@/hooks/Tokens'
-import { ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, Currency, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
 import { useCallback, useState } from 'react'
 import { maxAmountSpend } from '@/utils/maxAmountSpend'
@@ -20,12 +18,15 @@ import { useTransactionAdder } from '@/state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { ROUTER_ADDRESS } from '@/constants'
-import { ButtonPrimary } from '@/components/Button'
-import Wallet from '@/components/Icons/Wallet'
+import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import ReviewModal from '@/components/Pool/ReviewModal'
 import SuccessModal from '@/components/Pool/SuccessModal'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
+import { currencyId } from '@/utils/currencyId'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -33,12 +34,11 @@ export default function PoolAdd() {
     currencyIdA: string
     currencyIdB: string
   }>()
-  const { account, chainId, library } = useActiveWeb3React()
-
+  const { address: account } = useAccount()
+  const chainId: ChainId = useChainId()
+  const provider = useEthersProvider()
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
-
-  const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState()
@@ -56,6 +56,7 @@ export default function PoolAdd() {
     fieldBError,
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+  const isSupportedChainId = useIsSupportedChainId()
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
@@ -99,8 +100,8 @@ export default function PoolAdd() {
   const addTransaction = useTransactionAdder()
 
   const onAdd = useCallback(async () => {
-    if (!chainId || !library || !account) return
-    const router = getRouterContract(chainId, library, account)
+    if (!chainId || !provider || !account) return
+    const router = getRouterContract(chainId, provider, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB) {
@@ -188,7 +189,7 @@ export default function PoolAdd() {
     currencyA,
     currencyB,
     deadline,
-    library,
+    provider,
     noLiquidity,
     parsedAmounts,
   ])
@@ -230,6 +231,14 @@ export default function PoolAdd() {
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false)
     history.push('/pool/all')
+  }
+
+  const handleCurrencyASelect = (currencyA: Currency) => {
+    history.push(`/pool/add/${currencyId(currencyA)}/${currencyIdB}`)
+  }
+
+  const handleCurrencyBSelect = (currencyB: Currency) => {
+    history.push(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
   }
 
   return (
@@ -279,7 +288,8 @@ export default function PoolAdd() {
                 }}
                 showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
                 currency={currencies[Field.CURRENCY_A]}
-                disableCurrencySelect
+                disableCurrencySelect={currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_A] !== ETHER}
+                onCurrencySelect={handleCurrencyASelect}
                 rhombus={'top'}
                 className={'mt-6'}
               />
@@ -301,7 +311,8 @@ export default function PoolAdd() {
                 }}
                 showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
                 currency={currencies[Field.CURRENCY_B]}
-                disableCurrencySelect
+                disableCurrencySelect={currencies[Field.CURRENCY_B] && currencies[Field.CURRENCY_B] !== ETHER}
+                onCurrencySelect={handleCurrencyBSelect}
                 rhombus={'bottom'}
                 className={'mt-1'}
               />
@@ -338,18 +349,20 @@ export default function PoolAdd() {
               )}
               <div className={'flex justify-center mt-8'}>
                 {account ? (
-                  <ButtonPrimary
-                    onPress={handleConfirm}
-                    className={'w-full max-w-60'}
-                    isDisabled={!!error || !!fieldAError || !!fieldBError}
-                  >
-                    {submitting ? <span className={'loading loading-dots'} /> : error ?? 'Confirm'}
-                  </ButtonPrimary>
+                  isSupportedChainId ? (
+                    <ButtonPrimary
+                      onPress={handleConfirm}
+                      className={'w-full max-w-60'}
+                      isDisabled={!!error || !!fieldAError || !!fieldBError}
+                      isLoading={submitting}
+                    >
+                      {'Confirm'}
+                    </ButtonPrimary>
+                  ) : (
+                    <SwitchChainButton />
+                  )
                 ) : (
-                  <ButtonPrimary onPress={toggleWalletModal} className={'w-full max-w-60'}>
-                    <Wallet className={'text-xl mr-6'} />
-                    <span>Connect Wallet</span>
-                  </ButtonPrimary>
+                  <ConnectWalletButton />
                 )}
               </div>
             </div>

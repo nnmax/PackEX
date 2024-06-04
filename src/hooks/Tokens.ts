@@ -1,16 +1,15 @@
 import { parseBytes32String } from '@ethersproject/strings'
-import { Currency, ETHER, Token, currencyEquals } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, Currency, ETHER, Token, currencyEquals } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import { WrappedTokenInfo, useSelectedTokenList } from '../state/lists/hooks'
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import { useUserAddedTokens } from '../state/user/hooks'
 import { isAddress } from '../utils'
-
-import { useActiveWeb3React } from './index'
 import { useBytes32TokenContract, useTokenContract } from './useContract'
+import { useChainId } from 'wagmi'
 
 export function useAllTokens(): { [address: string]: WrappedTokenInfo } {
-  const { chainId } = useActiveWeb3React()
+  const chainId: ChainId = useChainId()
   const allTokens = useSelectedTokenList()
 
   return useMemo(() => {
@@ -39,7 +38,7 @@ function parseStringOrBytes32(str: string | undefined, bytes32: string | undefin
 // null if loading
 // otherwise returns the token
 export function useToken(tokenAddress?: string): Token | undefined | null {
-  const { chainId } = useActiveWeb3React()
+  const chainId: ChainId = useChainId()
   const tokens = useAllTokens()
 
   const address = isAddress(tokenAddress)

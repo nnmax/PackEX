@@ -5,7 +5,7 @@ import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
 import { isEqual } from 'lodash-es'
-import { getMyPools, MyPoolListData } from '@/api'
+import { getMyPools, MyPoolListData, PoolMyItem } from '@/api'
 import { usePoolMyList } from '@/state/user/hooks'
 // import GearIcon from '@/components/Icons/GearIcon'
 import PoolLayout from '@/pages/Pool/Layout'
@@ -81,12 +81,12 @@ const PoolMy = () => {
                   </div>
                 </Cell>
                 <Cell>{`${item.poolShare} %`}</Cell>
-                <Cell>{item.feeEarned}</Cell>
+                <Cell>{item.paxEarnedToday}</Cell>
                 <Cell>{item.lpTokenAmount}</Cell>
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
                     <Link
-                      to={`/pool/add/${item.token0Contract}/${item.token1Contract}`}
+                      to={getLinkHref(item, 'add')}
                       className={
                         'text-lemonYellow w-[60px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
@@ -94,7 +94,7 @@ const PoolMy = () => {
                       {'+ADD'}
                     </Link>
                     <Link
-                      to={`/pool/remove/${item.token0Contract}/${item.token1Contract}`}
+                      to={`/pool/${item.token0Contract}/eth/${item.token1Contract}`}
                       className={
                         'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
@@ -194,3 +194,13 @@ const PoolMy = () => {
 }
 
 export default PoolMy
+
+function getLinkHref(item: PoolMyItem, type: 'add' | 'remove') {
+  if (item.token0Name.toLowerCase() === 'weth') {
+    return `/pool/${type}/eth/${item.token1Contract}`
+  }
+  if (item.token1Name.toLowerCase() === 'weth') {
+    return `/pool/${type}/${item.token0Contract}/eth`
+  }
+  return `/pool/${type}/${item.token0Contract}/${item.token1Contract}`
+}

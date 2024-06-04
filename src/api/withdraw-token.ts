@@ -17,7 +17,7 @@ export type WithdrawTokenData = {
     /**
      * 合约地址
      */
-    destination: string
+    destination: `0x${string}`
     /**
      * 调用合约时候的 ETH 值
      */
@@ -25,7 +25,7 @@ export type WithdrawTokenData = {
     /**
      * 合约调用参数
      */
-    callData: string
+    callData: `0x${string}`
   }
 }
 

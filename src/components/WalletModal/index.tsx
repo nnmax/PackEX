@@ -1,23 +1,12 @@
-import { useState, useEffect } from 'react'
-import { Web3Provider } from '@ethersproject/providers'
+import { useState, useMemo } from 'react'
 import { isMobile } from 'react-device-detect'
-import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import {
   useBTCWalletModalOpen,
   useBTCWalletModalToggle,
   useWalletModalOpen,
   useWalletModalToggle,
 } from '../../state/application/hooks'
-import {
-  BTC_MESSAGE_KEY,
-  BTC_SIGNATURE_KEY,
-  CURRENT_BTC_WALLET,
-  MESSAGE_KEY,
-  SIGNATURE_KEY,
-  SUPPORTED_WALLETS,
-} from '../../constants'
-import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
-import { AbstractConnector } from '@web3-react/abstract-connector'
+import { BTC_MESSAGE_KEY, BTC_SIGNATURE_KEY, CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
 import { connectBTCWallet, connectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
 import okxLogo from '../../assets/images/okx.svg'
@@ -26,145 +15,84 @@ import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
 import { isString } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
 import { Heading } from 'react-aria-components'
-import { toast } from 'react-toastify'
+import { Connector, ConnectorAlreadyConnectedError, useChainId, useConnect, useSignMessage } from 'wagmi'
 
 export default function WalletModal() {
-  // important that these are destructed from the account-specific web3-react context
-  const { activate, error, deactivate } = useWeb3React<Web3Provider>()
-  const [pendingWallet, setPendingWallet] = useState<AbstractConnector>()
+  const [pendingWallet, setPendingWallet] = useState<Connector>()
   const [, updateUserInfo] = useUserInfo()
   const walletModalOpen = useWalletModalOpen()
   const toggleWalletModal = useWalletModalToggle()
+  const { connectAsync } = useConnect()
+  const chainId = useChainId()
+  const { signMessageAsync } = useSignMessage()
 
-  useEffect(() => {
-    if (error instanceof UnsupportedChainIdError) {
-      deactivate()
-      // disconnectWallet().catch(() => {})
-    }
-  }, [error, deactivate])
-
-  const tryActivation = async (connector: AbstractConnector | undefined) => {
+  const tryActivation = async (connector: Connector) => {
     setPendingWallet(connector) // set wallet for pending view
 
-    // if the connector is walletconnect and the user has already tried to connect, manually reset the connector
-    if (
-      connector instanceof WalletConnectConnector &&
-      connector.walletConnectProvider &&
-      'wc' in connector.walletConnectProvider &&
-      connector.walletConnectProvider.wc &&
-      // @ts-ignore
-      connector.walletConnectProvider.wc.uri
-    ) {
-      connector.walletConnectProvider = undefined
-    }
-
-    if (!connector) {
-      setPendingWallet(undefined)
-      return
-    }
-
-    const result = await activate(connector, undefined, true)
-      .then(() => true)
-      .catch(async (error) => {
-        if (error instanceof UnsupportedChainIdError) {
-          const provider: Web3Provider = await connector.getProvider()
-          const chainId = '0x' + Number.parseInt(process.env.REACT_APP_CHAIN_ID!, 10).toString(16)
-          return provider
-            .send('wallet_switchEthereumChain', [{ chainId }])
-            .then(() => true)
-            .catch(async (err: { code: number }) => {
-              // This error code indicates that the chain has not been added to MetaMask
-              if (err.code === 4902) {
-                const config = JSON.parse(process.env.REACT_APP_CHAIN_CONFIRM!)
-                return provider
-                  .send('wallet_addEthereumChain', [
-                    {
-                      chainId,
-                      ...config,
-                    },
-                  ])
-                  .then(() => true)
-                  .catch(() => false)
-              }
-              return false
-            })
-        } else {
-          toast.error(error.message)
-        }
-        return false
+    try {
+      const { accounts } = await connectAsync({
+        connector,
+        chainId,
       })
 
-    if (!result) {
-      setPendingWallet(undefined)
-      return
-    }
+      const s = window.localStorage.getItem(SIGNATURE_KEY)
+      const m = window.localStorage.getItem(MESSAGE_KEY)
 
-    const _account = await connector.getAccount()
-    if (!_account) return
+      const connectWalletResponse = await connectWallet({
+        address: accounts[0],
+        signature: s,
+        message: m,
+      })
 
-    const s = window.localStorage.getItem(SIGNATURE_KEY)
-    const m = window.localStorage.getItem(MESSAGE_KEY)
-    const connectWalletResponse = await connectWallet({
-      address: _account,
-      signature: s,
-      message: m,
-    }).catch((error) => {
-      setPendingWallet(undefined)
-      throw error
-    })
-
-    if (typeof connectWalletResponse === 'string') {
-      const provider = await connector.getProvider()
-      if (provider && typeof provider.request === 'function') {
-        const signatureawait = (await provider.request({
-          method: 'personal_sign',
-          params: [connectWalletResponse, _account],
-        })) as string
+      if (typeof connectWalletResponse === 'string') {
+        const signature = await signMessageAsync({
+          message: connectWalletResponse,
+          account: accounts[0],
+        })
         const connectWalletResponse2 = await connectWallet({
-          address: _account,
-          signature: signatureawait,
+          address: accounts[0],
+          signature: signature,
           message: connectWalletResponse,
         })
         if (typeof connectWalletResponse2 === 'string') {
           setPendingWallet(undefined)
           return
         }
-        window.localStorage.setItem(SIGNATURE_KEY, signatureawait)
+        window.localStorage.setItem(SIGNATURE_KEY, signature)
         window.localStorage.setItem(MESSAGE_KEY, connectWalletResponse)
         updateUserInfo(connectWalletResponse2)
+      } else {
+        updateUserInfo(connectWalletResponse)
       }
-    } else {
-      updateUserInfo(connectWalletResponse)
+      setPendingWallet(undefined)
+      toggleWalletModal()
+    } catch (error) {
+      console.error(error)
+      if (error instanceof ConnectorAlreadyConnectedError) {
+        toggleWalletModal()
+      }
+      setPendingWallet(undefined)
     }
-    setPendingWallet(undefined)
-    toggleWalletModal()
   }
 
-  // get wallets user can switch too, depending on device/browser
-  function getOptions() {
-    return Object.keys(SUPPORTED_WALLETS).map((key) => {
-      const option = SUPPORTED_WALLETS[key]
-
-      // return rest of options
-      return (
-        !isMobile && (
-          <WalletModalListItem
-            name={option.name}
-            loading={option.connector === pendingWallet}
-            onClick={async () => {
-              await tryActivation(option.connector)
-            }}
-            key={key}
-            icon={require('../../assets/images/' + option.iconName)}
-          />
-        )
-      )
-    })
-  }
+  const connectors = useOrderedConnections()
 
   return (
     <WalletModalWrapper open={walletModalOpen} onClose={() => toggleWalletModal()}>
-      {getOptions()}
+      {connectors.map((connector) => {
+        return (
+          <WalletModalListItem
+            key={connector.uid}
+            name={connector.name}
+            icon={connector.icon!}
+            loading={connector === pendingWallet}
+            disabled={!!pendingWallet}
+            onClick={() => {
+              tryActivation(connector)
+            }}
+          />
+        )
+      })}
     </WalletModalWrapper>
   )
 }
@@ -180,9 +108,9 @@ export function BTCWalletModal() {
     try {
       const { address, network, publicKey } = await connect(wallet)
 
-      if (process.env.APP_ENV === 'prod' && network !== 'livenet') {
+      if (process.env.REACT_APP_APP_ENV === 'prod' && network !== 'livenet') {
         await switchNetwork(wallet, 'livenet')
-      } else if (process.env.APP_ENV === 'dev' && network !== 'testnet') {
+      } else if (process.env.REACT_APP_APP_ENV === 'dev' && network !== 'testnet') {
         await switchNetwork(wallet, 'testnet')
       }
 
@@ -255,32 +183,33 @@ export function WalletModalWrapper(props: { open: boolean; onClose: () => void; 
 const liClasses =
   'flex h-[60px] items-center aria-disabled:pointer-events-none gap-6 text-sm px-3 rounded hover:bg-white/20 transition-colors cursor-pointer'
 
-export function WalletModalListItem(props: {
+function WalletModalListItem(props: {
   loading?: boolean
   icon: string
   name: string
+  disabled?: boolean
   onClick?: (e: React.MouseEvent<HTMLLIElement> | React.KeyboardEvent<HTMLLIElement>) => void
 }) {
-  const { onClick, loading, icon, name } = props
+  const { onClick, loading, icon, name, disabled } = props
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
-    if ((e.key === 'Enter' || e.key === ' ') && onClick && !loading) {
+    if (!onClick || loading || disabled) return
+    if (e.key === 'Enter' || e.key === ' ') {
       onClick(e)
     }
   }
 
   const handleClick = (e: React.MouseEvent<HTMLLIElement>) => {
-    if (onClick && !loading) {
-      onClick(e)
-    }
+    if (!onClick || loading || disabled) return
+    onClick(e)
   }
 
   return (
     <li
       className={liClasses}
       role={'menuitem'}
-      tabIndex={loading ? -1 : 0}
-      aria-disabled={loading}
+      tabIndex={loading || disabled ? -1 : 0}
+      aria-disabled={loading || disabled}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
     >
@@ -288,4 +217,101 @@ export function WalletModalListItem(props: {
       {name}
     </li>
   )
+}
+
+function getInjectedConnectors(connectors: readonly Connector[], excludeUniswapConnections?: boolean) {
+  let isCoinbaseWalletBrowser = false
+  const injectedConnectors = connectors.filter((c) => {
+    // Special-case: Ignore coinbase eip6963-injected connector; coinbase connection is handled via the SDK connector.
+    if (c.id === CONNECTION.COINBASE_RDNS) {
+      if (isMobile) {
+        isCoinbaseWalletBrowser = true
+      }
+      return false
+    }
+
+    return c.type === CONNECTION.INJECTED_CONNECTOR_TYPE && c.id !== CONNECTION.INJECTED_CONNECTOR_ID
+  })
+
+  // Special-case: Return deprecated window.ethereum connector when no eip6963 injectors are present.
+  const fallbackInjector = getConnectorWithId(connectors, CONNECTION.INJECTED_CONNECTOR_ID, { shouldThrow: true })
+  if (!injectedConnectors.length && Boolean(window.ethereum)) {
+    return { injectedConnectors: [fallbackInjector], isCoinbaseWalletBrowser }
+  }
+
+  return { injectedConnectors, isCoinbaseWalletBrowser }
+}
+
+const CONNECTION = {
+  WALLET_CONNECT_CONNECTOR_ID: 'walletConnect',
+  INJECTED_CONNECTOR_ID: 'injected',
+  INJECTED_CONNECTOR_TYPE: 'injected',
+  COINBASE_SDK_CONNECTOR_ID: 'coinbaseWalletSDK',
+  COINBASE_RDNS: 'com.coinbase.wallet',
+  METAMASK_RDNS: 'io.metamask',
+} as const
+
+type ConnectorID = (typeof CONNECTION)[keyof typeof CONNECTION]
+
+function getConnectorWithId(
+  connectors: readonly Connector[],
+  id: ConnectorID,
+  options: { shouldThrow: true },
+): Connector
+function getConnectorWithId(connectors: readonly Connector[], id: ConnectorID): Connector | undefined
+function getConnectorWithId(
+  connectors: readonly Connector[],
+  id: ConnectorID,
+  options?: { shouldThrow: true },
+): Connector | undefined {
+  const connector = connectors.find((c) => c.id === id)
+  if (!connector && options?.shouldThrow) {
+    throw new Error(`Expected connector ${id} missing from wagmi context.`)
+  }
+  return connector
+}
+
+function useOrderedConnections() {
+  const { connectors } = useConnect()
+
+  return useMemo(() => {
+    const { injectedConnectors, isCoinbaseWalletBrowser } = getInjectedConnectors(connectors)
+    const SHOULD_THROW = { shouldThrow: true } as const
+    const coinbaseSdkConnector = getConnectorWithId(connectors, CONNECTION.COINBASE_SDK_CONNECTOR_ID, SHOULD_THROW)
+    const walletConnectConnector = getConnectorWithId(connectors, CONNECTION.WALLET_CONNECT_CONNECTOR_ID, SHOULD_THROW)
+
+    if (!coinbaseSdkConnector || !walletConnectConnector) {
+      throw new Error('Expected connector(s) missing from wagmi context.')
+    }
+
+    // Special-case: Only display the injected connector for in-wallet browsers.
+    if (isMobile && injectedConnectors.length === 1) {
+      return injectedConnectors
+    }
+
+    // Special-case: Only display the Coinbase connector in the Coinbase Wallet.
+    if (isCoinbaseWalletBrowser) {
+      return [coinbaseSdkConnector]
+    }
+
+    const orderedConnectors: Connector[] = []
+
+    // Injected connectors should appear next in the list, as the user intentionally installed/uses them.
+    orderedConnectors.push(...injectedConnectors)
+
+    // WalletConnect and Coinbase are added last in the list.
+    orderedConnectors.push(walletConnectConnector)
+    orderedConnectors.push(coinbaseSdkConnector)
+
+    // id 等于 io.metamask 的排在最前面，id 等于 com.okex.wallet 的排在最后面
+    orderedConnectors.sort((a, b) => {
+      if (a.id === 'io.metamask') return -1
+      if (b.id === 'io.metamask') return 1
+      if (a.id === 'com.okex.wallet') return 1
+      if (b.id === 'com.okex.wallet') return -1
+      return 0
+    })
+
+    return orderedConnectors
+  }, [connectors])
 }

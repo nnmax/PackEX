@@ -4,7 +4,6 @@ import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
 import useParsedQueryString from '../../hooks/useParsedQueryString'
@@ -15,6 +14,7 @@ import { Field, replaceSwapState, selectCurrency, setRecipient, switchCurrencies
 import { SwapState } from './reducer'
 import { useUserSlippageTolerance } from '../user/hooks'
 import { computeSlippageAdjustedAmounts } from '../../utils/prices'
+import { useAccount, useChainId } from 'wagmi'
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap)
@@ -121,7 +121,7 @@ export function useDerivedSwapInfo(): {
   inputError?: string
   inputErrorType?: InputErrorType
 } {
-  const { account } = useActiveWeb3React()
+  const { address: account } = useAccount()
 
   const {
     independentField,
@@ -276,7 +276,7 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
 
 // updates the swap state to use the defaults for a given network
 export function useDefaultsFromURLSearch() {
-  const { chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const dispatch = useDispatch<AppDispatch>()
   const parsedQs = useParsedQueryString()
 

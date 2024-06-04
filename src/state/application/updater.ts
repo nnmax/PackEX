@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useActiveWeb3React } from '../../hooks'
 import useDebounce from '../../hooks/useDebounce'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
 import { updateBlockNumber } from './actions'
 import { useDispatch } from 'react-redux'
+import { useBlockNumber, useChainId } from 'wagmi'
 
 export default function Updater(): null {
-  const { library, chainId } = useActiveWeb3React()
+  const chainId = useChainId()
   const dispatch = useDispatch()
+  const { data: blockNumber } = useBlockNumber()
 
   const windowVisible = useIsWindowVisible()
 
@@ -31,20 +32,12 @@ export default function Updater(): null {
 
   // attach/detach listeners
   useEffect(() => {
-    if (!library || !chainId || !windowVisible) return undefined
+    if (!blockNumber || !chainId || !windowVisible) return undefined
 
     setState({ chainId, blockNumber: null })
 
-    library
-      .getBlockNumber()
-      .then(blockNumberCallback)
-      .catch((error) => console.error(`Failed to get block number for chainId: ${chainId}`, error))
-
-    library.on('block', blockNumberCallback)
-    return () => {
-      library.removeListener('block', blockNumberCallback)
-    }
-  }, [dispatch, chainId, library, blockNumberCallback, windowVisible])
+    blockNumberCallback(Number(blockNumber))
+  }, [blockNumber, blockNumberCallback, chainId, windowVisible])
 
   const debouncedState = useDebounce(state, 100)
 

@@ -1,5 +1,5 @@
 import { BigNumber } from '@ethersproject/bignumber'
-import { splitSignature } from '@ethersproject/bytes'
+import { splitSignature, Signature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useCallback, useId, useMemo, useState } from 'react'
@@ -10,25 +10,25 @@ import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLef
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/burn/actions'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
-import { ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
+import { ChainId, ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
 import { usePairContract } from '@/hooks/useContract'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { useCurrency } from '@/hooks/Tokens'
-import { useActiveWeb3React } from '@/hooks'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
-import { useWalletModalToggle } from '@/state/application/hooks'
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from '@/state/burn/hooks'
 import { ROUTER_ADDRESS } from '@/constants'
 import { useTransactionAdder } from '@/state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import useDebouncedChangeHandler from '@/utils/useDebouncedChangeHandler'
 import CurrencyLogo from '@/components/CurrencyLogo'
-import { ButtonPrimary } from '@/components/Button'
-import Wallet from '@/components/Icons/Wallet'
+import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import AriaModal from '@/components/AriaModal'
 import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import SuccessModal from '@/components/Pool/SuccessModal'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
+import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 
 const commonSpanStyles = {
   className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
@@ -37,19 +37,19 @@ const commonSpanStyles = {
 export default function PoolRemove() {
   const history = useHistory()
   const inputId = useId()
+  const isSupportedChainId = useIsSupportedChainId()
   const { currencyIdA, currencyIdB } = useParams<{
     currencyIdA: string
     currencyIdB: string
   }>()
   const [currencyA, currencyB] = [useCurrency(currencyIdA) ?? undefined, useCurrency(currencyIdB) ?? undefined]
-  const { account, chainId, library } = useActiveWeb3React()
+  const provider = useEthersProvider()
+  const { address: account } = useAccount()
+  const chainId: ChainId = useChainId()
   const [tokenA, tokenB] = useMemo(
     () => [wrappedCurrency(currencyA, chainId), wrappedCurrency(currencyB, chainId)],
     [currencyA, currencyB, chainId],
   )
-
-  // toggle wallet when disconnected
-  const toggleWalletModal = useWalletModalToggle()
 
   // burn state
   const { independentField, typedValue } = useBurnState()
@@ -83,11 +83,10 @@ export default function PoolRemove() {
   const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
 
   // allowance handling
-  const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
 
   const onAttemptToApprove = useCallback(async () => {
-    if (!pairContract || !pair || !library) throw new Error('missing dependencies')
+    if (!pairContract || !pair || !provider) throw new Error('missing dependencies')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
     // try to gather a signature for permission
@@ -131,18 +130,9 @@ export default function PoolRemove() {
       message,
     })
 
-    await library
+    return provider
       .send('eth_signTypedData_v4', [account, data])
       .then(splitSignature)
-      .then((signature) => {
-        setSignatureData({
-          v: signature.v,
-          r: signature.r,
-          s: signature.s,
-          deadline: deadlineForSignature,
-        })
-        return signature
-      })
       .catch((error) => {
         // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
         if (error?.code !== 4001) {
@@ -150,12 +140,11 @@ export default function PoolRemove() {
         }
         return
       })
-  }, [account, approveCallback, chainId, deadline, library, pair, pairContract, parsedAmounts])
+  }, [account, approveCallback, chainId, deadline, provider, pair, pairContract, parsedAmounts])
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
     (field: Field, typedValue: string) => {
-      setSignatureData(null)
       return _onUserInput(field, typedValue)
     },
     [_onUserInput],
@@ -164,157 +153,161 @@ export default function PoolRemove() {
   // tx sending
   const addTransaction = useTransactionAdder()
 
-  const onRemove = useCallback(async () => {
-    if (!chainId || !library || !account) throw new Error('missing dependencies')
-    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
-    if (!currencyAmountA || !currencyAmountB) {
-      throw new Error('missing currency amounts')
-    }
-    const router = getRouterContract(chainId, library, account)
-
-    const amountsMin = {
-      [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
-      [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
-    }
-
-    if (!currencyA || !currencyB) throw new Error('missing tokens')
-    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
-    if (!liquidityAmount) throw new Error('missing liquidity amount')
-
-    const currencyBIsETH = currencyB === ETHER
-    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
-    const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline
-
-    if (!tokenA || !tokenB) throw new Error('could not wrap')
-
-    let methodNames: string[], args: Array<string | string[] | number | boolean>
-    // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
-      // removeLiquidityETH
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          deadlineFromNow,
-        ]
+  const onRemove = useCallback(
+    async (signature: Signature) => {
+      console.log('%c [ signature ]-158', 'font-size:13px; background:pink; color:#bf2c9f;', signature)
+      if (!chainId || !provider || !account) throw new Error('missing dependencies')
+      const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
+      if (!currencyAmountA || !currencyAmountB) {
+        throw new Error('missing currency amounts')
       }
-      // removeLiquidity
-      else {
-        methodNames = ['removeLiquidity']
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          deadlineFromNow,
-        ]
+      const router = getRouterContract(chainId, provider, account)
+
+      const amountsMin = {
+        [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
+        [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
       }
-    }
-    // we have a signataure, use permit versions of remove liquidity
-    else if (signatureData !== null) {
-      // removeLiquidityETHWithPermit
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ]
+
+      if (!currencyA || !currencyB) throw new Error('missing tokens')
+      const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
+      if (!liquidityAmount) throw new Error('missing liquidity amount')
+
+      const currencyBIsETH = currencyB === ETHER
+      const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
+      const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline
+
+      if (!tokenA || !tokenB) throw new Error('could not wrap')
+
+      let methodNames: string[], args: Array<string | string[] | number | boolean>
+      // we have approval, use normal remove liquidity
+      if (approval === ApprovalState.APPROVED) {
+        // removeLiquidityETH
+        if (oneCurrencyIsETH) {
+          methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
+          args = [
+            currencyBIsETH ? tokenA.address : tokenB.address,
+            liquidityAmount.raw.toString(),
+            amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+            amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+            account,
+            deadlineFromNow,
+          ]
+        }
+        // removeLiquidity
+        else {
+          methodNames = ['removeLiquidity']
+          args = [
+            tokenA.address,
+            tokenB.address,
+            liquidityAmount.raw.toString(),
+            amountsMin[Field.CURRENCY_A].toString(),
+            amountsMin[Field.CURRENCY_B].toString(),
+            account,
+            deadlineFromNow,
+          ]
+        }
       }
-      // removeLiquidityETHWithPermit
-      else {
-        methodNames = ['removeLiquidityWithPermit']
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ]
+      // we have a signataure, use permit versions of remove liquidity
+      else if (signature !== null) {
+        // removeLiquidityETHWithPermit
+        const deadlineForSignature: number = Math.ceil(Date.now() / 1000) + deadline
+        if (oneCurrencyIsETH) {
+          methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
+          args = [
+            currencyBIsETH ? tokenA.address : tokenB.address,
+            liquidityAmount.raw.toString(),
+            amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+            amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+            account,
+            deadlineForSignature,
+            false,
+            signature.v,
+            signature.r,
+            signature.s,
+          ]
+        }
+        // removeLiquidityETHWithPermit
+        else {
+          methodNames = ['removeLiquidityWithPermit']
+          args = [
+            tokenA.address,
+            tokenB.address,
+            liquidityAmount.raw.toString(),
+            amountsMin[Field.CURRENCY_A].toString(),
+            amountsMin[Field.CURRENCY_B].toString(),
+            account,
+            deadlineForSignature,
+            false,
+            signature.v,
+            signature.r,
+            signature.s,
+          ]
+        }
+      } else {
+        throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
       }
-    } else {
-      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
-    }
 
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
-      methodNames.map((methodName) =>
-        router.estimateGas[methodName](...args)
-          .then(calculateGasMargin)
-          .catch((error) => {
-            console.error(`estimateGas failed`, methodName, args, error)
-            return undefined
-          }),
-      ),
-    )
+      const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+        methodNames.map((methodName) =>
+          router.estimateGas[methodName](...args)
+            .then(calculateGasMargin)
+            .catch((error) => {
+              console.error(`estimateGas failed`, methodName, args, error)
+              return BigNumber.from(500000)
+            }),
+        ),
+      )
 
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate),
-    )
+      const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+        BigNumber.isBigNumber(safeGasEstimate),
+      )
 
-    // all estimations failed...
-    if (indexOfSuccessfulEstimation === -1) {
-      console.error('This transaction would fail. Please contact support.')
-    } else {
-      const methodName = methodNames[indexOfSuccessfulEstimation]
-      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
+      // all estimations failed...
+      if (indexOfSuccessfulEstimation === -1) {
+        throw new Error('This transaction would fail. Please contact support.')
+      } else {
+        const methodName = methodNames[indexOfSuccessfulEstimation]
+        const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
 
-      await router[methodName](...args, {
-        gasLimit: safeGasEstimate,
-      })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary:
-              'Remove ' +
-              parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-              ' ' +
-              currencyA?.symbol +
-              ' and ' +
-              parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-              ' ' +
-              currencyB?.symbol,
+        await router[methodName](...args, {
+          gasLimit: safeGasEstimate,
+        })
+          .then((response: TransactionResponse) => {
+            addTransaction(response, {
+              summary:
+                'Remove ' +
+                parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
+                ' ' +
+                currencyA?.symbol +
+                ' and ' +
+                parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
+                ' ' +
+                currencyB?.symbol,
+            })
+
+            setTxHash(response.hash)
           })
-
-          setTxHash(response.hash)
-        })
-        .catch((error: Error) => {
-          // we only care if the error is something _other_ than the user rejected the tx
-          console.error(error)
-        })
-    }
-  }, [
-    account,
-    addTransaction,
-    allowedSlippage,
-    approval,
-    chainId,
-    currencyA,
-    currencyB,
-    deadline,
-    library,
-    parsedAmounts,
-    signatureData,
-    tokenA,
-    tokenB,
-  ])
+          .catch((error: Error) => {
+            // we only care if the error is something _other_ than the user rejected the tx
+            console.error(error)
+          })
+      }
+    },
+    [
+      account,
+      addTransaction,
+      allowedSlippage,
+      approval,
+      chainId,
+      currencyA,
+      currencyB,
+      deadline,
+      provider,
+      parsedAmounts,
+      tokenA,
+      tokenB,
+    ],
+  )
 
   const liquidityPercentChangeCallback = useCallback(
     (value: number) => {
@@ -331,26 +324,25 @@ export default function PoolRemove() {
   const handleConfirm = useCallback(async () => {
     setLoadingModalOpen(true)
     try {
-      if (!(approval === ApprovalState.APPROVED || signatureData !== null)) {
-        await onAttemptToApprove()
+      if (approval !== ApprovalState.APPROVED) {
+        const signature = await onAttemptToApprove()
+        if (signature) {
+          await onRemove(signature)
+        }
       }
-      await onRemove()
       setSuccessModalOpen(true)
     } catch (error) {
       console.error(error)
-      toast.error(isString(error) ? error : (error as any).message ?? 'Error submitting transaction', {
-        autoClose: false,
-      })
+      toast.error(isString(error) ? error : (error as any).message ?? 'Error submitting transaction')
     } finally {
       setLoadingModalOpen(false)
-      setSignatureData(null) // important that we clear signature data to avoid bad sigs
       // if there was a tx hash, we want to clear the input
       if (txHash) {
         onUserInput(Field.LIQUIDITY_PERCENT, '0')
       }
       setTxHash('')
     }
-  }, [approval, signatureData, onRemove, onAttemptToApprove, txHash, onUserInput])
+  }, [approval, onRemove, onAttemptToApprove, txHash, onUserInput])
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false)
@@ -375,7 +367,7 @@ export default function PoolRemove() {
         isOpen={loadingModalOpen}
         onOpenChange={setLoadingModalOpen}
         isKeyboardDismissDisabled
-        className={'flex flex-col items-center gap-4'}
+        contentClassName={'flex flex-col items-center gap-4'}
       >
         <span aria-hidden className={'loading !w-20 text-lemonYellow'} />
         <Heading slot="title">CONFIRMATION</Heading>
@@ -459,14 +451,20 @@ export default function PoolRemove() {
           </div>
           <div className={'flex justify-center mt-8'}>
             {account ? (
-              <ButtonPrimary onPress={handleConfirm} className={'w-full max-w-60'} isDisabled={!isValid}>
-                {loadingModalOpen ? <span className={'loading loading-dots'} /> : 'Confirm'}
-              </ButtonPrimary>
+              isSupportedChainId ? (
+                <ButtonPrimary
+                  isLoading={loadingModalOpen}
+                  onPress={handleConfirm}
+                  className={'w-full max-w-60'}
+                  isDisabled={!isValid}
+                >
+                  {'Confirm'}
+                </ButtonPrimary>
+              ) : (
+                <SwitchChainButton />
+              )
             ) : (
-              <ButtonPrimary onPress={toggleWalletModal} className={'w-full max-w-60'}>
-                <Wallet className={'text-xl mr-6'} />
-                <span>Connect Wallet</span>
-              </ButtonPrimary>
+              <ConnectWalletButton />
             )}
           </div>
         </div>
