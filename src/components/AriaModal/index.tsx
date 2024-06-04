@@ -66,7 +66,14 @@ export default function AriaModal(props: AriaModalProps) {
       >
         <Dialog aria-label={ariaLabel} className={clsx(contentClassName, 'focus-visible:outline-none')}>
           {showCloseButton && (
-            <Button autoFocus className={'absolute right-5 top-5 h-6 w-6'} onPress={onClose}>
+            <Button
+              autoFocus
+              className={'absolute right-5 top-5 h-6 w-6'}
+              onPress={() => {
+                if (onClose) onClose()
+                if (onOpenChange) onOpenChange(false)
+              }}
+            >
               <span className="icon-[pixelarticons--close] text-2xl" />
             </Button>
           )}

@@ -39,7 +39,7 @@ export default function ConfirmSwapModal({
           <dd className={'flex items-center justify-between'}>
             <span
               className={'text-base'}
-            >{`${trade.inputAmount.toSignificant(6)} ${trade.inputAmount.currency.symbol}`}</span>
+            >{`${trade.outputAmount.toSignificant(6)} ${trade.outputAmount.currency.symbol}`}</span>
             <CurrencyLogo currency={trade.outputAmount.currency} size={'20px'} />
           </dd>
         </div>
