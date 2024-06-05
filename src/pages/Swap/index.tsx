@@ -223,6 +223,7 @@ export default function Swap() {
           otherCurrency={currencies[Field.OUTPUT]}
           rhombus="top"
           error={inputErrorType === InputErrorType.InsufficientBalance ? swapInputError : undefined}
+          disableCurrencySelect={!isSupportedChainId}
         />
 
         <Button
@@ -245,6 +246,7 @@ export default function Swap() {
           otherCurrency={currencies[Field.INPUT]}
           rhombus="bottom"
           className={'mt-1'}
+          disableCurrencySelect={!isSupportedChainId}
         />
 
         <SwapDetailAccordion
@@ -257,6 +259,8 @@ export default function Swap() {
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (
             <ConnectWalletButton />
+          ) : !isSupportedChainId ? (
+            <SwitchChainButton />
           ) : showWrap ? (
             <ButtonPrimary
               isDisabled={!!wrapInputError}
@@ -270,7 +274,7 @@ export default function Swap() {
             <p className={'text-[#FF2323] p-2 border border-[#FF2323] rounded-sm text-center'}>
               Insufficient liquidity
             </p>
-          ) : isSupportedChainId ? (
+          ) : (
             <ButtonPrimary
               isError={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
               isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
@@ -285,8 +289,6 @@ export default function Swap() {
                     ? `Price Impact Too High`
                     : `Confirm`}
             </ButtonPrimary>
-          ) : (
-            <SwitchChainButton />
           )}
         </div>
       </div>

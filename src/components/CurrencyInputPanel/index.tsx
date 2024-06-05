@@ -100,7 +100,7 @@ export default function CurrencyInputPanel({
           onInput={(event) => {
             const _value = event.currentTarget.value
             if (_value.endsWith('.')) return
-            setInnerValue(_value === '' ? NaN : Number(_value))
+            setInnerValue(_value === '' ? NaN : Number(_value.replaceAll(',', '')))
           }}
         >
           <Label className={'mb-2 text-xs text-[#9E9E9E] block'}>{label}</Label>
