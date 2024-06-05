@@ -333,7 +333,7 @@ const SocialBox = forwardRef<
       .then((res) => {
         updateUserInfo({
           ...userInfo,
-          invitationCode: res,
+          invitationCode: res?.invitationCode,
         })
       })
       .catch(() => {

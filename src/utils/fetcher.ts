@@ -30,6 +30,9 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       if (data.code === 401) {
         // disconnectWallet().catch(() => {})
       }
+      if (data.code === 668800015) {
+        throw new Error(data.prompt)
+      }
       if (
         data.code === 401 ||
         disabledErrorToast === true ||
