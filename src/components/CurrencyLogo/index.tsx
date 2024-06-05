@@ -38,7 +38,9 @@ export default function CurrencyLogo({
   }, [currency, uriLocations])
 
   if (src) {
-    return <img width={size} height={size} alt={''} style={style} className={clsx(className, 'rounded-full')} />
+    return (
+      <img src={src} width={size} height={size} alt={''} style={style} className={clsx(className, 'rounded-full')} />
+    )
   }
 
   if (currency === ETHER) {
