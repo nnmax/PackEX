@@ -230,7 +230,7 @@ export default function PoolAdd() {
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false)
-    history.push('/pool/all')
+    history.push('/pool/my')
   }
 
   const handleCurrencyASelect = (currencyA: Currency) => {
