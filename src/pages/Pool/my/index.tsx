@@ -94,7 +94,7 @@ const PoolMy = () => {
                       {'+ADD'}
                     </Link>
                     <Link
-                      to={`/pool/${item.token0Contract}/eth/${item.token1Contract}`}
+                      to={`/pool/remove/${item.token0Contract}/${item.token1Contract}`}
                       className={
                         'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
