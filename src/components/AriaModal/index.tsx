@@ -39,7 +39,7 @@ export default function AriaModal(props: AriaModalProps) {
   const content = (
     <ModalOverlay
       className={clsx(
-        'fixed left-0 top-0 z-20 flex h-[--visual-viewport-height] w-screen items-start justify-center bg-black/50 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in data-[exiting]:fade-out',
+        'fixed left-0 top-0 z-20 flex h-[--visual-viewport-height] w-screen items-center justify-center bg-black/50 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in data-[exiting]:fade-out',
       )}
       style={{
         backgroundColor: DIALOG_MASK_BG_COLOR + alphaToHex(DIALOG_MASK_BG_OPACITY),
@@ -61,7 +61,7 @@ export default function AriaModal(props: AriaModalProps) {
         className={clsx(
           className,
           showRhombus && 'before:top-rhombus after:bottom-rhombus',
-          'relative top-[192px] w-full max-w-[480px] rounded-lg bg-[#1D252E] px-4 py-8 outline-none data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:zoom-in-75 data-[exiting]:zoom-out-75',
+          'relative w-full max-w-[480px] max-h-[calc(100vh-32px)] overflow-y-auto rounded-lg bg-[#1D252E] px-4 py-8 outline-none data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:zoom-in-75 data-[exiting]:zoom-out-75',
         )}
       >
         <Dialog aria-label={ariaLabel} className={clsx(contentClassName, 'focus-visible:outline-none')}>
