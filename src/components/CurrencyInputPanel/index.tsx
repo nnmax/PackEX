@@ -1,11 +1,11 @@
 import { Currency, ETHER, Pair, Token } from '@nnmax/uniswap-sdk-v2'
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import ArrowDown from '@/components/Icons/ArrowDown'
 import clsx from 'clsx'
-import { Button, Input, Label, ListBox, ListBoxItem, NumberField, Text } from 'react-aria-components'
+import { Button, ListBox, ListBoxItem, Text } from 'react-aria-components'
 import IconamoonSearchLight from '@/components/Icons/IconamoonSearchLight'
 import { useAllTokens, useToken } from '@/hooks/Tokens'
 import { isAddress } from '@/utils'
@@ -15,9 +15,8 @@ import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import { isSet } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
-import useDebounce from '@/hooks/useDebounce'
-import { useFirstMountState } from 'react-use'
 import { useAccount } from 'wagmi'
+import NumberInput from '@/components/NumberInput'
 
 const selectButtonClasses =
   'flex items-center min-w-32 self-end justify-between rounded-sm bg-[#0f0f0f] px-2 py-1 text-sm text-white relative before:absolute before:right-0 before:top-1/2 before:-translate-y-1/2 before:w-0.5 before:h-[18px] before:bg-[#242424] before:[clip-path:polygon(0_2px,100%_0,100%_100%,0_calc(100%-2px))]'
@@ -62,19 +61,6 @@ export default function CurrencyInputPanel({
   const { address } = useAccount()
   const selectedCurrencyBalance = useCurrencyBalance(address ?? undefined, currency ?? undefined)
 
-  const [innerValue, setInnerValue] = useState(
-    value === '' || value === null || value === undefined ? NaN : Number(value),
-  )
-  const debouncedInnerValue = useDebounce(innerValue, 500)
-  const isFirstMount = useFirstMountState()
-  const onUserInputRef = useRef(onUserInput)
-  onUserInputRef.current = onUserInput
-
-  useEffect(() => {
-    if (isFirstMount) return
-    onUserInputRef.current(Number.isNaN(debouncedInnerValue) ? '' : debouncedInnerValue.toString())
-  }, [debouncedInnerValue, isFirstMount])
-
   return (
     <div
       className={clsx('relative flex flex-col rounded-md bg-[#242424] p-6', className, {
@@ -93,22 +79,13 @@ export default function CurrencyInputPanel({
         />
       )}
       <div className={'flex justify-between gap-1'}>
-        <NumberField
-          value={value === '' || value === null || value === undefined ? NaN : Number(value)}
-          minValue={0}
-          isDisabled={!currency}
-          onInput={(event) => {
-            const _value = event.currentTarget.value
-            if (_value.endsWith('.')) return
-            setInnerValue(_value === '' ? NaN : Number(_value.replaceAll(',', '')))
-          }}
-        >
-          <Label className={'mb-2 text-xs text-[#9E9E9E] block'}>{label}</Label>
-          <Input
-            placeholder={'0'}
-            className={'w-full bg-transparent text-white outline-none reset-input-number placeholder:text-[#9e9e9e]'}
-          />
-        </NumberField>
+        <NumberInput
+          value={value}
+          disabled={!currency}
+          onUserInput={onUserInput}
+          label={label}
+          maxDecimals={currency?.decimals}
+        />
         <Button
           isDisabled={disableCurrencySelect}
           type={'button'}
