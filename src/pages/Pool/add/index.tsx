@@ -11,10 +11,9 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state
 import { useCurrency } from '@/hooks/Tokens'
 import { ChainId, Currency, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { maxAmountSpend } from '@/utils/maxAmountSpend'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
-import { useTransactionAdder } from '@/state/transactions/hooks'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { ROUTER_ADDRESS } from '@/constants'
@@ -23,10 +22,11 @@ import { toast } from 'react-toastify'
 import { isString } from 'lodash-es'
 import ReviewModal from '@/components/Pool/ReviewModal'
 import SuccessModal from '@/components/Pool/SuccessModal'
-import { useAccount, useChainId } from 'wagmi'
+import { useAccount, useChainId, useTransactionReceipt } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { currencyId } from '@/utils/currencyId'
+import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -60,6 +60,7 @@ export default function PoolAdd() {
 
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
+  const [loadingModalOpen, setLoadingModalOpen] = useState(false)
 
   // txn values
   const [deadline] = useUserDeadline() // custom from users settings
@@ -96,8 +97,6 @@ export default function PoolAdd() {
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
-
-  const addTransaction = useTransactionAdder()
 
   const onAdd = useCallback(async () => {
     if (!chainId || !provider || !account) return
@@ -158,18 +157,6 @@ export default function PoolAdd() {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit),
         }).then((response) => {
-          addTransaction(response, {
-            summary:
-              'Add ' +
-              parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-              ' ' +
-              currencies[Field.CURRENCY_A]?.symbol +
-              ' and ' +
-              parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-              ' ' +
-              currencies[Field.CURRENCY_B]?.symbol,
-          })
-
           setTxHash(response.hash)
         }),
       )
@@ -180,19 +167,7 @@ export default function PoolAdd() {
         }
         throw error
       })
-  }, [
-    account,
-    addTransaction,
-    allowedSlippage,
-    chainId,
-    currencies,
-    currencyA,
-    currencyB,
-    deadline,
-    provider,
-    noLiquidity,
-    parsedAmounts,
-  ])
+  }, [account, allowedSlippage, chainId, currencyA, currencyB, deadline, provider, noLiquidity, parsedAmounts])
 
   const handleDismiss = useCallback(() => {
     setReviewModalOpen(false)
@@ -218,7 +193,7 @@ export default function PoolAdd() {
       }
 
       await onAdd()
-      setSuccessModalOpen(true)
+      setLoadingModalOpen(true)
     } catch (error) {
       console.dir(error)
       toast.error(isString(error) ? error : (error as any).message ?? 'An unknown error occurred. Please try again.')
@@ -240,6 +215,23 @@ export default function PoolAdd() {
   const handleCurrencyBSelect = (currencyB: Currency) => {
     history.push(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
   }
+
+  const { data: txReceipt } = useTransactionReceipt({
+    hash: txHash as `0x${string}`,
+    chainId,
+    query: {
+      refetchInterval: 1000,
+      enabled: !!txHash,
+    },
+  })
+
+  useEffect(() => {
+    if (txReceipt) {
+      setLoadingModalOpen(false)
+      setSuccessModalOpen(true)
+      setTxHash('')
+    }
+  }, [txReceipt])
 
   return (
     <div className={'py-4'}>
@@ -266,6 +258,7 @@ export default function PoolAdd() {
         liquidityMinted={liquidityMinted}
       />
       <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
+      <TransactionInProgressModal isOpen={loadingModalOpen} onClose={() => setLoadingModalOpen(false)} />
       <div className={'flex w-full justify-center'}>
         <div className={'px-16 py-8'}>
           <div className={'flex flex-col items-center'}>

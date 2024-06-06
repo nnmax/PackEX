@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
@@ -25,10 +25,11 @@ import { calculateGasMargin } from '@/utils'
 import SuccessModal from '@/components/Pool/SuccessModal'
 import { usePriceState } from '@/state/price/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
-import { useGasPrice } from 'wagmi'
+import { useChainId, useGasPrice, useTransactionReceipt } from 'wagmi'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
 import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN } from '@/constants'
+import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -51,7 +52,6 @@ export default function Swap() {
     inputError: swapInputError,
     inputErrorType,
   } = useDerivedSwapInfo()
-  const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [priceImpactWarningModalOpen, setPriceImpactWarningModalOpen] = useState(false)
   const {
     wrapType,
@@ -83,14 +83,18 @@ export default function Swap() {
   }
 
   // modal and loading
-  const [{ showConfirm, activeStep }, setSwapState] = useState<{
+  const [{ showConfirm, activeStep, successModalOpen, transactionHash, loadingModalOpen }, setSwapState] = useState<{
     showConfirm: boolean
     activeStep: number
-    showCompleted: boolean
+    transactionHash: string | null
+    successModalOpen: boolean
+    loadingModalOpen: boolean
   }>({
     showConfirm: false,
     activeStep: 0,
-    showCompleted: false,
+    transactionHash: null,
+    successModalOpen: false,
+    loadingModalOpen: false,
   })
 
   const formattedAmounts = {
@@ -146,8 +150,8 @@ export default function Swap() {
       await approveCallback()
     }
     swapCallback()
-      .then(() => {
-        setSuccessModalOpen(true)
+      .then((txHash) => {
+        setSwapState((prev) => ({ ...prev, transactionHash: txHash, loadingModalOpen: true }))
       })
       .finally(() => {
         setSwapState((prev) => ({ ...prev, activeStep: 0, showConfirm: false }))
@@ -169,7 +173,7 @@ export default function Swap() {
   }
 
   const handleConfirmDismiss = () => {
-    setSwapState((prev) => ({ ...prev, showCompleted: false, showConfirm: false, activeStep: 0 }))
+    setSwapState((prev) => ({ ...prev, showConfirm: false, activeStep: 0 }))
     onUserInput(Field.INPUT, '')
   }
 
@@ -184,11 +188,26 @@ export default function Swap() {
   const handleOutputSelect = (outputCurrency: Currency) => onCurrencySelection(Field.OUTPUT, outputCurrency)
 
   const handleCloseSuccess = () => {
-    setSuccessModalOpen(false)
+    setSwapState((prev) => ({ ...prev, successModalOpen: false }))
     onUserInput(Field.INPUT, '')
     onUserInput(Field.OUTPUT, '')
     onCleanSelectedCurrencies()
   }
+  const chainId = useChainId()
+  const { data: transactionReceipt } = useTransactionReceipt({
+    hash: transactionHash as `0x${string}`,
+    chainId,
+    query: {
+      refetchInterval: 1000,
+      enabled: !!transactionHash,
+    },
+  })
+
+  useEffect(() => {
+    if (transactionReceipt) {
+      setSwapState((prev) => ({ ...prev, loadingModalOpen: false, successModalOpen: true, transactionHash: null }))
+    }
+  }, [transactionReceipt])
 
   return (
     <div className={'flex flex-col items-center'}>
@@ -200,6 +219,11 @@ export default function Swap() {
           onOpenChange={handleConfirmDismiss}
         />
       )}
+
+      <TransactionInProgressModal
+        isOpen={loadingModalOpen}
+        onClose={() => setSwapState((prev) => ({ ...prev, loadingModalOpen: false }))}
+      />
 
       <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccess} content={'SWAP COMPLETED'} />
       <PriceImpactWarningModal

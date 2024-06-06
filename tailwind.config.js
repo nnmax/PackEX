@@ -95,7 +95,7 @@ module.exports = {
           pointerEvents: 'none',
           display: 'inline-block',
           aspectRatio: '1 / 1',
-          width: '1.5rem' /* 24px */,
+          width: '1em',
           backgroundColor: 'currentColor',
           maskSize: '100%',
           maskRepeat: 'no-repeat',
