@@ -8,7 +8,11 @@ import { useBlockNumber, useChainId } from 'wagmi'
 export default function Updater(): null {
   const chainId = useChainId()
   const dispatch = useDispatch()
-  const { data: blockNumber } = useBlockNumber()
+  const { data: blockNumber } = useBlockNumber({
+    watch: {
+      enabled: true,
+    },
+  })
 
   const windowVisible = useIsWindowVisible()
 

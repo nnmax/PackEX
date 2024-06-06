@@ -13,9 +13,13 @@ const WETH_ONLY: ChainTokenList = {
   [ChainId.BLAST_TESTNET]: [WETH[ChainId.BLAST_TESTNET]],
 }
 
+export const USDB = new Token(ChainId.BLAST_TESTNET, process.env.REACT_APP_USDB_ADDRESS!, 18, 'USDB', 'USDB')
+
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
+  [ChainId.BLAST_TESTNET]: [...WETH_ONLY[ChainId.BLAST_TESTNET], USDB],
+  [ChainId.BLAST]: [...WETH_ONLY[ChainId.BLAST], USDB],
 }
 
 /**
