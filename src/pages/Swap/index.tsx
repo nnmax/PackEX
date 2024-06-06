@@ -71,7 +71,7 @@ export default function Swap() {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
       }
 
-  const { onSwitchTokens, onCurrencySelection, onUserInput } = useSwapActionHandlers()
+  const { onSwitchTokens, onCurrencySelection, onCleanSelectedCurrencies, onUserInput } = useSwapActionHandlers()
 
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
 
@@ -185,6 +185,9 @@ export default function Swap() {
 
   const handleCloseSuccess = () => {
     setSuccessModalOpen(false)
+    onUserInput(Field.INPUT, '')
+    onUserInput(Field.OUTPUT, '')
+    onCleanSelectedCurrencies()
   }
 
   return (
