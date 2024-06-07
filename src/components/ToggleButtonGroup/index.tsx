@@ -1,3 +1,4 @@
+import useControlled from '@/hooks/useControlled'
 import { createContext, forwardRef, useCallback, useMemo } from 'react'
 
 interface ToggleButtonGroupContextType {
@@ -14,21 +15,27 @@ if (process.env.NODE_ENV !== 'production') {
   ToggleButtonGroupContext.displayName = 'ToggleButtonGroupContext'
 }
 
-interface ToggleButtonGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface ToggleButtonGroupProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: string | null
+  defaultValue?: string | null
   onChange?: (value: string | null, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 export default forwardRef<HTMLDivElement, ToggleButtonGroupProps>(function ToggleButtonGroup(props, ref) {
-  const { children, onChange, value, className, ...restProps } = props
+  const { children, onChange, value: valueProp, className, defaultValue, ...restProps } = props
+  const [value, setValue] = useControlled({
+    controlled: valueProp,
+    defaultValue,
+  })
 
   const handleChange = useCallback<Exclude<ToggleButtonGroupProps['onChange'], undefined>>(
     (buttonValue, event) => {
+      const newValue = value === buttonValue ? null : buttonValue
+      setValue(newValue)
       if (!onChange) return
-
-      onChange(value === buttonValue ? null : buttonValue, event)
+      onChange(newValue, event)
     },
-    [onChange, value],
+    [onChange, setValue, value],
   )
 
   const contextValue = useMemo(() => {

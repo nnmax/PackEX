@@ -29,10 +29,11 @@ import SuccessModal from '@/components/Pool/SuccessModal'
 import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
+import ToggleButtonGroup from '@/components/ToggleButtonGroup'
+import ToggleButton from '@/components/ToggleButton'
 
-const commonSpanStyles = {
-  className: `text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E]`,
-}
+const commonButtonClasses =
+  'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E] aria-pressed:border-lemonYellow transition-colors aria-pressed:text-lemonYellow'
 
 export default function PoolRemove() {
   const history = useHistory()
@@ -403,20 +404,30 @@ export default function PoolRemove() {
                   />
                 </div>
               </div>
-              <div className={'flex items-center justify-start text-xs gap-4'}>
-                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '25')}>
+              <ToggleButtonGroup
+                className={'flex items-center justify-start text-xs gap-4'}
+                onChange={(selected) => {
+                  console.log('%c [ selected ]-411', 'font-size:13px; background:pink; color:#bf2c9f;', selected)
+                  if (selected) {
+                    onUserInput(Field.LIQUIDITY_PERCENT, selected)
+                  } else {
+                    onUserInput(Field.LIQUIDITY_PERCENT, '0')
+                  }
+                }}
+              >
+                <ToggleButton className={commonButtonClasses} value="25">
                   {'25%'}
-                </Button>
-                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '50')}>
+                </ToggleButton>
+                <ToggleButton className={commonButtonClasses} value="50">
                   {'50%'}
-                </Button>
-                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '75')}>
+                </ToggleButton>
+                <ToggleButton className={commonButtonClasses} value="75">
                   {'75%'}
-                </Button>
-                <Button {...commonSpanStyles} onPress={() => onUserInput(Field.LIQUIDITY_PERCENT, '100')}>
+                </ToggleButton>
+                <ToggleButton className={commonButtonClasses} value="100">
                   {'MAX'}
-                </Button>
-              </div>
+                </ToggleButton>
+              </ToggleButtonGroup>
             </form>
           </div>
           <div

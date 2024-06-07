@@ -50,7 +50,7 @@ const DataTable = (props: DataTableProps) => {
               <div className={'flex items-center justify-start gap-10'}>
                 {item.swapFlag === 1 ? (
                   <Link
-                    to={`/swap?inputCurrency=${item.symbol.toUpperCase() === 'ETH' ? 'ETH' : item.tokenContract}&outputCurrency=${process.env.REACT_APP_USDB_ADDRESS}`}
+                    to={`/swap?inputCurrency=${item.symbol.toUpperCase() === 'ETH' ? 'ETH' : item.tokenContract}`}
                     className={'text-lemonYellow underline'}
                   >
                     {'Swap'}
