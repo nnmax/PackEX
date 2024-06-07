@@ -237,7 +237,7 @@ export default function PoolAdd() {
         setSuccessModalOpen(true)
         setTxHash('')
       })
-    }, 5000)
+    }, 7000)
 
     return () => {
       unmounted = true
