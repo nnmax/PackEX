@@ -45,7 +45,10 @@ export default function ConfirmSwapModal({
         </div>
       </dl>
       <hr className={'mb-4 mt-6 h-px w-full border-none bg-[#6A6A6A]'} />
-      <Steps steps={['APPROVE OLE SPENDING', 'CONFIRM SWAP IN WALLET']} activeStep={activeStep} />
+      <Steps
+        steps={[`APPROVE ${trade.inputAmount.currency.symbol} SPENDING`, 'CONFIRM SWAP IN WALLET']}
+        activeStep={activeStep}
+      />
     </AriaModal>
   )
 }

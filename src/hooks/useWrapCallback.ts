@@ -1,10 +1,11 @@
 import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@nnmax/uniswap-sdk-v2'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { tryParseAmount } from '../state/swap/hooks'
-import { useTransactionAdder } from '../state/transactions/hooks'
 import { useCurrencyBalance } from '../state/wallet/hooks'
 import { useWETHContract } from './useContract'
 import { useAccount, useChainId } from 'wagmi'
+import { toast } from 'react-toastify'
+import { isObject } from 'lodash-es'
 
 export enum WrapType {
   NOT_APPLICABLE,
@@ -23,14 +24,14 @@ export default function useWrapCallback(
   inputCurrency: Currency | undefined,
   outputCurrency: Currency | undefined,
   typedValue: string | undefined,
-): { wrapType: WrapType; execute?: undefined | (() => Promise<void>); inputError?: string } {
+): { wrapType: WrapType; execute?: undefined | (() => Promise<void>); inputError?: string; wraping?: boolean } {
   const { address: account } = useAccount()
   const chainId: ChainId = useChainId()
   const wethContract = useWETHContract()
   const balance = useCurrencyBalance(account ?? undefined, inputCurrency)
   // we can always parse the amount typed as the input currency, since wrapping is 1:1
   const inputAmount = useMemo(() => tryParseAmount(typedValue, inputCurrency), [inputCurrency, typedValue])
-  const addTransaction = useTransactionAdder()
+  const [wraping, setWraping] = useState(false)
 
   return useMemo(() => {
     if (!wethContract || !chainId || !inputCurrency || !outputCurrency) return NOT_APPLICABLE
@@ -39,15 +40,20 @@ export default function useWrapCallback(
 
     if (inputCurrency === ETHER && currencyEquals(WETH[chainId], outputCurrency)) {
       return {
+        wraping,
         wrapType: WrapType.WRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
                 try {
-                  const txReceipt = await wethContract.deposit({ value: `0x${inputAmount.raw.toString(16)}` })
-                  addTransaction(txReceipt, { summary: `Wrap ${inputAmount.toSignificant(6)} ETH to WETH` })
+                  setWraping(true)
+                  await wethContract.deposit({ value: `0x${inputAmount.raw.toString(16)}` })
                 } catch (error) {
                   console.error('Could not deposit', error)
+                  if (isObject(error) && 'code' in error && error.code === 'ACTION_REJECTED') return
+                  toast.error('Could not deposit')
+                } finally {
+                  setWraping(false)
                 }
               }
             : undefined,
@@ -55,15 +61,20 @@ export default function useWrapCallback(
       }
     } else if (currencyEquals(WETH[chainId], inputCurrency) && outputCurrency === ETHER) {
       return {
+        wraping,
         wrapType: WrapType.UNWRAP,
         execute:
           sufficientBalance && inputAmount
             ? async () => {
                 try {
-                  const txReceipt = await wethContract.withdraw(`0x${inputAmount.raw.toString(16)}`)
-                  addTransaction(txReceipt, { summary: `Unwrap ${inputAmount.toSignificant(6)} WETH to ETH` })
+                  setWraping(true)
+                  await wethContract.withdraw(`0x${inputAmount.raw.toString(16)}`)
                 } catch (error) {
                   console.error('Could not withdraw', error)
+                  if (isObject(error) && 'code' in error && error.code === 'ACTION_REJECTED') return
+                  toast.error('Could not withdraw')
+                } finally {
+                  setWraping(false)
                 }
               }
             : undefined,
@@ -72,5 +83,5 @@ export default function useWrapCallback(
     } else {
       return NOT_APPLICABLE
     }
-  }, [wethContract, chainId, inputCurrency, outputCurrency, inputAmount, balance, addTransaction])
+  }, [wethContract, chainId, inputCurrency, outputCurrency, inputAmount, balance, wraping])
 }

@@ -57,6 +57,7 @@ export default function Swap() {
     wrapType,
     execute: onWrap,
     inputError: wrapInputError,
+    wraping,
   } = useWrapCallback(currencies[Field.INPUT], currencies[Field.OUTPUT], typedValue)
   const showWrap = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
@@ -187,11 +188,15 @@ export default function Swap() {
 
   const handleOutputSelect = (outputCurrency: Currency) => onCurrencySelection(Field.OUTPUT, outputCurrency)
 
-  const handleCloseSuccess = () => {
-    setSwapState((prev) => ({ ...prev, successModalOpen: false }))
+  const clearInputData = () => {
     onUserInput(Field.INPUT, '')
     onUserInput(Field.OUTPUT, '')
     onCleanSelectedCurrencies()
+  }
+
+  const handleCloseSuccess = () => {
+    setSwapState((prev) => ({ ...prev, successModalOpen: false }))
+    clearInputData()
   }
   const chainId = useChainId()
   const { data: transactionReceipt } = useTransactionReceipt({
@@ -208,6 +213,13 @@ export default function Swap() {
       setSwapState((prev) => ({ ...prev, loadingModalOpen: false, successModalOpen: true, transactionHash: null }))
     }
   }, [transactionReceipt])
+
+  const handleWrap = async () => {
+    if (!onWrap) return
+
+    await onWrap()
+    clearInputData()
+  }
 
   return (
     <div className={'flex flex-col items-center'}>
@@ -292,8 +304,9 @@ export default function Swap() {
             <ButtonPrimary
               isDisabled={!!wrapInputError}
               isError={!!wrapInputError}
-              onPress={onWrap}
+              onPress={handleWrap}
               className={'w-full max-w-[240px]'}
+              isLoading={wraping}
             >
               {wrapInputError ?? (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
             </ButtonPrimary>
