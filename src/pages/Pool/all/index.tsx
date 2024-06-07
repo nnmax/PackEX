@@ -46,7 +46,10 @@ const PoolAll = () => {
     <PoolLayout activeTab={'all'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
         <TableHeader
-          className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading && poolAllList.length <= 0 })}
+          className={clsx(
+            'h-12 text-[#9E9E9E] [&_th]:font-normal',
+            loading && poolAllList.length <= 0 ? 'loading text-2xl' : '',
+          )}
         >
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>
@@ -60,7 +63,13 @@ const PoolAll = () => {
           <Column>{'APR'}</Column>
           <Column>{'ACTION'}</Column>
         </TableHeader>
-        <TableBody items={poolAllList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody
+          items={poolAllList}
+          className={clsx(
+            '[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity',
+            loading && poolAllList.length > 0 ? 'opacity-40' : '',
+          )}
+        >
           {(item) => (
             <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>
               <Cell>

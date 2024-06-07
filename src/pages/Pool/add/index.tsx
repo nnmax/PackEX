@@ -27,6 +27,7 @@ import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { currencyId } from '@/utils/currencyId'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
+import { useMyPools } from '@/api/get-my-pools'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -57,7 +58,7 @@ export default function PoolAdd() {
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
   const isSupportedChainId = useIsSupportedChainId()
-
+  const { refetch: refetchMyPools } = useMyPools(true)
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [loadingModalOpen, setLoadingModalOpen] = useState(false)
@@ -226,12 +227,23 @@ export default function PoolAdd() {
   })
 
   useEffect(() => {
-    if (txReceipt) {
-      setLoadingModalOpen(false)
-      setSuccessModalOpen(true)
-      setTxHash('')
+    if (!txReceipt) return
+
+    let unmounted = false
+    const timer = setTimeout(() => {
+      refetchMyPools().finally(() => {
+        if (unmounted) return
+        setLoadingModalOpen(false)
+        setSuccessModalOpen(true)
+        setTxHash('')
+      })
+    }, 5000)
+
+    return () => {
+      unmounted = true
+      clearTimeout(timer)
     }
-  }, [txReceipt])
+  }, [refetchMyPools, txReceipt])
 
   return (
     <div className={'py-4'}>

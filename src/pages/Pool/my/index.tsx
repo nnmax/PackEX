@@ -1,54 +1,27 @@
-'use client'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { isEqual } from 'lodash-es'
-import { getMyPools, MyPoolListData, PoolMyItem } from '@/api'
-import { usePoolMyList } from '@/state/user/hooks'
-// import GearIcon from '@/components/Icons/GearIcon'
+import { PoolMyItem } from '@/api'
 import PoolLayout from '@/pages/Pool/Layout'
+import { useMyPools } from '@/api/get-my-pools'
+import CurrencyLogo from '@/components/CurrencyLogo'
 
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(true)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const [poolMyList, updatePoolMyList] = usePoolMyList()
-
-  useEffect(() => {
-    setLoading(true)
-    getMyPools()
-      .then((data: MyPoolListData) => {
-        updatePoolMyList((prev) => {
-          if (isEqual(prev, data.myPools)) return prev
-          return data.myPools
-        })
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [updatePoolMyList])
-
-  // function GearIconLogo() {
-  //   return (
-  //     <div
-  //       onClick={() => {
-  //         setOpen(true)
-  //       }}
-  //       className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer mr-3'}
-  //     >
-  //       <GearIcon className={'h-full w-full rounded-full'} />
-  //     </div>
-  //   )
-  // }
+  const { poolMyList, loading } = useMyPools()
 
   return (
     <PoolLayout activeTab={'my'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
         <TableHeader
-          className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading && poolMyList.length <= 0 })}
+          className={clsx(
+            'h-12 text-[#9E9E9E] [&_th]:font-normal',
+            loading && poolMyList.length <= 0 ? 'loading text-2xl' : '',
+          )}
         >
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>{'AMOUNT'}</Column>
@@ -57,7 +30,13 @@ const PoolMy = () => {
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
-        <TableBody items={poolMyList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>
+        <TableBody
+          items={poolMyList}
+          className={clsx(
+            '[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity',
+            loading && poolMyList.length > 0 ? 'opacity-40' : '',
+          )}
+        >
           {(item) => (
             <Fragment key={item.id}>
               <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>
@@ -73,9 +52,9 @@ const PoolMy = () => {
                 <Cell>
                   <div className={'flex items-center justify-center gap-4'}>
                     <div className={'flex items-center justify-start'}>
-                      <img className={'h-6 w-6 rounded-ful'} src={item.token0LogoUri} alt="logo0" />{' '}
+                      <CurrencyLogo size="24px" src={item.token0LogoUri} />{' '}
                       <span className={'text-xs ml-2 mr-2'}>{item.token0Amount}</span> /
-                      <img className={'h-6 w-6 rounded-ful ml-2'} src={item.token1LogoUri} alt="logo1" />{' '}
+                      <CurrencyLogo size="24px" className={'ml-2'} src={item.token1LogoUri} />{' '}
                       <span className={'text-xs ml-2'}>{item.token1Amount}</span>
                     </div>
                   </div>

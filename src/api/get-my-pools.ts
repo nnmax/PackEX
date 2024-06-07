@@ -1,4 +1,7 @@
+import { usePoolMyList } from '@/state/user/hooks'
 import fetcher from '@/utils/fetcher'
+import { isEqual } from 'lodash-es'
+import { useCallback, useEffect, useState } from 'react'
 
 export interface PoolMyItem {
   id: number
@@ -30,4 +33,35 @@ export default function getMyPools() {
   return fetcher<MyPoolListData>('/get-my-pools', {
     method: 'GET',
   })
+}
+
+export function useMyPools(disabledAutoFetch?: boolean) {
+  const [loading, setLoading] = useState(false)
+  const [poolMyList, updatePoolMyList] = usePoolMyList()
+
+  const refetch = useCallback(async () => {
+    setLoading(true)
+    return await getMyPools()
+      .then((data: MyPoolListData) => {
+        updatePoolMyList((prev) => {
+          if (isEqual(prev, data.myPools)) return prev
+          return data.myPools
+        })
+        return data.myPools
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [updatePoolMyList])
+
+  useEffect(() => {
+    if (disabledAutoFetch) return
+    refetch()
+  }, [disabledAutoFetch, refetch])
+
+  return {
+    loading,
+    poolMyList,
+    refetch,
+  }
 }
