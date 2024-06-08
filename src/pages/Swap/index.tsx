@@ -232,10 +232,7 @@ export default function Swap() {
         />
       )}
 
-      <TransactionInProgressModal
-        isOpen={loadingModalOpen}
-        onClose={() => setSwapState((prev) => ({ ...prev, loadingModalOpen: false }))}
-      />
+      <TransactionInProgressModal isOpen={loadingModalOpen} />
 
       <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccess} content={'SWAP COMPLETED'} />
       <PriceImpactWarningModal

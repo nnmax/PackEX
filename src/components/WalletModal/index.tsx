@@ -7,7 +7,7 @@ import {
   useWalletModalToggle,
 } from '../../state/application/hooks'
 import { BTC_MESSAGE_KEY, BTC_SIGNATURE_KEY, CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
-import { connectBTCWallet, connectWallet } from '@/api'
+import { ConnectWalletData, connectBTCWallet, connectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
 import okxLogo from '../../assets/images/okx.svg'
 import unisatLogo from '../../assets/images/unisat.svg'
@@ -38,11 +38,22 @@ export default function WalletModal() {
       const s = window.localStorage.getItem(SIGNATURE_KEY)
       const m = window.localStorage.getItem(MESSAGE_KEY)
 
-      const connectWalletResponse = await connectWallet({
-        address: accounts[0],
-        signature: s,
-        message: m,
-      })
+      let connectWalletResponse: string | ConnectWalletData | false = false
+      if (m && s) {
+        connectWalletResponse = await connectWallet({
+          address: accounts[0],
+          signature: s,
+          message: m,
+        }).catch((err) => {
+          console.error(err)
+          return false
+        })
+      }
+      if (connectWalletResponse === false) {
+        connectWalletResponse = await connectWallet({
+          address: accounts[0],
+        })
+      }
 
       if (typeof connectWalletResponse === 'string') {
         const signature = await signMessageAsync({

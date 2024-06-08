@@ -10,7 +10,6 @@ import { useTransactionAdder, useHasPendingApproval } from '../state/transaction
 import { computeSlippageAdjustedAmounts } from '../utils/prices'
 import { calculateGasMargin } from '../utils'
 import { useTokenContract } from './useContract'
-import { toast } from 'react-toastify'
 import { useAccount } from 'wagmi'
 
 export enum ApprovalState {
@@ -95,8 +94,10 @@ export function useApproveCallback(
   }, [getGas])
 
   const approve = useCallback(async (): Promise<void> => {
-    const res = await getGas()
-    if (!res) return
+    let res = await getGas()
+    if (!res) {
+      res = [BigNumber.from(0), false] as const
+    }
     const [_estimatedGas, _useExact] = res
 
     return tokenContract!
@@ -108,10 +109,6 @@ export function useApproveCallback(
           summary: 'Approve ' + amountToApprove!.currency.symbol,
           approval: { tokenAddress: token!.address, spender: spender! },
         })
-      })
-      .catch((error: Error) => {
-        toast.error('Failed to approve token')
-        throw error
       })
   }, [addTransaction, amountToApprove, getGas, spender, token, tokenContract])
 

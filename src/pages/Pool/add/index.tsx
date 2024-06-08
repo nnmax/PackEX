@@ -19,7 +19,6 @@ import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { ROUTER_ADDRESS } from '@/constants'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import { toast } from 'react-toastify'
-import { isString } from 'lodash-es'
 import ReviewModal from '@/components/Pool/ReviewModal'
 import SuccessModal from '@/components/Pool/SuccessModal'
 import { useAccount, useChainId, useTransactionReceipt } from 'wagmi'
@@ -197,7 +196,8 @@ export default function PoolAdd() {
       setLoadingModalOpen(true)
     } catch (error) {
       console.dir(error)
-      toast.error(isString(error) ? error : (error as any).message ?? 'An unknown error occurred. Please try again.')
+      toast.error('Error adding liquidity')
+      setLoadingModalOpen(false)
     } finally {
       setSubmitting(false)
       setReviewModalOpen(false)
@@ -270,7 +270,7 @@ export default function PoolAdd() {
         liquidityMinted={liquidityMinted}
       />
       <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
-      <TransactionInProgressModal isOpen={loadingModalOpen} onClose={() => setLoadingModalOpen(false)} />
+      <TransactionInProgressModal isOpen={loadingModalOpen} />
       <div className={'flex w-full justify-center'}>
         <div className={'px-16 py-8'}>
           <div className={'flex flex-col items-center'}>

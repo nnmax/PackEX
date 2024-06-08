@@ -73,7 +73,7 @@ const PoolMy = () => {
                       {'+ADD'}
                     </Link>
                     <Link
-                      to={`/pool/remove/${item.token0Contract}/${item.token1Contract}`}
+                      to={getLinkHref(item, 'remove')}
                       className={
                         'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
