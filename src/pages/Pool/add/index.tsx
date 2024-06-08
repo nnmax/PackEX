@@ -228,6 +228,7 @@ export default function PoolAdd() {
 
   useEffect(() => {
     if (!txReceipt) return
+    console.log('%c [ txReceipt ]-231', 'font-size:13px; background:pink; color:#bf2c9f;', txReceipt)
 
     let unmounted = false
     const timer = setTimeout(() => {
@@ -236,14 +237,16 @@ export default function PoolAdd() {
         setLoadingModalOpen(false)
         setSuccessModalOpen(true)
         setTxHash('')
+        onFieldAInput('')
+        onFieldBInput('')
       })
-    }, 7000)
+    }, 10000)
 
     return () => {
       unmounted = true
       clearTimeout(timer)
     }
-  }, [refetchMyPools, txReceipt])
+  }, [onFieldAInput, onFieldBInput, refetchMyPools, txReceipt])
 
   return (
     <div className={'py-4'}>
