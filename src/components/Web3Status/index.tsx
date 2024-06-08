@@ -7,10 +7,12 @@ import Wallet from '@/components/Icons/Wallet'
 import MaterialSymbolsLogout from '@/components/Icons/MaterialSymbolsLogout'
 import { disconnectWallet } from '@/api'
 import { useUserInfo } from '@/state/user/hooks'
-import { useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect } from 'wagmi'
+import { ButtonBase } from '@/components/Button'
 
 function Web3StatusInner() {
   const { disconnect } = useDisconnect()
+  const { isConnecting } = useAccount()
   const [userInfo] = useUserInfo()
 
   const toggleWalletModal = useWalletModalToggle()
@@ -46,13 +48,15 @@ function Web3StatusInner() {
   }
 
   return (
-    <Button
+    <ButtonBase
       onPress={toggleWalletModal}
-      className={'flex h-9 items-center rounded border border-solid border-aaa/50 px-2 text-xs gap-2'}
+      className={'border border-aaa/50 gap-2'}
+      loadingClassName={'!text-aaa/50'}
+      isLoading={isConnecting}
     >
       <Wallet className={'text-xl'} />
       <span>{'Connect Wallet'}</span>
-    </Button>
+    </ButtonBase>
   )
 }
 
