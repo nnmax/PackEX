@@ -5,10 +5,8 @@ import useBTCWallet from '@/hooks/useBTCWallet'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { useBTCWalletModalToggle } from '@/state/application/hooks'
 import clsx from 'clsx'
-import QueryString from 'qs'
-import { useState } from 'react'
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
-import { useLocation } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 
 enum FormField {
@@ -24,30 +22,42 @@ const height1 = 60
 
 const height2 = 156
 
-export default function FormCard(props: {
-  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
-  loading?: boolean
-  type: 'deposit' | 'withdraw'
-}) {
-  const { onSubmit, loading, type } = props
-
+export default forwardRef<
+  {
+    reset: () => void
+  },
+  {
+    onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
+    loading?: boolean
+    type: 'deposit' | 'withdraw'
+    data: Asset
+  }
+>(function FormCard(props, ref) {
+  const { onSubmit, loading, type, data } = props
+  const formRef = useRef<HTMLFormElement>(null)
   const [amount, setAmount] = useState(NaN)
   const toggleBTCWalletModal = useBTCWalletModalToggle()
   const { address: btcAddress } = useBTCWallet()
   const { address: ethAddress } = useAccount()
   const isSupportedChainId = useIsSupportedChainId()
 
-  const { search } = useLocation()
-  const data = QueryString.parse(search, {
-    ignoreQueryPrefix: true,
-  }) as unknown as Asset
-
   const handleMax = () => {
     setAmount(data.availableAmount)
   }
 
+  useImperativeHandle(
+    ref,
+    () => ({
+      reset: () => {
+        if (formRef.current) formRef.current.reset()
+        setAmount(NaN)
+      },
+    }),
+    [],
+  )
+
   return (
-    <Form className={'mt-[60px] flex flex-col items-center'} onSubmit={onSubmit}>
+    <Form className={'mt-[60px] flex flex-col items-center'} onSubmit={onSubmit} ref={formRef}>
       <div className={'flex flex-col gap-1'} style={{ width }}>
         <div className={'flex gap-1 text-sm'}>
           <div
@@ -134,12 +144,7 @@ export default function FormCard(props: {
 
       {type === 'deposit' ? (
         btcAddress ? (
-          <ButtonPrimary
-            isLoading={loading}
-            type={'submit'}
-            isDisabled={loading}
-            className={clsx('mt-14 w-full max-w-60')}
-          >
+          <ButtonPrimary isLoading={loading} type={'submit'} className={clsx('mt-14 w-full max-w-60')}>
             {'Confirm'}
           </ButtonPrimary>
         ) : (
@@ -171,7 +176,7 @@ export default function FormCard(props: {
       )}
     </Form>
   )
-}
+})
 
 function getDeformityOne(width: number, height: number, radius: number) {
   return `path('M ${radius},0 L ${width / 2},0 L ${width / 2 + 9},7 L ${width},7 L ${width},${height} L ${radius},${height} A ${radius} ${radius} 0 0 1 0 ${height - radius} L 0,${radius} A ${radius} ${radius} 0 0 1 ${radius} 0 Z')`

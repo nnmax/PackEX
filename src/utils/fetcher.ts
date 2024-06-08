@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify'
 import type { CommonResponse } from '@/api/types'
-// import { disconnectWallet } from '@/api'
+import { disconnectWallet } from '@/api'
 import { API_BASE } from '@/constants'
 
 interface FetcherOptions<ResponseData> extends RequestInit {
@@ -28,7 +28,7 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
         return data.data
       }
       if (data.code === 401) {
-        // disconnectWallet().catch(() => {})
+        disconnectWallet().catch(() => {})
       }
       if (data.code === 668800015) {
         throw new Error(data.prompt)

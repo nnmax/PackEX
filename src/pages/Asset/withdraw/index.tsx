@@ -66,7 +66,7 @@ export default function Withdraw() {
         {'Withdraw'}
       </Link>
 
-      <FormCard onSubmit={handleSubmit} loading={loading} type="withdraw" />
+      <FormCard data={data} onSubmit={handleSubmit} loading={loading} type="withdraw" />
 
       <ModalOverlay
         className={
