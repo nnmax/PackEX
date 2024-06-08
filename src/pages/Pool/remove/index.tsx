@@ -327,6 +327,7 @@ export default function PoolRemove() {
 
   useEffect(() => {
     if (!txReceipt) return
+    console.log('%c [ txReceipt ]-330', 'font-size:13px; background:pink; color:#bf2c9f;', txReceipt)
 
     let unmounted = false
     const timer = setTimeout(() => {
@@ -336,7 +337,7 @@ export default function PoolRemove() {
         setSuccessModalOpen(true)
         setTxHash('')
       })
-    }, 7000)
+    }, 10000)
 
     return () => {
       unmounted = true
