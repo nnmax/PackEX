@@ -27,6 +27,7 @@ import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { currencyId } from '@/utils/currencyId'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { useMyPools } from '@/api/get-my-pools'
+import { PairState } from '@/data/Reserves'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -54,6 +55,7 @@ export default function PoolAdd() {
     error,
     fieldAError,
     fieldBError,
+    pairState,
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
   const isSupportedChainId = useIsSupportedChainId()
@@ -340,17 +342,37 @@ export default function PoolAdd() {
                       <span>
                         {currencyA.symbol} PER {currencyB.symbol}
                       </span>
-                      <span>{price?.invert().toSignificant(4) ?? '-'}</span>
+                      <span>
+                        {pairState === PairState.LOADING ? (
+                          <span className={'loading'} />
+                        ) : (
+                          price?.invert().toSignificant(4) ?? '-'
+                        )}
+                      </span>
                     </p>
                     <p className={'flex justify-between'}>
                       <span>
                         {currencyB.symbol} PER {currencyA.symbol}
                       </span>
-                      <span>{price?.toSignificant(4) ?? '-'}</span>
+                      <span>
+                        {pairState === PairState.LOADING ? (
+                          <span className={'loading'} />
+                        ) : (
+                          price?.toSignificant(4) ?? '-'
+                        )}
+                      </span>
                     </p>
                     <p className={'flex justify-between'}>
                       <span>SHARE OF POOL</span>
-                      <span>{noLiquidity ? '100' : poolTokenPercentage?.toSignificant(4)}%</span>
+                      <span>
+                        {noLiquidity ? (
+                          '100'
+                        ) : pairState === PairState.LOADING ? (
+                          <span className={'loading'} />
+                        ) : (
+                          (poolTokenPercentage?.toSignificant(4) ?? '-') + '%'
+                        )}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -362,7 +384,7 @@ export default function PoolAdd() {
                       onPress={handleConfirm}
                       className={'w-full max-w-60'}
                       isDisabled={!!error || !!fieldAError || !!fieldBError}
-                      isLoading={submitting}
+                      isLoading={submitting || pairState === PairState.LOADING}
                     >
                       {'Confirm'}
                     </ButtonPrimary>

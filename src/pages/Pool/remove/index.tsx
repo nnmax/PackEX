@@ -159,7 +159,7 @@ export default function PoolRemove() {
     [_onUserInput],
   )
 
-  async function onRemove() {
+  async function onRemove(_approval = approval) {
     if (!chainId || !library || !account) throw new Error('missing dependencies')
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
     if (!currencyAmountA || !currencyAmountB) {
@@ -184,7 +184,7 @@ export default function PoolRemove() {
 
     let methodNames: string[], args: Array<string | string[] | number | boolean>
     // we have approval, use normal remove liquidity
-    if (approval === ApprovalState.APPROVED) {
+    if (_approval === ApprovalState.APPROVED) {
       // removeLiquidityETH
       if (oneCurrencyIsETH) {
         methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
@@ -306,7 +306,7 @@ export default function PoolRemove() {
           console.error(e)
         })
       }
-      await onRemove()
+      await onRemove(ApprovalState.APPROVED)
       setInProgressModalOpen(true)
     } catch (error) {
       console.error(error)
