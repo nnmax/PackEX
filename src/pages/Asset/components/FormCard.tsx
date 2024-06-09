@@ -9,7 +9,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import { Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
 import { useAccount } from 'wagmi'
 
-enum FormField {
+export enum FormField {
   Amount = 'amount',
   Address = 'address',
 }

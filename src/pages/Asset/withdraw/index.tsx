@@ -7,13 +7,8 @@ import QueryString from 'qs'
 import { Asset } from '@/api'
 import withdrawToken from '@/api/withdraw-token'
 import { toast } from 'react-toastify'
-import FormCard from '../components/FormCard'
+import FormCard, { type FormField } from '../components/FormCard'
 import { useSendTransaction } from 'wagmi'
-
-enum FormField {
-  Amount = 'amount',
-  Address = 'address',
-}
 
 export default function Withdraw() {
   const [isOpen, setOpen] = useState<boolean>(false)
