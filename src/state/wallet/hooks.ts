@@ -10,9 +10,12 @@ import { useAccount } from 'wagmi'
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
  */
-export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): {
-  [address: string]: CurrencyAmount | undefined
-} {
+export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): [
+  {
+    [address: string]: CurrencyAmount | undefined
+  },
+  boolean,
+] {
   const multicallContract = useMulticallContract()
 
   const addresses: string[] = useMemo(
@@ -31,15 +34,18 @@ export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): {
     'getEthBalance',
     addresses.map((address) => [address]),
   )
+  const anyLoading = results.some((callState) => callState.loading)
 
   return useMemo(
-    () =>
+    () => [
       addresses.reduce<{ [address: string]: CurrencyAmount }>((memo, address, i) => {
         const value = results?.[i]?.result?.[0]
         if (value) memo[address] = CurrencyAmount.ether(JSBI.BigInt(value.toString()))
         return memo
       }, {}),
-    [addresses, results],
+      anyLoading,
+    ],
+    [addresses, results, anyLoading],
   )
 }
 
@@ -97,30 +103,34 @@ export function useTokenBalance(account?: string, token?: Token): TokenAmount | 
 export function useCurrencyBalances(
   account?: string,
   currencies?: (Currency | undefined)[],
-): (CurrencyAmount | undefined)[] {
+): { balances: (CurrencyAmount | undefined)[]; anyLoading: boolean } {
   const tokens = useMemo(
     () => currencies?.filter((currency): currency is Token => currency instanceof Token) ?? [],
     [currencies],
   )
 
-  const tokenBalances = useTokenBalances(account, tokens)
+  const [tokenBalances, anyLoading] = useTokenBalancesWithLoadingIndicator(account, tokens)
   const containsETH: boolean = useMemo(() => currencies?.some((currency) => currency === ETHER) ?? false, [currencies])
-  const ethBalance = useETHBalances(containsETH ? [account] : [])
+  const [ethBalance, ethAnyLoading] = useETHBalances(containsETH ? [account] : [])
 
   return useMemo(
-    () =>
-      currencies?.map((currency) => {
-        if (!account || !currency) return undefined
-        if (currency instanceof Token) return tokenBalances[currency.address]
-        if (currency === ETHER) return ethBalance[account]
-        return undefined
-      }) ?? [],
-    [account, currencies, ethBalance, tokenBalances],
+    () => ({
+      balances:
+        currencies?.map((currency) => {
+          if (!account || !currency) return undefined
+          if (currency instanceof Token) return tokenBalances[currency.address]
+          if (currency === ETHER) return ethBalance[account]
+          return undefined
+        }) ?? [],
+      anyLoading: anyLoading || ethAnyLoading,
+    }),
+    [account, anyLoading, currencies, ethAnyLoading, ethBalance, tokenBalances],
   )
 }
 
-export function useCurrencyBalance(account?: string, currency?: Currency): CurrencyAmount | undefined {
-  return useCurrencyBalances(account, [currency])[0]
+export function useCurrencyBalance(account?: string, currency?: Currency): [CurrencyAmount | undefined, boolean] {
+  const result = useCurrencyBalances(account, [currency])
+  return [result.balances[0], result.anyLoading]
 }
 
 // mimics useAllBalances

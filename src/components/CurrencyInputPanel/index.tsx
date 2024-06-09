@@ -59,7 +59,10 @@ export default function CurrencyInputPanel({
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { address } = useAccount()
-  const selectedCurrencyBalance = useCurrencyBalance(address ?? undefined, currency ?? undefined)
+  const [selectedCurrencyBalance, loadingSelectedCurrencyBalance] = useCurrencyBalance(
+    address ?? undefined,
+    currency ?? undefined,
+  )
 
   return (
     <div
@@ -114,7 +117,14 @@ export default function CurrencyInputPanel({
           <span className={'text-[#FF2323]'}>{error ?? ''}</span>
           <div>
             <span>
-              {'BALANCE: ' + (!!currency && selectedCurrencyBalance ? selectedCurrencyBalance.toSignificant(6) : ' -')}
+              BALANCE:{' '}
+              {loadingSelectedCurrencyBalance ? (
+                <span className={'loading'} />
+              ) : !!currency && selectedCurrencyBalance ? (
+                selectedCurrencyBalance.toSignificant(6)
+              ) : (
+                ' -'
+              )}
             </span>
             {!!currency && showMaxButton && (
               <Button className={'text-lemonYellow ml-2'} onPress={onMax}>

@@ -63,8 +63,8 @@ export function useDerivedMintInfo(
     currencies[Field.CURRENCY_B],
   ])
   const currencyBalances: { [field in Field]?: CurrencyAmount } = {
-    [Field.CURRENCY_A]: balances[0],
-    [Field.CURRENCY_B]: balances[1],
+    [Field.CURRENCY_A]: balances.balances[0],
+    [Field.CURRENCY_B]: balances.balances[1],
   }
 
   // amounts
