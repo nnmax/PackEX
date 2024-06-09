@@ -1,7 +1,7 @@
 import { ChainId, Currency, CurrencyAmount, JSBI, Pair, Percent, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { usePair } from '../../data/Reserves'
+import { PairState, usePair } from '../../data/Reserves'
 import { useTotalSupply } from '../../data/TotalSupply'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import { AppDispatch, AppState } from '../index'
@@ -26,6 +26,7 @@ export function useDerivedBurnInfo(
     [Field.CURRENCY_B]?: CurrencyAmount
   }
   error?: string
+  pairState: PairState
 } {
   const { address: account } = useAccount()
   const chainId: ChainId = useChainId()
@@ -33,7 +34,7 @@ export function useDerivedBurnInfo(
   const { independentField, typedValue } = useBurnState()
 
   // pair + totalsupply
-  const [, pair] = usePair(currencyA, currencyB)
+  const [pairState, pair] = usePair(currencyA, currencyB)
 
   // balances
   const relevantTokenBalances = useTokenBalances(account ?? undefined, [pair?.liquidityToken])
@@ -135,7 +136,7 @@ export function useDerivedBurnInfo(
     error = error ?? 'Enter an amount'
   }
 
-  return useMemo(() => ({ pair, parsedAmounts, error }), [error, pair, parsedAmounts])
+  return useMemo(() => ({ pair, parsedAmounts, error, pairState }), [error, pair, parsedAmounts, pairState])
 }
 
 export function useBurnActionHandlers(): {

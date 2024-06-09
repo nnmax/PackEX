@@ -28,6 +28,7 @@ import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { useMyPools } from '@/api/get-my-pools'
+import { PairState } from '@/data/Reserves'
 
 const commonButtonClasses =
   'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E] aria-pressed:border-lemonYellow transition-colors aria-pressed:text-lemonYellow'
@@ -51,7 +52,7 @@ export default function PoolRemove() {
 
   // burn state
   const { independentField, typedValue } = useBurnState()
-  const { pair, parsedAmounts, error } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
+  const { pair, parsedAmounts, error, pairState } = useDerivedBurnInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
@@ -310,7 +311,6 @@ export default function PoolRemove() {
     } catch (error) {
       console.error(error)
       toast.error('Error removing liquidity')
-      setInProgressModalOpen(false)
     } finally {
       setLoadingModalOpen(false)
     }
@@ -327,7 +327,6 @@ export default function PoolRemove() {
 
   useEffect(() => {
     if (!txReceipt) return
-    console.log('%c [ txReceipt ]-330', 'font-size:13px; background:pink; color:#bf2c9f;', txReceipt)
 
     let unmounted = false
     const timer = setTimeout(() => {
@@ -335,7 +334,6 @@ export default function PoolRemove() {
         if (unmounted) return
         setInProgressModalOpen(false)
         setSuccessModalOpen(true)
-        setTxHash('')
       })
     }, 10000)
 
@@ -448,20 +446,37 @@ export default function PoolRemove() {
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'REMOVING'}</span>
                 <CurrencyLogo currency={currencyA} />
                 <span className={'ml-auto text-[#9E9E9E]'}>
-                  {formattedAmounts[Field.CURRENCY_A] || '-'} {currencyA?.symbol}
+                  {pairState === PairState.LOADING ? (
+                    <span className={'loading'} />
+                  ) : (
+                    formattedAmounts[Field.CURRENCY_A] || '-'
+                  )}{' '}
+                  {currencyA?.symbol}
                 </span>
               </div>
               <div className={'flex items-center text-xs'}>
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'REMOVING'}</span>
                 <CurrencyLogo currency={currencyB} />
                 <span className={'ml-auto text-[#9E9E9E]'}>
-                  {formattedAmounts[Field.CURRENCY_B] || '-'} {currencyB?.symbol}
+                  {pairState === PairState.LOADING ? (
+                    <span className={'loading'} />
+                  ) : (
+                    formattedAmounts[Field.CURRENCY_B] || '-'
+                  )}{' '}
+                  {currencyB?.symbol}
                 </span>
               </div>
               <div className={'flex items-center text-xs'}>
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'RATE'}</span>
                 <span className={'ml-auto text-[#9E9E9E]'}>
-                  1 {currencyA?.symbol} = {tokenA && pair ? pair.priceOf(tokenA).toSignificant(6) : '-'}{' '}
+                  1 {currencyA?.symbol} ={' '}
+                  {pairState === PairState.LOADING ? (
+                    <span className={'loading'} />
+                  ) : tokenA && pair ? (
+                    pair.priceOf(tokenA).toSignificant(6)
+                  ) : (
+                    '-'
+                  )}{' '}
                   {currencyB?.symbol}
                 </span>
               </div>
@@ -471,30 +486,16 @@ export default function PoolRemove() {
             {account ? (
               isSupportedChainId ? (
                 <div className={'flex flex-col gap-4 w-full'}>
-                  {/* <ButtonPrimary
-                  isLoading={loadingModalOpen}
-                  onPress={handleConfirm}
-                  className={'w-full max-w-60'}
-                  isDisabled={!isValid}
-                >
-                  {'Confirm'}
-                  </ButtonPrimary> */}
-                  {/* <ButtonPrimary
-                    className={'w-full max-w-60'}
-                    onPress={approveCallback}
-                    isDisabled={approval !== ApprovalState.NOT_APPROVED || signatureData !== null}
-                    isLoading={approval === ApprovalState.PENDING}
-                  >
-                    {approval === ApprovalState.APPROVED || signatureData !== null ? 'Approved' : 'Approve'}
-                  </ButtonPrimary> */}
                   <ButtonPrimary
                     className={'w-full max-w-60'}
                     onPress={handleConfirm}
-                    isLoading={loadingModalOpen}
+                    isLoading={
+                      pairState === PairState.LOADING || loadingModalOpen || approval === ApprovalState.UNKNOWN
+                    }
                     isDisabled={!isValid}
                     isError={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
                   >
-                    Remove
+                    {error ?? 'Remove'}
                   </ButtonPrimary>
                 </div>
               ) : (

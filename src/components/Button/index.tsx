@@ -50,7 +50,7 @@ export const ButtonPrimary = forwardRef<HTMLButtonElement, ButtonPrimaryProps>(f
       {...restProps}
       isDisabled={isDisabled}
       ref={ref}
-      loadingClassName={clsx('!text-[#020202]', loadingClassName)}
+      loadingClassName={clsx(isDisabled ? '!text-[#888]' : '!text-[#020202]', loadingClassName)}
       className={clsx(
         className,
         isError

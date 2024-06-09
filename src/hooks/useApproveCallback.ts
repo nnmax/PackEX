@@ -94,10 +94,8 @@ export function useApproveCallback(
   }, [getGas])
 
   const approve = useCallback(async (): Promise<void> => {
-    let res = await getGas()
-    if (!res) {
-      res = [BigNumber.from(0), false] as const
-    }
+    const res = await getGas()
+    if (!res) return
     const [_estimatedGas, _useExact] = res
 
     return tokenContract!

@@ -3,16 +3,11 @@ import useDebounce from '../../hooks/useDebounce'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
 import { updateBlockNumber } from './actions'
 import { useDispatch } from 'react-redux'
-import { useBlockNumber, useChainId } from 'wagmi'
+import { useChainId, useWatchBlockNumber } from 'wagmi'
 
 export default function Updater(): null {
   const chainId = useChainId()
   const dispatch = useDispatch()
-  const { data: blockNumber } = useBlockNumber({
-    watch: {
-      enabled: true,
-    },
-  })
 
   const windowVisible = useIsWindowVisible()
 
@@ -22,11 +17,11 @@ export default function Updater(): null {
   })
 
   const blockNumberCallback = useCallback(
-    (blockNumber: number) => {
+    (blockNumber: bigint) => {
       setState((state) => {
         if (chainId === state.chainId) {
-          if (typeof state.blockNumber !== 'number') return { chainId, blockNumber }
-          return { chainId, blockNumber: Math.max(blockNumber, state.blockNumber) }
+          if (typeof state.blockNumber !== 'number') return { chainId, blockNumber: Number(blockNumber) }
+          return { chainId, blockNumber: Math.max(Number(blockNumber), state.blockNumber) }
         }
         return state
       })
@@ -34,14 +29,12 @@ export default function Updater(): null {
     [chainId, setState],
   )
 
-  // attach/detach listeners
-  useEffect(() => {
-    if (!blockNumber || !chainId || !windowVisible) return undefined
-
-    setState({ chainId, blockNumber: null })
-
-    blockNumberCallback(Number(blockNumber))
-  }, [blockNumber, blockNumberCallback, chainId, windowVisible])
+  useWatchBlockNumber({
+    chainId,
+    onBlockNumber: blockNumberCallback,
+    onError: (error) => console.error('Failed to fetch block number', error),
+    pollingInterval: 1000,
+  })
 
   const debouncedState = useDebounce(state, 100)
 

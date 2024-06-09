@@ -75,7 +75,7 @@ const PoolMy = () => {
                     <Link
                       to={getLinkHref(item, 'remove')}
                       className={
-                        'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
+                        'text-lemonYellow flex-grow flex-shrink-0 w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
                     >
                       {'—REMOVE'}
