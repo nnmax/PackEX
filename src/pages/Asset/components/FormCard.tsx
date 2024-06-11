@@ -1,4 +1,4 @@
-import { Asset } from '@/api'
+import { Asset, useWithdrawFee } from '@/api'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
@@ -22,6 +22,8 @@ const height1 = 60
 
 const height2 = 156
 
+const height3 = 96
+
 export default forwardRef<
   {
     reset: () => void
@@ -30,19 +32,24 @@ export default forwardRef<
     onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
     loading?: boolean
     type: 'deposit' | 'withdraw'
-    data: Asset
+    data: Record<keyof Asset, string>
+    placeholder?: string
+    minValue?: number
   }
 >(function FormCard(props, ref) {
-  const { onSubmit, loading, type, data } = props
+  const { onSubmit, loading, type, data, placeholder = '0', minValue = 0 } = props
   const formRef = useRef<HTMLFormElement>(null)
   const [amount, setAmount] = useState(NaN)
   const toggleBTCWalletModal = useBTCWalletModalToggle()
   const { address: btcAddress } = useBTCWallet()
   const { address: ethAddress } = useAccount()
   const isSupportedChainId = useIsSupportedChainId()
+  const { data: withdrawFee, isLoading: isLoadingWithdrawFee } = useWithdrawFee({
+    enabled: type === 'withdraw',
+  })
 
   const handleMax = () => {
-    setAmount(data.availableAmount)
+    setAmount(Number(data.availableAmount))
   }
 
   useImperativeHandle(
@@ -93,14 +100,19 @@ export default forwardRef<
             <NumberField
               value={amount}
               name={FormField.Amount}
-              maxValue={data.availableAmount}
-              minValue={0}
+              maxValue={Number(data.availableAmount)}
+              minValue={minValue}
               onChange={setAmount}
               isRequired
+              step={1}
             >
-              <Label className={'text-[#9E9E9E]'}>{'Amount'}</Label>
-              <div className="flex items-center">
-                <Input className={'flex-1 bg-transparent focus:outline-none'} autoFocus />
+              <Label className={'text-[#9E9E9E] text-xs'}>{'Amount'}</Label>
+              <div className="flex items-center mt-1">
+                <Input
+                  className={'flex-1 bg-transparent placeholder:text-[#4F4F4F] focus:outline-none'}
+                  autoFocus
+                  placeholder={placeholder}
+                />
                 <button
                   type="button"
                   onClick={handleMax}
@@ -119,26 +131,40 @@ export default forwardRef<
           </div>
         </div>
         {type === 'withdraw' && (
-          <div
-            className={'relative rounded-md bg-[#242424] p-6'}
-            style={{
-              clipPath: getDeformityThree(width, height2, 6),
-              height: height2,
-            }}
-          >
-            <TextField className={'flex flex-col gap-4'} isRequired>
-              <Label className={'text-[#9E9E9E]'}>{'BITCOIN ADDRESS:'}</Label>
-              <div className={'flex items-center'}>
-                <TextArea
-                  rows={2}
-                  name={FormField.Address}
-                  className={
-                    'text-[12px] leading-[20px] h-full w-full px-[12px] py-[8px] bg-transparent resize-none border rounded border-[#9E9E9E]'
-                  }
-                />
-              </div>
-            </TextField>
-          </div>
+          <>
+            <div className={'relative rounded-md bg-[#242424] p-6'}>
+              <TextField className={'flex flex-col gap-4'} isRequired>
+                <Label className={'text-[#9E9E9E] text-xs'}>{'BITCOIN ADDRESS:'}</Label>
+                <div className={'flex items-center'}>
+                  <TextArea
+                    rows={2}
+                    name={FormField.Address}
+                    className={
+                      'text-[12px] leading-[20px] h-full w-full px-[12px] py-[8px] bg-transparent resize-none border rounded border-[#9E9E9E]'
+                    }
+                  />
+                </div>
+              </TextField>
+            </div>
+            <div
+              className={'relative rounded-md bg-[#242424] p-6 text-xs'}
+              style={{
+                clipPath: getDeformityThree(width, height3, 6),
+                height: height3,
+              }}
+            >
+              <p className={'flex justify-between items-center mb-4'}>
+                <span>Network fee</span>
+                <span className={'text-[#9E9E9E]'}>
+                  {isLoadingWithdrawFee ? <span className={'loading'} /> : withdrawFee?.networkFeeInDog ?? '-'} DOG
+                </span>
+              </p>
+              <p className={'flex justify-between items-center'}>
+                <span>Amount received</span>
+                <span>10 DOG</span>
+              </p>
+            </div>
+          </>
         )}
       </div>
 

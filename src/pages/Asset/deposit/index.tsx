@@ -13,7 +13,7 @@ export default function Deposit() {
   const [loading, setLoading] = useState(false)
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
-  }) as unknown as Asset
+  }) as unknown as Record<keyof Asset, string>
   const { address, signMessage, currentWallet } = useBTCWallet()
   const formCardRef = useRef<{ reset: () => void }>(null)
 
@@ -31,7 +31,7 @@ export default function Deposit() {
         address,
         amount: formData.amount as string,
         decimals: Number(data.decimals),
-        runesId: data.id,
+        runesId: Number(data.id),
       })
       const signature = await signMessage(currentWallet!, messageToBeSigned)
       console.log('%c [ signature ]-33', 'font-size:13px; background:pink; color:#bf2c9f;', signature)

@@ -18,7 +18,7 @@ export default function Withdraw() {
 
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
-  }) as unknown as Asset
+  }) as unknown as Record<keyof Asset, string>
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -27,7 +27,7 @@ export default function Withdraw() {
     const { contractMethod } = await withdrawToken({
       amount: Number.parseFloat(formData.amount),
       address: formData.address,
-      chainId: data.chainId,
+      chainId: Number(data.chainId),
       originNetworkName: data.originNetworkName,
       tokenContract: data.tokenContract,
     }).catch((error) => {
@@ -61,7 +61,14 @@ export default function Withdraw() {
         {'Withdraw'}
       </Link>
 
-      <FormCard data={data} onSubmit={handleSubmit} loading={loading} type="withdraw" />
+      <FormCard
+        data={data}
+        onSubmit={handleSubmit}
+        loading={loading}
+        type="withdraw"
+        minValue={0.0012}
+        placeholder={`Min 0.0012`}
+      />
 
       <ModalOverlay
         className={

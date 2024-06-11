@@ -20,6 +20,12 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       if (response.ok) return response.json()
       const parsed = await response.json().catch(() => ({}))
       const errorMessage = response.statusText || parsed.error || 'Request failed'
+      if (
+        disabledErrorToast === true ||
+        (typeof disabledErrorToast === 'function' && disabledErrorToast(response as any))
+      ) {
+        throw new Error(errorMessage)
+      }
       toast.error(errorMessage)
       throw new Error(errorMessage)
     })
