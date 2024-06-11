@@ -17,7 +17,6 @@ import {
   updateUserSlippageTolerance,
   updateAssetsList,
   updateTotalValue,
-  updatePoolAllList,
   updatePoolMyList,
   updatePaxInvite,
   updatePaxInfo,
@@ -310,32 +309,6 @@ export function usePoolMyList() {
   )
 
   return [poolMyList, _updatePoolMyLst] as const
-}
-
-export function usePoolAllList() {
-  const poolAllList = useSelector<AppState, AppState['user']['poolAllList']>((state) => state.user.poolAllList)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const poolAllListRef = useRef(poolAllList)
-  poolAllListRef.current = poolAllList
-  const _updatePoolAllLst = useCallback(
-    (
-      action:
-        | AppState['user']['poolAllList']
-        | ((state: AppState['user']['poolAllList']) => AppState['user']['poolAllList']),
-    ) => {
-      let data: AppState['user']['poolAllList']
-      if (typeof action === 'function') {
-        data = action(poolAllListRef.current)
-      } else {
-        data = action
-      }
-      dispatch(updatePoolAllList({ poolAllList: data }))
-    },
-    [dispatch],
-  )
-
-  return [poolAllList, _updatePoolAllLst] as const
 }
 
 export function usePaxInvite() {

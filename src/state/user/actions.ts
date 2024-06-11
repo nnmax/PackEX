@@ -1,4 +1,4 @@
-import { Asset, PoolMyItem, PoolAllItem, ConnectWalletData, GetPaxInviteData } from '@/api'
+import { Asset, PoolMyItem, ConnectWalletData, GetPaxInviteData } from '@/api'
 import { GetPaxInfoData } from '@/api/get-pax-info'
 import { createAction } from '@reduxjs/toolkit'
 
@@ -30,6 +30,5 @@ export const updateUserInfo = createAction<ConnectWalletData | null>('user/updat
 export const updateAssetsList = createAction<{ assetsList: Asset[] }>('user/updateAssetsList')
 export const updateTotalValue = createAction<{ totalValue: number }>('user/updateTotalValue')
 export const updatePoolMyList = createAction<{ poolMyList: PoolMyItem[] }>('user/updatePoolMyList')
-export const updatePoolAllList = createAction<{ poolAllList: PoolAllItem[] }>('user/updatePoolAllList')
 export const updatePaxInvite = createAction<GetPaxInviteData | null>('user/updatePaxInvite')
 export const updatePaxInfo = createAction<GetPaxInfoData | null>('user/updatePaxInfo')

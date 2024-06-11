@@ -14,12 +14,11 @@ import {
   updateUserInfo,
   updateAssetsList,
   updateTotalValue,
-  updatePoolAllList,
   updatePoolMyList,
   updatePaxInvite,
   updatePaxInfo,
 } from './actions'
-import { Asset, PoolMyItem, PoolAllItem, ConnectWalletData, GetPaxInviteData } from '@/api'
+import { Asset, PoolMyItem, ConnectWalletData, GetPaxInviteData } from '@/api'
 import { GetPaxInfoData } from '@/api/get-pax-info'
 
 const currentTimestamp = () => new Date().getTime()
@@ -57,7 +56,6 @@ export interface UserState {
   userInfo: ConnectWalletData | null
   assetsList: Asset[]
   totalValue: number
-  poolAllList: PoolAllItem[]
   poolMyList: PoolMyItem[]
   paxInviteData: GetPaxInviteData | null
   paxInfoData: GetPaxInfoData | null
@@ -78,7 +76,6 @@ export const initialState: UserState = {
   timestamp: currentTimestamp(),
   userInfo: null,
   assetsList: [],
-  poolAllList: [],
   poolMyList: [],
   totalValue: 0,
   paxInviteData: null,
@@ -157,10 +154,6 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(updatePoolMyList, (state, { payload }) => {
       state.poolMyList = payload.poolMyList
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updatePoolAllList, (state, { payload }) => {
-      state.poolAllList = payload.poolAllList
       state.timestamp = currentTimestamp()
     })
     .addCase(updatePaxInvite, (state, { payload }) => {

@@ -3,7 +3,7 @@ export { default as disconnectWallet } from './disconnect-wallet'
 export { default as getUser, type GetUserData } from './get-user'
 export { default as enterInvitationCode } from './enter-invitation-code'
 export { default as getAssetList, type AssetListData, type Asset } from './get-asset-list'
-export { default as getAllPools, type AllPoolListData, type PoolAllItem } from './get-all-pools'
+export { default as getAllPools, type AllPoolListData, type PoolAllItem, useAllPools } from './get-all-pools'
 export { default as getMyPools, type MyPoolListData, type PoolMyItem } from './get-my-pools'
 export {
   default as connectBTCWallet,

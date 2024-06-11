@@ -1,33 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { isEqual } from 'lodash-es'
-import { getAllPools, AllPoolListData, PoolAllItem } from '@/api'
-import { usePoolAllList } from '@/state/user/hooks'
+import { PoolAllItem, useAllPools } from '@/api'
 // import GearIcon from '@/components/Icons/GearIcon'
 // import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 
 const PoolAll = () => {
-  const [isOpen, setOpen] = useState<boolean>(false)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
-  const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const [poolAllList, updatePoolAllList] = usePoolAllList()
-
-  useEffect(() => {
-    getAllPools()
-      .then((data: AllPoolListData) => {
-        updatePoolAllList((prev) => {
-          if (isEqual(prev, data.allPools)) return prev
-          return data.allPools
-        })
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [updatePoolAllList])
+  const [isOpen, setOpen] = useState(false)
+  const [selectedFlagOne, setSelectedFlagOne] = useState(true)
+  const [selectedFlagTwo, setSelectedFlagTwo] = useState(false)
+  const { data: poolAllList, isLoading, isFetching } = useAllPools()
 
   // function GearIconLogo() {
   //   return (
@@ -45,12 +29,7 @@ const PoolAll = () => {
   return (
     <PoolLayout activeTab={'all'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader
-          className={clsx(
-            'h-12 text-[#9E9E9E] [&_th]:font-normal',
-            loading && poolAllList.length <= 0 ? 'loading text-2xl' : '',
-          )}
-        >
+        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', isLoading ? 'loading text-2xl' : '')}>
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>
             <span className={'relative'}>
@@ -64,10 +43,10 @@ const PoolAll = () => {
           <Column>{'ACTION'}</Column>
         </TableHeader>
         <TableBody
-          items={poolAllList}
+          items={poolAllList?.allPools}
           className={clsx(
             '[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity',
-            loading && poolAllList.length > 0 ? 'opacity-40' : '',
+            isFetching ? 'opacity-40' : '',
           )}
         >
           {(item) => (

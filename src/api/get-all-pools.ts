@@ -1,4 +1,5 @@
 import fetcher from '@/utils/fetcher'
+import { UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
 
 export interface PoolAllItem {
   id: number
@@ -29,5 +30,13 @@ export type AllPoolListData = {
 export default function getAllPools() {
   return fetcher<AllPoolListData>('/get-all-pools', {
     method: 'GET',
+  })
+}
+
+export function useAllPools(options?: Omit<UndefinedInitialDataOptions<AllPoolListData>, 'queryKey' | 'queryFn'>) {
+  return useQuery({
+    queryKey: ['get-all-pools'],
+    queryFn: getAllPools,
+    ...options,
   })
 }
