@@ -9,10 +9,6 @@ export default function getRunesWithdrawFee() {
   return fetcher<WithdrawFeeData>('/get-runes-withdraw-fee', {
     method: 'POST',
     disabledErrorToast: true,
-  }).catch(() => {
-    return {
-      networkFeeInDog: 0,
-    }
   })
 }
 
