@@ -6,14 +6,14 @@ import ArrowDown from '@/components/Icons/ArrowDown'
 import Wallet from '@/components/Icons/Wallet'
 import MaterialSymbolsLogout from '@/components/Icons/MaterialSymbolsLogout'
 import { disconnectWallet } from '@/api'
-import { useUserInfo } from '@/state/user/hooks'
 import { useAccount, useDisconnect } from 'wagmi'
 import { ButtonBase } from '@/components/Button'
+import { useUserInfo } from '@/api/get-user'
 
 function Web3StatusInner() {
   const { disconnect } = useDisconnect()
   const { isConnecting } = useAccount()
-  const [userInfo] = useUserInfo()
+  const { data: userInfo } = useUserInfo()
 
   const toggleWalletModal = useWalletModalToggle()
 

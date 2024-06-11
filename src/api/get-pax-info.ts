@@ -1,7 +1,5 @@
-import { usePaxInfo } from '@/state/user/hooks'
 import fetcher from '@/utils/fetcher'
-import { isEqual } from 'lodash-es'
-import { useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
 
 export type PaxTableData = {
   totalAmount: number
@@ -27,23 +25,9 @@ function getPaxInfo() {
   })
 }
 
-export const useFetchPaxInfo = () => {
-  const [data, updateData] = usePaxInfo()
-
-  useEffect(() => {
-    getPaxInfo().then((data) => {
-      updateData((prev) => {
-        if (isEqual(data, prev)) return prev
-        if (data.leaderBoard) {
-          data.leaderBoard = data.leaderBoard.map((item, index) => ({
-            ...item,
-            rank: index + 1,
-          }))
-        }
-        return data
-      })
-    })
-  }, [updateData])
-
-  return data
+export function usePaxInfo() {
+  return useQuery({
+    queryKey: ['get-pax-info'],
+    queryFn: getPaxInfo,
+  })
 }

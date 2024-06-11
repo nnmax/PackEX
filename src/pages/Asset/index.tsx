@@ -1,34 +1,14 @@
-import { useState, useEffect } from 'react'
 import Introduce from './components/Introduce'
 import DataTable from './components/DataTable'
-import { getAssetList } from '@/api'
-import { useAssetList, useTotalValue } from '@/state/user/hooks'
-import { isEqual } from 'lodash-es'
+import { useAssetList } from '@/api/get-asset-list'
 
 export default function AssetPage() {
-  const [assetsList, updateAssetsList] = useAssetList()
-  const [totalValue, updateTotalValue] = useTotalValue()
-  const [loading, setLoading] = useState<boolean>(false)
-
-  useEffect(() => {
-    setLoading(true)
-    getAssetList()
-      .then((data) => {
-        updateTotalValue(data.totalValue)
-        updateAssetsList((prev) => {
-          if (isEqual(prev, data.assetList)) return prev
-          return data.assetList
-        })
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [updateAssetsList, updateTotalValue])
+  const { data, isLoading, isFetching } = useAssetList()
 
   return (
     <>
-      <Introduce totalVal={totalValue} />
-      <DataTable assetsList={assetsList} loading={assetsList.length <= 0 && loading} />
+      <Introduce totalVal={data?.totalValue ?? 0} />
+      <DataTable assetsList={data?.assetList ?? []} isLoading={isLoading} isFetching={isFetching} />
     </>
   )
 }

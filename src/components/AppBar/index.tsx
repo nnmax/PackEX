@@ -5,11 +5,11 @@ import { Link } from 'react-router-dom'
 import Web3Status from '../Web3Status'
 import XLogo from '@/assets/images/X-logo.svg'
 import { useWalletModalToggle } from '@/state/application/hooks'
-import { useUserInfo } from '@/state/user/hooks'
 import clsx from 'clsx'
+import { useUserInfo } from '@/api/get-user'
 
 export default function AppBar() {
-  const [userInfo] = useUserInfo()
+  const { data: userInfo } = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
 
   const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {

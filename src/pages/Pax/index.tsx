@@ -1,12 +1,10 @@
 import { enterInvitationCode } from '@/api'
-import { PaxRewardRatio, PaxTableData, useFetchPaxInfo } from '@/api/get-pax-info'
-import { useFetchPaxInvite } from '@/api/get-pax-invite'
+import { PaxRewardRatio, PaxTableData, usePaxInfo } from '@/api/get-pax-info'
 import { ButtonPrimary } from '@/components/Button'
 import OTP from '@/components/OTPInput'
 import copy from 'copy-to-clipboard'
 import useENS from '@/hooks/useENS'
 import { useWalletModalToggle } from '@/state/application/hooks'
-import { useUserInfo } from '@/state/user/hooks'
 import { shortenAddress } from '@/utils'
 import clsx from 'clsx'
 import { last } from 'lodash-es'
@@ -19,6 +17,9 @@ import Clock from '@/components/Icons/Clock'
 import { useChainId, useConnectorClient, useSwitchChain } from 'wagmi'
 import { watchAsset } from 'viem/actions'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
+import { usePaxInvite } from '@/api/get-pax-invite'
+import { GetUserData, useUserInfo } from '@/api/get-user'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
@@ -26,10 +27,10 @@ export default function PaxPage() {
   const { data: connectorClient } = useConnectorClient()
   const isSupportedChainId = useIsSupportedChainId()
 
-  const [userInfo] = useUserInfo()
+  const { data: userInfo } = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
-  const inviteData = useFetchPaxInvite()
-  const infoData = useFetchPaxInfo()
+  const { data: inviteData } = usePaxInvite()
+  const { data: infoData } = usePaxInfo()
   const { switchChain } = useSwitchChain()
   const chainId = useChainId()
   const [watchingAsset, setWatchingAsset] = useState(false)
@@ -321,7 +322,8 @@ const SocialBox = forwardRef<
   }
 >(function SocialBox(props, ref) {
   const { data } = props
-  const [userInfo, updateUserInfo] = useUserInfo()
+  const { data: userInfo } = useUserInfo()
+  const queryClient = useQueryClient()
   const toggleWalletModal = useWalletModalToggle()
   const [loading, setLoading] = useState(false)
   const [invalid, setInvalid] = useState(false)
@@ -331,9 +333,12 @@ const SocialBox = forwardRef<
     setLoading(true)
     enterInvitationCode(value)
       .then((res) => {
-        updateUserInfo({
-          ...userInfo,
-          invitationCode: res?.invitationCode,
+        queryClient.setQueryData<GetUserData | undefined>(['get-current-login-user'], (oldData) => {
+          if (!oldData) return oldData
+          return {
+            ...oldData,
+            invitationCode: res?.invitationCode,
+          }
         })
       })
       .catch(() => {

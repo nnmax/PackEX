@@ -12,17 +12,12 @@ const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const { poolMyList, loading } = useMyPools()
+  const { data, isLoading, isFetching } = useMyPools()
 
   return (
     <PoolLayout activeTab={'my'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader
-          className={clsx(
-            'h-12 text-[#9E9E9E] [&_th]:font-normal',
-            loading && poolMyList.length <= 0 ? 'loading text-2xl' : '',
-          )}
-        >
+        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { 'loading text-2xl': isLoading })}>
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>{'AMOUNT'}</Column>
           <Column>{'POOL SHARE'}</Column>
@@ -31,11 +26,10 @@ const PoolMy = () => {
           <Column>{''}</Column>
         </TableHeader>
         <TableBody
-          items={poolMyList}
-          className={clsx(
-            '[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity',
-            loading && poolMyList.length > 0 ? 'opacity-40' : '',
-          )}
+          items={data?.myPools}
+          className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity', {
+            'opacity-40': isFetching,
+          })}
         >
           {(item) => (
             <Fragment key={item.id}>

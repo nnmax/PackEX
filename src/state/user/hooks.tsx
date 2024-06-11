@@ -1,6 +1,6 @@
 import { ChainId, Pair, Token } from '@nnmax/uniswap-sdk-v2'
 import { flatMap } from 'lodash-es'
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo } from 'react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux'
 import { BASES_TO_TRACK_LIQUIDITY_FOR, PINNED_PAIRS } from '../../constants'
 import { useAllTokens } from '../../hooks/Tokens'
@@ -8,20 +8,14 @@ import { AppDispatch, AppState } from '../index'
 import {
   addSerializedPair,
   addSerializedToken,
-  updateUserInfo,
   removeSerializedToken,
   SerializedPair,
   SerializedToken,
   updateUserDeadline,
   updateUserExpertMode,
   updateUserSlippageTolerance,
-  updateAssetsList,
-  updateTotalValue,
-  updatePoolMyList,
-  updatePaxInvite,
-  updatePaxInfo,
 } from './actions'
-import { useAccount, useChainId } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 function serializeToken(token: Token): SerializedToken {
   return {
@@ -231,136 +225,4 @@ export function useTrackedTokenPairs(): [Token, Token][] {
 
     return Object.keys(keyed).map((key) => keyed[key])
   }, [combinedList])
-}
-
-export function useUserInfo(): [AppState['user']['userInfo'], (data: AppState['user']['userInfo']) => void] {
-  const { isConnected } = useAccount()
-  const userInfo = useSelector<AppState, AppState['user']['userInfo']>((state) => state.user.userInfo)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const updateUser = (data: AppState['user']['userInfo']) => {
-    dispatch(updateUserInfo(data))
-  }
-
-  return [isConnected ? userInfo : null, updateUser]
-}
-
-export function useAssetList() {
-  const assetsList = useSelector<AppState, AppState['user']['assetsList']>((state) => state.user.assetsList)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const assetsListRef = useRef(assetsList)
-  assetsListRef.current = assetsList
-  const _updateAssetsList = useCallback(
-    (
-      action:
-        | AppState['user']['assetsList']
-        | ((state: AppState['user']['assetsList']) => AppState['user']['assetsList']),
-    ) => {
-      let data: AppState['user']['assetsList']
-      if (typeof action === 'function') {
-        data = action(assetsListRef.current)
-      } else {
-        data = action
-      }
-      dispatch(updateAssetsList({ assetsList: data }))
-    },
-    [dispatch],
-  )
-
-  return [assetsList, _updateAssetsList] as const
-}
-
-export function useTotalValue(): [AppState['user']['totalValue'], (data: AppState['user']['totalValue']) => void] {
-  const totalValue = useSelector<AppState, AppState['user']['totalValue']>((state) => state.user.totalValue)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const _updateTotalValue = useCallback(
-    (data: AppState['user']['totalValue']) => {
-      dispatch(updateTotalValue({ totalValue: data }))
-    },
-    [dispatch],
-  )
-
-  return [totalValue, _updateTotalValue]
-}
-
-export function usePoolMyList() {
-  const poolMyList = useSelector<AppState, AppState['user']['poolMyList']>((state) => state.user.poolMyList)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const poolMyListRef = useRef(poolMyList)
-  poolMyListRef.current = poolMyList
-  const _updatePoolMyLst = useCallback(
-    (
-      action:
-        | AppState['user']['poolMyList']
-        | ((state: AppState['user']['poolMyList']) => AppState['user']['poolMyList']),
-    ) => {
-      let data: AppState['user']['poolMyList']
-      if (typeof action === 'function') {
-        data = action(poolMyListRef.current)
-      } else {
-        data = action
-      }
-      dispatch(updatePoolMyList({ poolMyList: data }))
-    },
-    [dispatch],
-  )
-
-  return [poolMyList, _updatePoolMyLst] as const
-}
-
-export function usePaxInvite() {
-  const paxInvite = useSelector<AppState, AppState['user']['paxInviteData']>((state) => state.user.paxInviteData)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const paxInviteRef = useRef(paxInvite)
-  paxInviteRef.current = paxInvite
-
-  const _updatePaxInvite = useCallback(
-    (
-      action:
-        | AppState['user']['paxInviteData']
-        | ((state: AppState['user']['paxInviteData']) => AppState['user']['paxInviteData']),
-    ) => {
-      let data: AppState['user']['paxInviteData']
-      if (typeof action === 'function') {
-        data = action(paxInviteRef.current)
-      } else {
-        data = action
-      }
-      dispatch(updatePaxInvite(data))
-    },
-    [dispatch],
-  )
-
-  return [paxInvite, _updatePaxInvite] as const
-}
-
-export function usePaxInfo() {
-  const paxInfo = useSelector<AppState, AppState['user']['paxInfoData']>((state) => state.user.paxInfoData)
-  const dispatch = useDispatch<AppDispatch>()
-
-  const paxInfoRef = useRef(paxInfo)
-  paxInfoRef.current = paxInfo
-
-  const _updatePaxInfo = useCallback(
-    (
-      action:
-        | AppState['user']['paxInfoData']
-        | ((state: AppState['user']['paxInfoData']) => AppState['user']['paxInfoData']),
-    ) => {
-      let data: AppState['user']['paxInfoData']
-      if (typeof action === 'function') {
-        data = action(paxInfoRef.current)
-      } else {
-        data = action
-      }
-      dispatch(updatePaxInfo(data))
-    },
-    [dispatch],
-  )
-
-  return [paxInfo, _updatePaxInfo] as const
 }

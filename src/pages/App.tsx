@@ -1,5 +1,5 @@
-import { Suspense, useEffect } from 'react'
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom'
+import { Suspense } from 'react'
+import { Redirect, Route, Switch } from 'react-router-dom'
 import PoolAdd from './Pool/add'
 import PoolRemove from './Pool/remove'
 import Asset from './Asset'
@@ -11,38 +11,9 @@ import AppBar from '@/components/AppBar'
 import PoolAll from './Pool/all'
 import PoolMy from './Pool/my'
 import Pax from './Pax'
-import { getUser } from '@/api'
-import { useUserInfo } from '@/state/user/hooks'
 import Footer from '@/components/Footer'
 
-function useInitialUserInfo() {
-  const [, updateUserInfo] = useUserInfo()
-  const history = useHistory()
-
-  useEffect(() => {
-    let isMounted = true
-
-    getUser()
-      .then((userInfo) => {
-        if (isMounted) {
-          updateUserInfo(userInfo)
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          updateUserInfo(null)
-        }
-      })
-
-    return () => {
-      isMounted = false
-    }
-  }, [history, updateUserInfo])
-}
-
 export default function App() {
-  useInitialUserInfo()
-
   return (
     <Suspense fallback={null}>
       <AppBar />

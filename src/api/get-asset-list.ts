@@ -1,4 +1,5 @@
 import fetcher from '@/utils/fetcher'
+import { useQuery } from '@tanstack/react-query'
 
 export interface Asset {
   id: number
@@ -29,5 +30,12 @@ export default function getAssertList() {
   return fetcher<AssetListData>('/get-asset-list', {
     method: 'GET',
     disabledErrorToast: true,
+  })
+}
+
+export function useAssetList() {
+  return useQuery({
+    queryKey: ['get-asset-list'],
+    queryFn: getAssertList,
   })
 }

@@ -33,7 +33,6 @@ export default function Updater(): null {
     chainId,
     onBlockNumber: blockNumberCallback,
     onError: (error) => console.error('Failed to fetch block number', error),
-    pollingInterval: 1000,
   })
 
   const debouncedState = useDebounce(state, 100)

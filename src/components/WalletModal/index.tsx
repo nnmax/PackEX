@@ -7,8 +7,7 @@ import {
   useWalletModalToggle,
 } from '../../state/application/hooks'
 import { BTC_MESSAGE_KEY, BTC_SIGNATURE_KEY, CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
-import { ConnectWalletData, connectBTCWallet, connectWallet } from '@/api'
-import { useUserInfo } from '@/state/user/hooks'
+import { ConnectWalletData, GetUserData, connectBTCWallet, connectWallet } from '@/api'
 import okxLogo from '../../assets/images/okx.svg'
 import unisatLogo from '../../assets/images/unisat.svg'
 import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
@@ -16,15 +15,20 @@ import { isString } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
 import { Heading } from 'react-aria-components'
 import { Connector, ConnectorAlreadyConnectedError, useChainId, useConnect, useSignMessage } from 'wagmi'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function WalletModal() {
   const [pendingWallet, setPendingWallet] = useState<Connector>()
-  const [, updateUserInfo] = useUserInfo()
+  const queryClient = useQueryClient()
   const walletModalOpen = useWalletModalOpen()
   const toggleWalletModal = useWalletModalToggle()
   const { connectAsync } = useConnect()
   const chainId = useChainId()
   const { signMessageAsync } = useSignMessage()
+
+  const updateUserInfo = (data: ConnectWalletData) => {
+    queryClient.setQueryData<GetUserData | undefined>(['get-current-login-user'], data)
+  }
 
   const tryActivation = async (connector: Connector) => {
     setPendingWallet(connector) // set wallet for pending view

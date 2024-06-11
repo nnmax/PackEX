@@ -61,7 +61,7 @@ export default function PoolRemove() {
   const [inProgressModalOpen, setInProgressModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
 
-  const { refetch: refetchMyPools } = useMyPools(true)
+  const { refetch: refetchMyPools } = useMyPools()
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')

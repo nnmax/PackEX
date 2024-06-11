@@ -23,8 +23,6 @@ declare module '@uniswap/token-lists' {
   }
 }
 
-// const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
-
 if ('ethereum' in window) {
   ;(window.ethereum as any).autoRefreshOnNetworkChange = false
 }

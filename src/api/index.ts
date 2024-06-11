@@ -10,5 +10,5 @@ export {
   type ConnectBTCWalletData,
   type ConnectBTCWalletParams,
 } from './connect-btc-wallet'
-export { useFetchPaxInvite as usePaxInvite, type GetPaxInviteData } from './get-pax-invite'
+export { type GetPaxInviteData } from './get-pax-invite'
 export { default as getWithdrawFee, type WithdrawFeeData, useWithdrawFee } from './get-runes-withdraw-fee'

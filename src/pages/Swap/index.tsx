@@ -15,7 +15,7 @@ import {
   useSwapActionHandlers,
   useSwapState,
 } from '../../state/swap/hooks'
-import { useUserDeadline, useUserInfo, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useUserDeadline, useUserSlippageTolerance } from '../../state/user/hooks'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import SlippageSetting from '@/components/SlippageSetting'
@@ -30,10 +30,11 @@ import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
 import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN } from '@/constants'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
+import { useUserInfo } from '@/api/get-user'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
-  const [userInfo] = useUserInfo()
+  const { data: userInfo } = useUserInfo()
 
   // get custom setting values for user
   const [deadline] = useUserDeadline()

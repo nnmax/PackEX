@@ -7,16 +7,17 @@ import { Asset } from '@/api'
 import { formatAmountColumn, formatValueColumn } from '@/utils/prices'
 
 interface DataTableProps {
-  loading: boolean
+  isLoading: boolean
+  isFetching: boolean
   assetsList: Asset[]
 }
 
 const DataTable = (props: DataTableProps) => {
-  const { assetsList, loading } = props
+  const { assetsList, isLoading, isFetching } = props
 
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-      <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { loading: loading })}>
+      <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { 'loading text-2xl': isLoading })}>
         <Column isRowHeader>{'TOKEN'}</Column>
         <Column>{'AMOUNT'}</Column>
         <Column>{'AVAILABLE'}</Column>
@@ -24,7 +25,12 @@ const DataTable = (props: DataTableProps) => {
         <Column>{'CHANGE (TODAY)'}</Column>
         <Column> </Column>
       </TableHeader>
-      <TableBody items={assetsList} className={'[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]'}>
+      <TableBody
+        items={assetsList}
+        className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity', {
+          'opacity-40': isFetching,
+        })}
+      >
         {(item) => (
           <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
             <Cell>

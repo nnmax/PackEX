@@ -11,15 +11,7 @@ import {
   updateUserExpertMode,
   updateUserSlippageTolerance,
   updateUserDeadline,
-  updateUserInfo,
-  updateAssetsList,
-  updateTotalValue,
-  updatePoolMyList,
-  updatePaxInvite,
-  updatePaxInfo,
 } from './actions'
-import { Asset, PoolMyItem, ConnectWalletData, GetPaxInviteData } from '@/api'
-import { GetPaxInfoData } from '@/api/get-pax-info'
 
 const currentTimestamp = () => new Date().getTime()
 
@@ -52,13 +44,6 @@ export interface UserState {
   }
 
   timestamp: number
-
-  userInfo: ConnectWalletData | null
-  assetsList: Asset[]
-  totalValue: number
-  poolMyList: PoolMyItem[]
-  paxInviteData: GetPaxInviteData | null
-  paxInfoData: GetPaxInfoData | null
 }
 
 function pairKey(token0Address: string, token1Address: string) {
@@ -74,12 +59,6 @@ export const initialState: UserState = {
   tokens: {},
   pairs: {},
   timestamp: currentTimestamp(),
-  userInfo: null,
-  assetsList: [],
-  poolMyList: [],
-  totalValue: 0,
-  paxInviteData: null,
-  paxInfoData: null,
 }
 
 export default createReducer(initialState, (builder) =>
@@ -138,30 +117,6 @@ export default createReducer(initialState, (builder) =>
         delete state.pairs[chainId][pairKey(tokenAAddress, tokenBAddress)]
         delete state.pairs[chainId][pairKey(tokenBAddress, tokenAAddress)]
       }
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updateUserInfo, (state, { payload }) => {
-      state.userInfo = payload
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updateAssetsList, (state, { payload }) => {
-      state.assetsList = payload.assetsList
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updateTotalValue, (state, { payload }) => {
-      state.totalValue = payload.totalValue
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updatePoolMyList, (state, { payload }) => {
-      state.poolMyList = payload.poolMyList
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updatePaxInvite, (state, { payload }) => {
-      state.paxInviteData = payload
-      state.timestamp = currentTimestamp()
-    })
-    .addCase(updatePaxInfo, (state, { payload }) => {
-      state.paxInfoData = payload
       state.timestamp = currentTimestamp()
     }),
 )

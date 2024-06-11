@@ -59,7 +59,7 @@ export default function PoolAdd() {
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
   const isSupportedChainId = useIsSupportedChainId()
-  const { refetch: refetchMyPools } = useMyPools(true)
+  const { refetch: refetchMyPools } = useMyPools()
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [loadingModalOpen, setLoadingModalOpen] = useState(false)
@@ -230,7 +230,6 @@ export default function PoolAdd() {
 
   useEffect(() => {
     if (!txReceipt) return
-    console.log('%c [ txReceipt ]-231', 'font-size:13px; background:pink; color:#bf2c9f;', txReceipt)
 
     let unmounted = false
     const timer = setTimeout(() => {
