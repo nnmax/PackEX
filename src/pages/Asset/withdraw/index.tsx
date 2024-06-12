@@ -4,17 +4,25 @@ import ConfirmImg from '@/assets/images/confirm.png'
 import { Modal, Dialog, ModalOverlay, Button } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import QueryString from 'qs'
-import { Asset } from '@/api'
-import withdrawToken from '@/api/withdraw-token'
+import { Asset, useWithdrawFee } from '@/api'
 import { toast } from 'react-toastify'
 import FormCard, { type FormField } from '../components/FormCard'
 import { useSendTransaction } from 'wagmi'
+import { WithdrawRunesParams, useWithdrawRunes } from '@/api/withdraw-runes'
+import { useWithdrawRunesConfirm } from '@/api/withdraw-runes-confirm'
+
+const DOG_MIN_AMOUNT = 1000
 
 export default function Withdraw() {
   const [isOpen, setOpen] = useState<boolean>(false)
   const { search } = useLocation()
-  const { sendTransactionAsync } = useSendTransaction()
-  const [loading, setLoading] = useState<boolean>(false)
+  const { sendTransactionAsync, isPending: sendingTransaction } = useSendTransaction()
+  const { mutateAsync: withdrawRunesAsync, isPending: withdrawingRunes } = useWithdrawRunes()
+  const { data: withdrawFee, isLoading: isLoadingWithdrawFee } = useWithdrawFee({
+    refetchInterval: 15000,
+  })
+  const { mutateAsync: withdrawRunesConfirmAsync, isPending: withdrawingRunesConfirm } = useWithdrawRunesConfirm()
+  const minValue = Math.max(DOG_MIN_AMOUNT, withdrawFee?.networkFeeInDog ?? 0)
 
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
@@ -22,36 +30,43 @@ export default function Withdraw() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setLoading(true)
+    if (!withdrawFee?.networkFeeInDog) {
+      toast.error('Please wait for the network fee to be calculated')
+      return
+    }
     const formData = Object.fromEntries(new FormData(event.currentTarget)) as Record<FormField, string>
-    const { contractMethod } = await withdrawToken({
+    const amount = Number.parseFloat(formData.amount)
+    const amountReceived = amount - withdrawFee.networkFeeInDog
+    if (amount < minValue) {
+      toast.error(`Minimum withdrawal amount is ${minValue}`)
+      return
+    }
+    const params: WithdrawRunesParams = {
       amount: Number.parseFloat(formData.amount),
-      address: formData.address,
+      btcAddress: formData.address,
       chainId: Number(data.chainId),
       originNetworkName: data.originNetworkName,
       tokenContract: data.tokenContract,
-    }).catch((error) => {
-      toast.error(error.message)
-      setLoading(false)
-      throw error
-    })
+      amountNetworkFee: withdrawFee.networkFeeInDog,
+      amountReceived: amountReceived,
+    }
+    const { contractMethod } = await withdrawRunesAsync(params)
 
-    await sendTransactionAsync({
+    const txHash = await sendTransactionAsync({
       chainId: contractMethod.chainId,
       to: contractMethod.destination,
       value: BigInt(contractMethod.value),
       data: contractMethod.callData,
     })
-      .then(() => {
-        setOpen(true)
-      })
-      .catch((error) => {
-        console.error(error)
-        toast.error(error.message)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
+
+    await withdrawRunesConfirmAsync({
+      ...params,
+      txHash,
+    }).catch((error) => {
+      console.error(error)
+    })
+
+    setOpen(true)
   }
 
   return (
@@ -64,10 +79,12 @@ export default function Withdraw() {
       <FormCard
         data={data}
         onSubmit={handleSubmit}
-        loading={loading}
+        loading={withdrawingRunes || sendingTransaction || withdrawingRunesConfirm}
         type="withdraw"
-        minValue={0.0012}
-        placeholder={`Min 0.0012`}
+        minValue={minValue}
+        placeholder={`Min ${minValue}`}
+        withdrawFee={withdrawFee?.networkFeeInDog}
+        isLoadingWithdrawFee={isLoadingWithdrawFee}
       />
 
       <ModalOverlay

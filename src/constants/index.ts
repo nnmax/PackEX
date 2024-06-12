@@ -74,3 +74,5 @@ export const CURRENT_BTC_WALLET = 'packex.btc.wallet'
 export const API_BASE = '/packex'
 
 export const IS_PROD = process.env.REACT_APP_APP_ENV === 'prod'
+
+export const ADMIN_WHITELIST_ADDRESS = ['0xd4C17F2F17C37E4c3987aeD7d6812d63c9e23B5D']

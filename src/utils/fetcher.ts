@@ -36,18 +36,16 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       if (data.code === 401) {
         disconnectWallet().catch(() => {})
       }
-      if (data.code === 668800015 || data.code === 668800003) {
-        throw new Error(data.prompt)
-      }
+      const errMsg = data.prompt || data.message || 'Request failed'
       if (
         data.code === 401 ||
         disabledErrorToast === true ||
         (typeof disabledErrorToast === 'function' && disabledErrorToast(data))
       ) {
-        return data.data
+        throw new Error(errMsg)
       }
-      toast.error(data.prompt)
-      return data.data
+      toast.error(errMsg)
+      throw new Error(errMsg)
     })
     .catch((error) => {
       console.error(error)

@@ -16,7 +16,6 @@ export function useWithdrawFee(options?: Omit<UndefinedInitialDataOptions<Withdr
   return useQuery({
     queryKey: ['get-runes-withdraw-fee'],
     queryFn: getRunesWithdrawFee,
-    refetchInterval: 5000,
     ...options,
   })
 }

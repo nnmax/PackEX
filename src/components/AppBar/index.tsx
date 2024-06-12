@@ -7,6 +7,7 @@ import XLogo from '@/assets/images/X-logo.svg'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import clsx from 'clsx'
 import { useUserInfo } from '@/api/get-user'
+import isAdmin from '@/utils/isAdmin'
 
 export default function AppBar() {
   const { data: userInfo } = useUserInfo()
@@ -52,6 +53,7 @@ export default function AppBar() {
             {'Earn'}
           </LinkTab>
           <LinkTab to={'/pax'}>{'$PAX'}</LinkTab>
+          {isAdmin(userInfo?.ethAddress) && <LinkTab to={'/__admin'}>Admin</LinkTab>}
         </NavTabs>
 
         <div className={'ml-auto flex items-center gap-6'}>

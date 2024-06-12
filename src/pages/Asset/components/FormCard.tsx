@@ -1,4 +1,4 @@
-import { Asset, useWithdrawFee } from '@/api'
+import { Asset } from '@/api'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
@@ -35,18 +35,19 @@ export default forwardRef<
     data: Record<keyof Asset, string>
     placeholder?: string
     minValue?: number
+    withdrawFee?: number
+    isLoadingWithdrawFee?: boolean
   }
 >(function FormCard(props, ref) {
-  const { onSubmit, loading, type, data, placeholder = '0', minValue = 0 } = props
+  const { onSubmit, loading, type, data, placeholder = '0', minValue = 0, withdrawFee, isLoadingWithdrawFee } = props
   const formRef = useRef<HTMLFormElement>(null)
   const [amount, setAmount] = useState(NaN)
   const toggleBTCWalletModal = useBTCWalletModalToggle()
   const { address: btcAddress } = useBTCWallet()
   const { address: ethAddress } = useAccount()
   const isSupportedChainId = useIsSupportedChainId()
-  const { data: withdrawFee, isLoading: isLoadingWithdrawFee } = useWithdrawFee({
-    enabled: type === 'withdraw',
-  })
+
+  const amountReceived = amount ? amount - (withdrawFee ?? 0) : '-'
 
   const handleMax = () => {
     setAmount(Number(data.availableAmount))
@@ -139,6 +140,7 @@ export default forwardRef<
                   <TextArea
                     rows={2}
                     name={FormField.Address}
+                    spellCheck={false}
                     className={
                       'text-[12px] leading-[20px] h-full w-full px-[12px] py-[8px] bg-transparent resize-none border rounded border-[#9E9E9E]'
                     }
@@ -156,12 +158,12 @@ export default forwardRef<
               <p className={'flex justify-between items-center mb-4'}>
                 <span>Network fee</span>
                 <span className={'text-[#9E9E9E]'}>
-                  {isLoadingWithdrawFee ? <span className={'loading'} /> : withdrawFee?.networkFeeInDog ?? '-'} DOG
+                  {isLoadingWithdrawFee ? <span className={'loading'} /> : withdrawFee ?? '-'} DOG
                 </span>
               </p>
               <p className={'flex justify-between items-center'}>
                 <span>Amount received</span>
-                <span>10 DOG</span>
+                <span>{amountReceived ?? '-'} DOG</span>
               </p>
             </div>
           </>

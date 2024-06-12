@@ -5,14 +5,12 @@ import OTP from '@/components/OTPInput'
 import copy from 'copy-to-clipboard'
 import useENS from '@/hooks/useENS'
 import { useWalletModalToggle } from '@/state/application/hooks'
-import { shortenAddress } from '@/utils'
 import clsx from 'clsx'
 import { last } from 'lodash-es'
 import { forwardRef, useState } from 'react'
 import { Button, Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
-import Tooltip from '@/components/Tooltip'
 import Clock from '@/components/Icons/Clock'
 import { useChainId, useConnectorClient, useSwitchChain } from 'wagmi'
 import { watchAsset } from 'viem/actions'
@@ -20,6 +18,7 @@ import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { usePaxInvite } from '@/api/get-pax-invite'
 import { GetUserData, useUserInfo } from '@/api/get-user'
 import { useQueryClient } from '@tanstack/react-query'
+import ShortenAddressCopy from '@/components/ShortenAddressCopy'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
@@ -297,22 +296,7 @@ function ShortenAddressOrENSName(props: { address: string }) {
   const { address } = props
   const { name } = useENS(address)
   if (name) return <span>{name}</span>
-  return (
-    <Tooltip title={address}>
-      <Button
-        className={'cursor-copy'}
-        onPress={() => {
-          if (copy(address)) {
-            toast.success('Copied!')
-          } else {
-            toast.error('Failed to copy!')
-          }
-        }}
-      >
-        {shortenAddress(address)}
-      </Button>
-    </Tooltip>
-  )
+  return <ShortenAddressCopy address={address} />
 }
 
 const SocialBox = forwardRef<
