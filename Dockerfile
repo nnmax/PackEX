@@ -1,5 +1,7 @@
 FROM node:lts-alpine as base
 
+RUN apk add --no-cache libc6-compat g++ make py3-pip python3
+
 FROM base AS deps
 
 WORKDIR /app

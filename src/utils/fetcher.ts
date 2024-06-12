@@ -33,7 +33,7 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
       if (data.code === 200) {
         return data.data
       }
-      if (data.code === 401) {
+      if (data.code === 401 && input !== '/disconnect-wallet') {
         disconnectWallet().catch(() => {})
       }
       const errMsg = data.prompt || data.message || 'Request failed'

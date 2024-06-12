@@ -37,6 +37,7 @@ export default function Admin() {
           <Column>{'Amount'}</Column>
           <Column>{'Network Fee'}</Column>
           <Column>{'Amount Received'}</Column>
+          <Column>{'Runes ID'}</Column>
         </TableHeader>
         <TableBody
           items={tableData?.list}
@@ -56,6 +57,7 @@ export default function Admin() {
               <Cell>{item.amount}</Cell>
               <Cell>{item.amountNetworkFee}</Cell>
               <Cell>{item.amountReceived}</Cell>
+              <Cell>{item.runesId}</Cell>
             </Row>
           )}
         </TableBody>

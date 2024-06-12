@@ -38,7 +38,13 @@ function Updaters() {
   )
 }
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+})
 
 function Providers({ children }: { children: React.ReactNode }) {
   const history = useHistory()
