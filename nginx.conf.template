@@ -4,6 +4,17 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
+  error_page 451 /451.html;
+
+  if ($allowed_country = no) {
+    return 451;
+  }
+
+  location = /451.html {
+    root /usr/share/nginx/html;
+    internal;
+  }
+
   location ^~ /packex/ {
     proxy_pass $PROXY_PASS;
     proxy_redirect off;
