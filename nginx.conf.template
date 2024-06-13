@@ -6,14 +6,6 @@ server {
 
   error_page 451 /451.html;
 
-  if ($allowed_country = no) {
-    return 451;
-  }
-
-  location = /451.html {
-    root /usr/share/nginx/html;
-  }
-
   location ^~ /packex/ {
     proxy_pass $PROXY_PASS;
     proxy_redirect off;
@@ -23,6 +15,15 @@ server {
   }
 
   location / {
+    if ($allowed_country = no) {
+      if ($request_uri != '/451') {
+        return 451;
+      }
+    }
     try_files $uri $uri/ /index.html;
+  }
+
+  location = /451.html {
+    internal;
   }
 }
