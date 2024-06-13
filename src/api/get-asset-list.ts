@@ -19,6 +19,7 @@ export interface Asset {
   swapFlag: 0 | 1
   depositFlag: 0 | 1
   withdrawFlag: 0 | 1
+  runesId: string
 }
 
 export type AssetListData = {

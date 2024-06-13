@@ -28,10 +28,10 @@ export default function Deposit() {
 
     try {
       const { messageToBeSigned } = await depositRunes({
-        address,
+        btcAddress: address,
         amount: formData.amount as string,
         decimals: Number(data.decimals),
-        runesId: Number(data.id),
+        runesId: data.runesId,
       })
       const signature = await signMessage(currentWallet!, messageToBeSigned)
       console.log('%c [ signature ]-33', 'font-size:13px; background:pink; color:#bf2c9f;', signature)
