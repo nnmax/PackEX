@@ -12,7 +12,6 @@ server {
 
   location = /451.html {
     root /usr/share/nginx/html;
-    internal;
   }
 
   location ^~ /packex/ {
