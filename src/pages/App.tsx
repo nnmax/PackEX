@@ -13,7 +13,6 @@ import PoolMy from './Pool/my'
 import Pax from './Pax'
 import Footer from '@/components/Footer'
 import Admin from './Admin'
-import Page451 from './451'
 
 export default function App() {
   return (
@@ -34,7 +33,6 @@ export default function App() {
             <Route exact strict path="/asset/deposit" component={Deposit} />
             <Route exact strict path="/pax" component={Pax} />
             <Route exact strict path="/__admin" component={Admin} />
-            <Route exact strict path="/451" component={Page451} />
             <Route component={RedirectPathToSwapOnly} />
           </Switch>
         </div>
