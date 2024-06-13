@@ -4,11 +4,11 @@ export interface DepositParams {
   /**
    * 用户 BTC 钱包地址
    */
-  address: string
+  btcAddress: string
   /**
    * runes id，/get-asset-list 接口已经返回
    */
-  runesId: number
+  runesId: string
   /**
    * runes 数量
    */
