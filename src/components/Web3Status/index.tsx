@@ -9,6 +9,7 @@ import { disconnectWallet } from '@/api'
 import { useAccount, useDisconnect } from 'wagmi'
 import { ButtonBase } from '@/components/Button'
 import { useUserInfo } from '@/api/get-user'
+import verify451Pathname from '@/utils/verify451Pathname'
 
 function Web3StatusInner() {
   const { disconnect } = useDisconnect()
@@ -22,7 +23,14 @@ function Web3StatusInner() {
     disconnectWallet()
   }
 
-  if (userInfo) {
+  let hasError = false
+  try {
+    verify451Pathname()
+  } catch (error) {
+    hasError = true
+  }
+
+  if (!hasError && userInfo) {
     return (
       <MenuTrigger>
         <Button className={'flex items-center text-xs h-9 px-2 rounded gap-2 bg-[#192129] outline-none'}>
@@ -52,7 +60,7 @@ function Web3StatusInner() {
       onPress={toggleWalletModal}
       className={'border border-aaa/50 gap-2'}
       loadingClassName={'!text-aaa/50'}
-      isLoading={isConnecting}
+      isLoading={hasError ? false : isConnecting}
     >
       <Wallet className={'text-xl'} />
       <span>{'Connect Wallet'}</span>
