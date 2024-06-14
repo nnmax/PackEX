@@ -9,6 +9,7 @@ interface FetcherOptions<ResponseData> extends RequestInit {
 
 export default function fetcher<ResponseData = unknown>(input: string, options?: FetcherOptions<ResponseData | null>) {
   const { disabledErrorToast, ...rest } = options || {}
+
   return fetch(API_BASE + input, {
     ...rest,
     headers: {

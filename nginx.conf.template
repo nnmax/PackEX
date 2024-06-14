@@ -4,6 +4,8 @@ server {
   root /usr/share/nginx/html;
   index index.html;
 
+  error_page 451 /451.html;
+
   location ^~ /packex/ {
     proxy_pass $PROXY_PASS;
     proxy_redirect off;
@@ -12,7 +14,22 @@ server {
     proxy_set_header X-Nginx-Proxy true;
   }
 
+  location = /451.html {
+    internal;
+  }
+
+  location = /images/451.png {
+    root /usr/share/nginx/html;
+  }
+
+  location = /favicon.svg {
+    root /usr/share/nginx/html;
+  }
+
   location / {
+    if ($allowed_country = no) {
+      return 451;
+    }
     try_files $uri $uri/ /index.html;
   }
 }
