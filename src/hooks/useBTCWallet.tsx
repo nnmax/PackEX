@@ -16,6 +16,8 @@ export type BTCWalletContextValue = {
   switchNetwork: (wallet: BTCWallet, network: BTCNetwork) => Promise<void>
   currentWallet?: BTCWallet
   signMessage: (wallet: BTCWallet, message: string) => Promise<string>
+  signPsbt: (wallet: BTCWallet, psbt: string) => Promise<string>
+  pushPsbt: (wallet: BTCWallet, psbtHex: string) => Promise<string>
   address: string | undefined
   network: BTCNetwork | undefined
   publicKey: string | undefined
@@ -30,6 +32,12 @@ const BTCWalletContext = createContext<BTCWalletContextValue>({
   network: undefined,
   publicKey: undefined,
   signMessage: async () => {
+    throw new Error('BTCWalletContext provider is not found')
+  },
+  signPsbt: async () => {
+    throw new Error('BTCWalletContext provider is not found')
+  },
+  pushPsbt: async () => {
     throw new Error('BTCWalletContext provider is not found')
   },
   switchNetwork: async () => {
@@ -78,11 +86,29 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const signPsbt = async (wallet: BTCWallet, psbt: string) => {
+    if (wallet === 'unisat') {
+      return unisat.signPsbt(psbt)
+    } else {
+      return okx.signPsbt(psbt)
+    }
+  }
+
+  const pushPsbt = async (wallet: BTCWallet, psbt: string) => {
+    if (wallet === 'unisat') {
+      return unisat.pushPsbt(psbt)
+    } else {
+      return okx.pushPsbt(psbt)
+    }
+  }
+
   const value = {
     connect,
     switchNetwork,
     currentWallet,
     signMessage,
+    signPsbt,
+    pushPsbt,
     address: currentWallet === 'unisat' ? unisat.address : okx.address,
     network: currentWallet === 'unisat' ? unisat.network : okx.network,
     publicKey: currentWallet === 'unisat' ? unisat.publicKey : okx.publicKey,

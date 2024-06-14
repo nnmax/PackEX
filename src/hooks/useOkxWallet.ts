@@ -99,6 +99,40 @@ export default function useOkxWallet() {
     }
   }
 
+  const signPsbt = async (psbtHex: string) => {
+    const okxwallet = (window as any).okxwallet
+    if (!okxwallet) {
+      toast.error('Okx wallet is not installed')
+      throw new Error('Okx wallet is not installed')
+    }
+
+    try {
+      const signature = (await okxwallet.bitcoin.signPsbt(psbtHex)) as string
+      return signature
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to sign psbt')
+      throw new Error('Failed to sign psbt')
+    }
+  }
+
+  const pushPsbt = async (psbtHex: string) => {
+    const okxwallet = (window as any).okxwallet
+    if (!okxwallet) {
+      toast.error('Okx wallet is not installed')
+      throw new Error('Okx wallet is not installed')
+    }
+
+    try {
+      const txHash = (await okxwallet.bitcoin.pushPsbt(psbtHex)) as string
+      return txHash
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to sign psbt')
+      throw new Error('Failed to sign psbt')
+    }
+  }
+
   const disconnect = useCallback(async () => {
     const okxwallet = (window as any).okxwallet
     if (okxwallet) {
@@ -139,6 +173,8 @@ export default function useOkxWallet() {
     connect,
     switchNetwork,
     signMessage,
+    signPsbt,
+    pushPsbt,
     disconnect,
   }
 }

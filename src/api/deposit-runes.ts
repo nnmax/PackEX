@@ -17,6 +17,7 @@ export interface DepositParams {
    * /get-asset-list 接口已经返回 decimals
    */
   decimals: number
+  publicKey: string
 }
 
 export interface DepositData {
