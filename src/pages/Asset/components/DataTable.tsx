@@ -9,12 +9,11 @@ import CurrencyLogo from '@/components/CurrencyLogo'
 
 interface DataTableProps {
   isLoading: boolean
-  isFetching: boolean
   assetsList: Asset[]
 }
 
 const DataTable = (props: DataTableProps) => {
-  const { assetsList, isLoading, isFetching } = props
+  const { assetsList, isLoading } = props
 
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
@@ -26,12 +25,7 @@ const DataTable = (props: DataTableProps) => {
         <Column>{'CHANGE (TODAY)'}</Column>
         <Column> </Column>
       </TableHeader>
-      <TableBody
-        items={assetsList}
-        className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity', {
-          'opacity-40': isFetching,
-        })}
-      >
+      <TableBody items={assetsList} className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}>
         {(item) => (
           <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
             <Cell>

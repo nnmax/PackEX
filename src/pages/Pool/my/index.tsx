@@ -12,7 +12,7 @@ const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
-  const { data, isLoading, isFetching } = useMyPools()
+  const { data, isLoading } = useMyPools()
 
   return (
     <PoolLayout activeTab={'my'}>
@@ -25,12 +25,7 @@ const PoolMy = () => {
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
-        <TableBody
-          items={data?.myPools}
-          className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity', {
-            'opacity-40': isFetching,
-          })}
-        >
+        <TableBody items={data?.myPools} className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}>
           {(item) => (
             <Fragment key={item.id}>
               <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>

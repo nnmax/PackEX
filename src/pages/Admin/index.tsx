@@ -7,11 +7,7 @@ import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-com
 
 export default function Admin() {
   const { data: userInfo, isLoading: isLoadingUserInfo } = useUserInfo()
-  const {
-    data: tableData,
-    isLoading: isLoadingTableData,
-    isFetching: isFetchingTableData,
-  } = useWithdrawRunesAdmin({
+  const { data: tableData, isLoading: isLoadingTableData } = useWithdrawRunesAdmin({
     enabled: isAdmin(userInfo?.ethAddress),
   })
 
@@ -39,12 +35,7 @@ export default function Admin() {
           <Column>{'Amount Received'}</Column>
           <Column>{'Runes ID'}</Column>
         </TableHeader>
-        <TableBody
-          items={tableData?.list}
-          className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity', {
-            'opacity-40': isFetchingTableData,
-          })}
-        >
+        <TableBody items={tableData?.list} className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}>
           {(item) => (
             <Row id={item.id}>
               <Cell>

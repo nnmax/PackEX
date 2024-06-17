@@ -11,7 +11,7 @@ const PoolAll = () => {
   const [isOpen, setOpen] = useState(false)
   const [selectedFlagOne, setSelectedFlagOne] = useState(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState(false)
-  const { data: poolAllList, isLoading, isFetching } = useAllPools()
+  const { data: poolAllList, isLoading } = useAllPools()
 
   // function GearIconLogo() {
   //   return (
@@ -44,10 +44,7 @@ const PoolAll = () => {
         </TableHeader>
         <TableBody
           items={poolAllList?.allPools}
-          className={clsx(
-            '[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333] transition-opacity',
-            isFetching ? 'opacity-40' : '',
-          )}
+          className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
         >
           {(item) => (
             <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>
