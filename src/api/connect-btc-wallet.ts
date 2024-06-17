@@ -8,11 +8,12 @@ export type ConnectBTCWalletParams = {
 }
 
 export type ConnectBTCWalletData = {
-  result: 'success'
+  result?: 'success'
+  message?: string
 }
 
 export default function connectBTCWallet(params: ConnectBTCWalletParams) {
-  return fetcher<string | ConnectBTCWalletData>('/btc-connect-wallet', {
+  return fetcher<ConnectBTCWalletData>('/btc-connect-wallet', {
     method: 'POST',
     body: JSON.stringify(params),
   })

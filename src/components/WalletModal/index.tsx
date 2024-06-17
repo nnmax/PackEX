@@ -6,7 +6,7 @@ import {
   useWalletModalOpen,
   useWalletModalToggle,
 } from '../../state/application/hooks'
-import { BTC_MESSAGE_KEY, BTC_SIGNATURE_KEY, CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
+import { CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
 import { ConnectWalletData, GetUserData, connectBTCWallet, connectWallet } from '@/api'
 import okxLogo from '../../assets/images/okx.svg'
 import unisatLogo from '../../assets/images/unisat.svg'
@@ -129,23 +129,17 @@ export function BTCWalletModal() {
         await switchNetwork(wallet, 'testnet')
       }
 
-      const signature = window.localStorage.getItem(BTC_SIGNATURE_KEY)
-      const message = window.localStorage.getItem(BTC_MESSAGE_KEY)
       const response = await connectBTCWallet({
         address,
-        signature,
-        message,
         publicKey,
       })
 
-      if (isString(response)) {
-        const _signature = await signMessage(wallet, response)
-        window.localStorage.setItem(BTC_MESSAGE_KEY, response)
-        window.localStorage.setItem(BTC_SIGNATURE_KEY, _signature)
+      if (isString(response.message)) {
+        const _signature = await signMessage(wallet, response.message)
         await connectBTCWallet({
           address,
           signature: _signature,
-          message: response,
+          message: response.message,
           publicKey,
         })
       }
