@@ -7,6 +7,7 @@ import depositRunes from '@/api/deposit-runes'
 import useBTCWallet from '@/hooks/useBTCWallet'
 import { toast } from 'react-toastify'
 import { useRef, useState } from 'react'
+import { useRunesBalance } from '@/api/get-runes-balance'
 
 export default function Deposit() {
   const { search } = useLocation()
@@ -14,14 +15,23 @@ export default function Deposit() {
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
   }) as unknown as Record<keyof Asset, string>
-  const { address, signMessage, currentWallet } = useBTCWallet()
+  const { address, currentWallet, signPsbt, pushPsbt, publicKey } = useBTCWallet()
   const formCardRef = useRef<{ reset: () => void }>(null)
+  const { data: runesBalance } = useRunesBalance({
+    btcAddress: address!,
+    runesId: data.runesId,
+    enabled: !!address && !!data.runesId,
+  })
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!address) {
       toast.error('address is required')
       throw new Error('address is required')
+    }
+    if (!publicKey) {
+      toast.error('publicKey is required')
+      throw new Error('publicKey is required')
     }
     setLoading(true)
     const formData = Object.fromEntries(new FormData(event.currentTarget))
@@ -32,9 +42,12 @@ export default function Deposit() {
         amount: formData.amount as string,
         decimals: Number(data.decimals),
         runesId: data.runesId,
+        publicKey,
       })
-      const signature = await signMessage(currentWallet!, messageToBeSigned)
+      const signature = await signPsbt(currentWallet!, messageToBeSigned)
       console.log('%c [ signature ]-33', 'font-size:13px; background:pink; color:#bf2c9f;', signature)
+      const txHash = await pushPsbt(currentWallet!, signature)
+      console.log('%c [ txHash ]-44', 'font-size:13px; background:pink; color:#bf2c9f;', txHash)
       toast.success('Deposit successfully')
       if (formCardRef.current) formCardRef.current.reset()
     } catch (error) {
@@ -51,7 +64,14 @@ export default function Deposit() {
         {'Deposit'}
       </Link>
 
-      <FormCard loading={loading} ref={formCardRef} data={data} type="deposit" onSubmit={handleSubmit} />
+      <FormCard
+        runesBalance={runesBalance}
+        loading={loading}
+        ref={formCardRef}
+        data={data}
+        type="deposit"
+        onSubmit={handleSubmit}
+      />
     </div>
   )
 }

@@ -104,6 +104,40 @@ export default function useUnisatWallet() {
     }
   }
 
+  const signPsbt = async (psbtHex: string) => {
+    const unisat = (window as any).unisat
+    if (!unisat) {
+      toast.error('UniSat wallet is not installed')
+      throw new Error('UniSat wallet is not installed')
+    }
+
+    try {
+      const signature = (await unisat.signPsbt(psbtHex)) as string
+      return signature
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to sign psbt')
+      throw new Error('Failed to sign psbt')
+    }
+  }
+
+  const pushPsbt = async (psbtHex: string) => {
+    const unisat = (window as any).unisat
+    if (!unisat) {
+      toast.error('UniSat wallet is not installed')
+      throw new Error('UniSat wallet is not installed')
+    }
+
+    try {
+      const txHash = (await unisat.pushPsbt(psbtHex)) as string
+      return txHash
+    } catch (error) {
+      console.error(error)
+      toast.error('Failed to push psbt')
+      throw new Error('Failed to push psbt')
+    }
+  }
+
   const disconnect = useCallback(() => {
     const unisat = (window as any).unisat
     setAddress(undefined)
@@ -154,6 +188,8 @@ export default function useUnisatWallet() {
     publicKey,
     switchNetwork,
     signMessage,
+    signPsbt,
+    pushPsbt,
     disconnect,
   }
 }

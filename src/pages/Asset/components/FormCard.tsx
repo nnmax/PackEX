@@ -1,4 +1,5 @@
 import { Asset } from '@/api'
+import { GetRunesBalanceResult } from '@/api/get-runes-balance'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
@@ -37,9 +38,20 @@ export default forwardRef<
     minValue?: number
     withdrawFee?: number
     isLoadingWithdrawFee?: boolean
+    runesBalance?: GetRunesBalanceResult | undefined
   }
 >(function FormCard(props, ref) {
-  const { onSubmit, loading, type, data, placeholder = '0', minValue = 0, withdrawFee, isLoadingWithdrawFee } = props
+  const {
+    onSubmit,
+    loading,
+    type,
+    data,
+    placeholder = '0',
+    minValue = 0,
+    withdrawFee,
+    isLoadingWithdrawFee,
+    runesBalance,
+  } = props
   const formRef = useRef<HTMLFormElement>(null)
   const [amount, setAmount] = useState(NaN)
   const toggleBTCWalletModal = useBTCWalletModalToggle()
@@ -50,7 +62,9 @@ export default forwardRef<
   const amountReceived = amount ? amount - (withdrawFee ?? 0) : '-'
 
   const handleMax = () => {
-    setAmount(Number(data.availableAmount))
+    if (runesBalance?.amount) {
+      setAmount(Number(runesBalance.amount))
+    }
   }
 
   useImperativeHandle(
@@ -101,7 +115,7 @@ export default forwardRef<
             <NumberField
               value={amount}
               name={FormField.Amount}
-              maxValue={Number(data.availableAmount)}
+              maxValue={Number(runesBalance?.amount ?? 99999999)}
               minValue={minValue}
               onChange={setAmount}
               isRequired
@@ -126,8 +140,8 @@ export default forwardRef<
 
             <p className={'flex items-center text-xs'}>
               <span>{'AVAILABLE'}</span>
-              <span className={'ml-1 inline-block rounded bg-[#0F0F0F] px-2 py-1'}>{data.symbol}</span>
-              <span className={'ml-auto text-[#9E9E9E]'}>{data.availableAmount}</span>
+              <span className={'ml-1 inline-block rounded bg-[#0F0F0F] px-2 py-1'}>{runesBalance?.symbol ?? '-'}</span>
+              <span className={'ml-auto text-[#9E9E9E]'}>{runesBalance?.amount ?? '-'}</span>
             </p>
           </div>
         </div>
