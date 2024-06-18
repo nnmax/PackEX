@@ -67,7 +67,6 @@ export const BODY_BG_COLOR: HexColor = '#0f0f0f'
 
 export const SIGNATURE_KEY = 'packex.signature'
 export const MESSAGE_KEY = 'packex.message'
-export const BTC_SIGNATURE_KEY = 'packex.btc.signature'
 export const CURRENT_BTC_WALLET = 'packex.btc.wallet'
 
 export const API_BASE = '/packex'
