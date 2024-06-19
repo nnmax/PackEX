@@ -94,7 +94,7 @@ export default function PoolAdd() {
     {},
   )
 
-  const { state } = useLocation<{ location: ReturnType<typeof useLocation> }>()
+  const { state, pathname } = useLocation<{ location: ReturnType<typeof useLocation> }>()
   const goBack = state?.location ?? '/pool/all'
 
   // check whether the user has approved the router on the tokens
@@ -180,6 +180,15 @@ export default function PoolAdd() {
     }
     setTxHash('')
   }, [onFieldAInput, txHash])
+
+  const resetInput = useCallback(() => {
+    onFieldAInput('')
+    onFieldBInput('')
+  }, [onFieldAInput, onFieldBInput])
+
+  useEffect(() => {
+    if (pathname) resetInput()
+  }, [resetInput, pathname])
 
   const [submitting, setSubmitting] = useState(false)
 

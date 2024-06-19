@@ -85,6 +85,10 @@ export default function Withdraw() {
         placeholder={`Min ${minValue}`}
         withdrawFee={withdrawFee?.networkFeeInDog}
         isLoadingWithdrawFee={isLoadingWithdrawFee}
+        runesBalance={{
+          amount: data.availableAmount,
+          symbol: data.symbol,
+        }}
       />
 
       <ModalOverlay

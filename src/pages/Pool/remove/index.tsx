@@ -148,7 +148,7 @@ export default function PoolRemove() {
   //   })
   // }
 
-  const { state } = useLocation<{ location: ReturnType<typeof useLocation> }>()
+  const { state, pathname } = useLocation<{ location: ReturnType<typeof useLocation> }>()
   const goBack = state?.location ?? '/pool/my'
 
   // wrapped onUserInput to clear signatures
@@ -316,6 +316,14 @@ export default function PoolRemove() {
       setLoadingModalOpen(false)
     }
   }
+
+  const resetInput = useCallback(() => {
+    onUserInput(Field.LIQUIDITY_PERCENT, '0')
+  }, [onUserInput])
+
+  useEffect(() => {
+    if (pathname) resetInput()
+  }, [resetInput, pathname])
 
   const { data: txReceipt } = useTransactionReceipt({
     hash: txHash as `0x${string}`,

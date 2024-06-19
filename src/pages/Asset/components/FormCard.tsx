@@ -1,5 +1,4 @@
 import { Asset } from '@/api'
-import { GetRunesBalanceResult } from '@/api/get-runes-balance'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
@@ -38,7 +37,12 @@ export default forwardRef<
     minValue?: number
     withdrawFee?: number
     isLoadingWithdrawFee?: boolean
-    runesBalance?: GetRunesBalanceResult | undefined
+    runesBalance?:
+      | {
+          amount: string
+          symbol: string
+        }
+      | undefined
   }
 >(function FormCard(props, ref) {
   const {
@@ -63,7 +67,7 @@ export default forwardRef<
 
   const handleMax = () => {
     if (runesBalance?.amount) {
-      setAmount(Number(runesBalance.amount))
+      setAmount(Number.parseFloat(runesBalance.amount))
     }
   }
 
@@ -119,7 +123,6 @@ export default forwardRef<
               minValue={minValue}
               onChange={setAmount}
               isRequired
-              step={1}
             >
               <Label className={'text-[#9E9E9E] text-xs'}>{'Amount'}</Label>
               <div className="flex items-center mt-1">

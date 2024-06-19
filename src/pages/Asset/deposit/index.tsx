@@ -45,9 +45,7 @@ export default function Deposit() {
         publicKey,
       })
       const signature = await signPsbt(currentWallet!, messageToBeSigned)
-      console.log('%c [ signature ]-33', 'font-size:13px; background:pink; color:#bf2c9f;', signature)
-      const txHash = await pushPsbt(currentWallet!, signature)
-      console.log('%c [ txHash ]-44', 'font-size:13px; background:pink; color:#bf2c9f;', txHash)
+      await pushPsbt(currentWallet!, signature)
       toast.success('Deposit successfully')
       if (formCardRef.current) formCardRef.current.reset()
     } catch (error) {

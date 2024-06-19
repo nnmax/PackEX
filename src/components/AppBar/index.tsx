@@ -21,7 +21,7 @@ export default function AppBar() {
   }
 
   return (
-    <header className={'flex h-20 flex-row justify-center bg-[#030303] px-[--main-x-padding]'}>
+    <header className={'flex fixed top-0 w-full z-10 h-20 flex-row justify-center bg-[#030303] px-[--main-x-padding]'}>
       <div className={'flex w-full max-w-[--main-max-width] flex-row items-center'}>
         <Link to={'/'} className={'mr-10'}>
           <h1 className={'flex items-center gap-2'}>
