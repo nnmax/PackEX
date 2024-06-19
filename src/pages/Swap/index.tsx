@@ -17,7 +17,7 @@ import {
 } from '../../state/swap/hooks'
 import { useUserDeadline, useUserSlippageTolerance } from '../../state/user/hooks'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
-import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
+import { computeTradePriceBreakdown } from '../../utils/prices'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
@@ -28,10 +28,10 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { useChainId, useGasPrice, useTransactionReceipt } from 'wagmi'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
-import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN } from '@/constants'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { useUserInfo } from '@/api/get-user'
 import { useQueryClient } from '@tanstack/react-query'
+import { ALLOWED_PRICE_IMPACT } from '@/constants'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -140,9 +140,6 @@ export default function Swap() {
     return result === 0 ? '< 0.00000001' : result.toString()
   }, [swapGasLimit, gasPrice, price, approveGas])
 
-  // warnings on slippage
-  const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
-
   const handleSwap = async () => {
     if (!swapCallback) {
       return
@@ -167,7 +164,7 @@ export default function Swap() {
       return
     }
 
-    if (!priceImpactWithoutFee.lessThan(PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN)) {
+    if (priceImpactWithoutFee.greaterThan(ALLOWED_PRICE_IMPACT)) {
       setPriceImpactWarningModalOpen(true)
       return
     }
@@ -307,12 +304,7 @@ export default function Swap() {
           disableCurrencySelect={!isSupportedChainId}
         />
 
-        <SwapDetailAccordion
-          priceImpactSeverity={priceImpactSeverity}
-          trade={trade}
-          price={trade?.executionPrice}
-          transactionFee={transactionFeeInUSD}
-        />
+        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInUSD} />
 
         <div className={'flex justify-center mt-8'}>
           {!userInfo ? (
@@ -335,18 +327,12 @@ export default function Swap() {
             </p>
           ) : (
             <ButtonPrimary
-              isError={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
-              isDisabled={!!swapInputError || priceImpactSeverity > 3 || !!swapCallbackError}
+              isError={!!swapInputError || !!swapCallbackError}
+              isDisabled={!!swapInputError || !!swapCallbackError}
               className={'w-full max-w-[240px]'}
               onPress={handleConfirm}
             >
-              {swapInputError
-                ? swapInputError
-                : swapCallbackError
-                  ? swapCallbackError
-                  : priceImpactSeverity > 3
-                    ? `Price Impact Too High`
-                    : `Confirm`}
+              {swapInputError ? swapInputError : swapCallbackError ? swapCallbackError : `Confirm`}
             </ButtonPrimary>
           )}
         </div>
