@@ -213,7 +213,7 @@ export default function PaxPage() {
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.totalMinted : '-'}</span>
               </p>
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>UNCLAIMED $PAX</span>
+                <span className={'w-[200px]'}>$PAX MINTED TODAY</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.unclaimed : '-'}</span>
               </p>
               <p className={'flex gap-6 items-center'}>
@@ -227,12 +227,6 @@ export default function PaxPage() {
                 <Button aria-label="Click to show total bonus" onPress={() => setShowBonusModalType('total')}>
                   <img src={Diamond3Svg} alt="" />
                 </Button>
-              </p>
-              <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>UNCLAIMED BONUS</span>
-                <span className={'text-[#9E9E9E]'}>
-                  <ButtonPrimary className="!px-6 !h-8">CLAIM</ButtonPrimary>
-                </span>
               </p>
               <p className="flex gap-3 items-center text-xs text-white">
                 <Clock className={'text-2xl'} />
