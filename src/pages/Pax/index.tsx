@@ -37,7 +37,7 @@ export default function PaxPage() {
   const { switchChain } = useSwitchChain()
   const chainId = useChainId()
   const [watchingAsset, setWatchingAsset] = useState(false)
-  const [showBonusModalType, setShowBonusModalType] = useState<'daily' | 'total' | null>('daily')
+  const [showBonusModalType, setShowBonusModalType] = useState<'daily' | 'total' | null>(null)
 
   const handleWatchAsset = async () => {
     if (!userInfo) {
