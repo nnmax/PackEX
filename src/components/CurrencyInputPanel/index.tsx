@@ -38,6 +38,7 @@ interface CurrencyInputPanelProps {
   rhombus?: 'top' | 'bottom'
   errorRhombus?: boolean
   error?: string
+  customFilter?: (token: Token) => boolean
 }
 
 export default function CurrencyInputPanel({
@@ -56,6 +57,7 @@ export default function CurrencyInputPanel({
   error,
   disableCurrencySelect,
   errorRhombus = true,
+  customFilter,
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { address } = useAccount()
@@ -143,7 +145,7 @@ export default function CurrencyInputPanel({
           otherSelectedCurrency={otherCurrency}
           selectedCurrency={currency}
           showETH
-          customFilter={(token) => (token.symbol ? token.symbol.toUpperCase() === 'WETH' : false)}
+          customFilter={customFilter}
         />
       )}
     </div>

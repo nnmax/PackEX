@@ -27,8 +27,8 @@ import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
-import { useMyPools } from '@/api/get-my-pools'
 import { PairState } from '@/data/Reserves'
+import { useQueryClient } from '@tanstack/react-query'
 
 const commonButtonClasses =
   'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E] aria-pressed:border-lemonYellow transition-colors aria-pressed:text-lemonYellow'
@@ -60,8 +60,6 @@ export default function PoolRemove() {
   const [loadingModalOpen, setLoadingModalOpen] = useState(false)
   const [inProgressModalOpen, setInProgressModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
-
-  const { refetch: refetchMyPools } = useMyPools()
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
@@ -328,23 +326,34 @@ export default function PoolRemove() {
     },
   })
 
+  const queryClient = useQueryClient()
   useEffect(() => {
     if (!txReceipt) return
 
     let unmounted = false
     const timer = setTimeout(() => {
-      refetchMyPools().finally(() => {
-        if (unmounted) return
-        setInProgressModalOpen(false)
-        setSuccessModalOpen(true)
-      })
+      queryClient
+        .refetchQueries(
+          {
+            queryKey: ['get-my-pools'],
+            exact: true,
+          },
+          {
+            throwOnError: false,
+          },
+        )
+        .finally(() => {
+          if (unmounted) return
+          setInProgressModalOpen(false)
+          setSuccessModalOpen(true)
+        })
     }, 10000)
 
     return () => {
       unmounted = true
       clearTimeout(timer)
     }
-  }, [refetchMyPools, txReceipt])
+  }, [queryClient, txReceipt])
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false)

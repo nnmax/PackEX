@@ -31,6 +31,7 @@ import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
 import { PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN } from '@/constants'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { useUserInfo } from '@/api/get-user'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -209,11 +210,31 @@ export default function Swap() {
     },
   })
 
+  const queryClient = useQueryClient()
   useEffect(() => {
-    if (transactionReceipt) {
-      setSwapState((prev) => ({ ...prev, loadingModalOpen: false, successModalOpen: true, transactionHash: null }))
+    if (!transactionReceipt) return
+    let unmounted = false
+    let timer = setTimeout(() => {
+      queryClient
+        .refetchQueries(
+          {
+            queryKey: ['get-asset-list'],
+            exact: true,
+          },
+          {
+            throwOnError: false,
+          },
+        )
+        .finally(() => {
+          if (unmounted) return
+          setSwapState((prev) => ({ ...prev, loadingModalOpen: false, successModalOpen: true, transactionHash: null }))
+        })
+    }, 10000)
+    return () => {
+      clearTimeout(timer)
+      unmounted = true
     }
-  }, [transactionReceipt])
+  }, [queryClient, transactionReceipt])
 
   const handleWrap = async () => {
     if (!onWrap) return

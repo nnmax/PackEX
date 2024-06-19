@@ -25,8 +25,8 @@ import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { currencyId } from '@/utils/currencyId'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
-import { useMyPools } from '@/api/get-my-pools'
 import { PairState } from '@/data/Reserves'
+import { useQueryClient } from '@tanstack/react-query'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -58,7 +58,6 @@ export default function PoolAdd() {
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
   const isSupportedChainId = useIsSupportedChainId()
-  const { refetch: refetchMyPools } = useMyPools()
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
   const [loadingModalOpen, setLoadingModalOpen] = useState(false)
@@ -230,26 +229,37 @@ export default function PoolAdd() {
     },
   })
 
+  const queryClient = useQueryClient()
   useEffect(() => {
     if (!txReceipt) return
 
     let unmounted = false
     const timer = setTimeout(() => {
-      refetchMyPools().finally(() => {
-        if (unmounted) return
-        setLoadingModalOpen(false)
-        setSuccessModalOpen(true)
-        setTxHash('')
-        onFieldAInput('')
-        onFieldBInput('')
-      })
+      queryClient
+        .refetchQueries(
+          {
+            queryKey: ['get-my-pools'],
+            exact: true,
+          },
+          {
+            throwOnError: false,
+          },
+        )
+        .finally(() => {
+          if (unmounted) return
+          setLoadingModalOpen(false)
+          setSuccessModalOpen(true)
+          setTxHash('')
+          onFieldAInput('')
+          onFieldBInput('')
+        })
     }, 10000)
 
     return () => {
       unmounted = true
       clearTimeout(timer)
     }
-  }, [onFieldAInput, onFieldBInput, refetchMyPools, txReceipt])
+  }, [onFieldAInput, onFieldBInput, queryClient, txReceipt])
 
   return (
     <div className={'py-4'}>
@@ -302,6 +312,7 @@ export default function PoolAdd() {
                 onCurrencySelect={handleCurrencyASelect}
                 rhombus={'top'}
                 className={'mt-6'}
+                customFilter={(token) => (token.symbol ? token.symbol.toUpperCase() === 'WETH' : false)}
               />
               <div
                 className={
@@ -329,6 +340,7 @@ export default function PoolAdd() {
                 onCurrencySelect={handleCurrencyBSelect}
                 rhombus={'bottom'}
                 className={'mt-1'}
+                customFilter={(token) => (token.symbol ? token.symbol.toUpperCase() === 'WETH' : false)}
               />
 
               {!!currencyA && !!currencyB && (
