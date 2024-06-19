@@ -297,7 +297,11 @@ export default function PoolAdd() {
                 }}
                 showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
                 currency={currencies[Field.CURRENCY_A]}
-                disableCurrencySelect={currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_A] !== ETHER}
+                disableCurrencySelect={
+                  currencies[Field.CURRENCY_A] &&
+                  currencies[Field.CURRENCY_A] !== ETHER &&
+                  currencies[Field.CURRENCY_A].symbol !== 'WETH'
+                }
                 onCurrencySelect={handleCurrencyASelect}
                 rhombus={'top'}
                 className={'mt-6'}
@@ -320,7 +324,11 @@ export default function PoolAdd() {
                 }}
                 showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
                 currency={currencies[Field.CURRENCY_B]}
-                disableCurrencySelect={currencies[Field.CURRENCY_B] && currencies[Field.CURRENCY_B] !== ETHER}
+                disableCurrencySelect={
+                  currencies[Field.CURRENCY_B] &&
+                  currencies[Field.CURRENCY_B] !== ETHER &&
+                  currencies[Field.CURRENCY_B].symbol !== 'WETH'
+                }
                 onCurrencySelect={handleCurrencyBSelect}
                 rhombus={'bottom'}
                 className={'mt-1'}

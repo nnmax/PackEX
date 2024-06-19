@@ -1,5 +1,5 @@
 import { Currency, ETHER, Pair, Token } from '@nnmax/uniswap-sdk-v2'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
 import CurrencyLogo from '../CurrencyLogo'
 import DoubleCurrencyLogo from '../DoubleLogo'
@@ -13,7 +13,7 @@ import { filterTokens } from './filtering'
 import { useTokenComparator } from './sorting'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
-import { isSet } from 'lodash-es'
+import { isFunction, isSet } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
 import { useAccount } from 'wagmi'
 import NumberInput from '@/components/NumberInput'
@@ -143,6 +143,7 @@ export default function CurrencyInputPanel({
           otherSelectedCurrency={otherCurrency}
           selectedCurrency={currency}
           showETH
+          customFilter={(token) => (token.symbol ? token.symbol.toUpperCase() === 'WETH' : false)}
         />
       )}
     </div>
@@ -156,8 +157,9 @@ function ChooseModal(props: {
   onCurrencySelect: (currency: Token) => void
   otherSelectedCurrency?: Token | null
   showETH?: boolean
+  customFilter?: (token: Token) => boolean
 }) {
-  const { open, onClose, onCurrencySelect, otherSelectedCurrency, selectedCurrency, showETH } = props
+  const { open, onClose, onCurrencySelect, otherSelectedCurrency, selectedCurrency, showETH, customFilter } = props
 
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -165,9 +167,16 @@ function ChooseModal(props: {
   const searchToken = useToken(searchQuery)
   const allTokens = useAllTokens()
 
+  const customFilterRef = useRef(customFilter)
+  customFilterRef.current = customFilter
   const filteredTokens: Token[] = useMemo(() => {
     if (isAddressSearch) return searchToken ? [searchToken] : []
-    return filterTokens(Object.values(allTokens), searchQuery)
+    return filterTokens(
+      isFunction(customFilterRef.current)
+        ? Object.values(allTokens).filter((t) => customFilterRef.current!(t))
+        : Object.values(allTokens),
+      searchQuery,
+    )
   }, [isAddressSearch, searchToken, allTokens, searchQuery])
 
   const tokenComparator = useTokenComparator(false)
@@ -233,7 +242,12 @@ function ChooseModal(props: {
           onKeyDown={handleEnter}
         />
       </div>
-      <SuggestedTokens onSelect={handleCurrencySelect} selectedCurrency={selectedCurrency} showETH={showETH} />
+      <SuggestedTokens
+        onSelect={handleCurrencySelect}
+        selectedCurrency={selectedCurrency}
+        showETH={showETH}
+        customFilter={customFilterRef.current}
+      />
       <hr className={'mb-2 mt-4 h-0.5 w-full border-none bg-[#494949]'} />
 
       <CurrencyList
@@ -251,11 +265,15 @@ function SuggestedTokens(props: {
   selectedCurrency?: Token | null
   onSelect: (currency: Token) => void
   showETH?: boolean
+  customFilter?: (token: Token) => boolean
 }) {
-  const { onSelect, selectedCurrency, showETH } = props
+  const { onSelect, selectedCurrency, showETH, customFilter } = props
   const value = selectedCurrency instanceof Token ? selectedCurrency.address : ''
   const allTokens = useAllTokens()
-  const options = Object.values(allTokens).filter((token) => token.commonFlag)
+  const options = Object.values(allTokens).filter((token) => {
+    if (!token.commonFlag) return false
+    return isFunction(customFilter) ? customFilter(token) : true
+  })
 
   return (
     <ToggleButtonGroup

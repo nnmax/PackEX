@@ -208,30 +208,30 @@ export default function PaxPage() {
             <div
               className={'mt-10 flex flex-col gap-6 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}
             >
-              <p className={'flex gap-6'}>
+              <p className={'flex gap-6 items-center'}>
                 <span className={'w-[200px]'}>TOTAL $PAX MINTED</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.totalMinted : '-'}</span>
               </p>
-              <p className={'flex gap-6'}>
+              <p className={'flex gap-6 items-center'}>
                 <span className={'w-[200px]'}>UNCLAIMED $PAX</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.unclaimed : '-'}</span>
               </p>
-              <p className={'flex gap-6'}>
+              <p className={'flex gap-6 items-center'}>
                 <span className={'w-[200px]'}>DAILY BONUS</span>
                 <Button aria-label="Click to show daily bonus" onPress={() => setShowBonusModalType('daily')}>
                   <img src={Diamond1Svg} alt="" />
                 </Button>
               </p>
-              <p className={'flex gap-6'}>
+              <p className={'flex gap-6 items-center'}>
                 <span className={'w-[200px]'}>TOTAL BONUS</span>
                 <Button aria-label="Click to show total bonus" onPress={() => setShowBonusModalType('total')}>
                   <img src={Diamond3Svg} alt="" />
                 </Button>
               </p>
-              <p className={'flex gap-6'}>
+              <p className={'flex gap-6 items-center'}>
                 <span className={'w-[200px]'}>UNCLAIMED BONUS</span>
                 <span className={'text-[#9E9E9E]'}>
-                  <ButtonPrimary className="!px-6">CLAIM</ButtonPrimary>
+                  <ButtonPrimary className="!px-6 !h-8">CLAIM</ButtonPrimary>
                 </span>
               </p>
               <p className="flex gap-3 items-center text-xs text-white">
