@@ -18,7 +18,7 @@ export default function App() {
   return (
     <Suspense fallback={null}>
       <AppBar />
-      <main className={'flex justify-center px-[--main-x-padding] mt-20 overflow-auto mb-40'}>
+      <main className={'flex justify-center px-[--main-x-padding] overflow-auto my-20'}>
         <div className={'flex w-full max-w-[--main-max-width] flex-col'}>
           <Switch>
             <Route exact strict path="/swap" component={Swap} />
