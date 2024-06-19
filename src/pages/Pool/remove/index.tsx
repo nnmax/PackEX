@@ -1,9 +1,9 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import clsx from 'clsx'
-import { Button, Heading } from 'react-aria-components'
+import { Heading } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/burn/actions'
@@ -149,6 +149,9 @@ export default function PoolRemove() {
   //     }
   //   })
   // }
+
+  const { state } = useLocation<{ location: ReturnType<typeof useLocation> }>()
+  const goBack = state?.location ?? '/pool/my'
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
@@ -357,15 +360,10 @@ export default function PoolRemove() {
   return (
     <div className={'py-4'}>
       <div className={'py-4'}>
-        <Button
-          onPress={() => {
-            history.goBack()
-          }}
-          className={'inline-flex h-8 items-center gap-2 text-sm'}
-        >
+        <Link to={goBack} className={'inline-flex h-8 cursor-pointer items-center gap-2 text-sm'}>
           <PixelarticonsChevronLeft aria-hidden className={'text-xl'} />
           {'Remove'}
-        </Button>
+        </Link>
       </div>
 
       <AriaModal

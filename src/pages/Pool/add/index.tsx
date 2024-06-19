@@ -1,9 +1,8 @@
-import { useHistory, useParams } from 'react-router-dom'
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import CurrencyInputPanel from '@/components/CurrencyInputPanel'
-import { Button } from 'react-aria-components'
 import AddIcon from '@/assets/images/add.png'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/mint/actions'
@@ -95,6 +94,9 @@ export default function PoolAdd() {
     },
     {},
   )
+
+  const { state } = useLocation<{ location: ReturnType<typeof useLocation> }>()
+  const goBack = state?.location ?? '/pool/all'
 
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
@@ -251,15 +253,10 @@ export default function PoolAdd() {
 
   return (
     <div className={'py-4'}>
-      <Button
-        onPress={() => {
-          history.goBack()
-        }}
-        className={'inline-flex h-8 cursor-pointer items-center gap-2 text-sm'}
-      >
+      <Link to={goBack} className={'inline-flex h-8 cursor-pointer items-center gap-2 text-sm'}>
         <PixelarticonsChevronLeft aria-hidden className={'text-xl'} />
         {'Add'}
-      </Button>
+      </Link>
       <ReviewModal
         modalOpen={reviewModalOpen}
         onDismiss={handleDismiss}

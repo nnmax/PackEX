@@ -1,17 +1,19 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { PoolAllItem, useAllPools } from '@/api'
+import { useAllPools } from '@/api'
 // import GearIcon from '@/components/Icons/GearIcon'
 // import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
+import { getLinkPathname } from '@/pages/Pool/utils'
 
 const PoolAll = () => {
   const [isOpen, setOpen] = useState(false)
   const [selectedFlagOne, setSelectedFlagOne] = useState(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState(false)
   const { data: poolAllList, isLoading } = useAllPools()
+  const location = useLocation()
 
   // function GearIconLogo() {
   //   return (
@@ -65,7 +67,12 @@ const PoolAll = () => {
               <Cell>{`${item.apr} %`}</Cell>
               <Cell>
                 <Link
-                  to={getLinkHref(item)}
+                  to={{
+                    pathname: getLinkPathname(item, 'add'),
+                    state: {
+                      location,
+                    },
+                  }}
                   className={
                     'text-lemonYellow inline-block w-[60px] h-6 leading-5 border rounded-sm border-lemonYellow'
                   }
@@ -163,13 +170,3 @@ const PoolAll = () => {
 }
 
 export default PoolAll
-
-function getLinkHref(item: PoolAllItem) {
-  if (item.token0Name.toLowerCase() === 'weth') {
-    return `/pool/add/eth/${item.token1Contract}`
-  }
-  if (item.token1Name.toLowerCase() === 'weth') {
-    return `/pool/add/${item.token0Contract}/eth`
-  }
-  return `/pool/add/${item.token0Contract}/${item.token1Contract}`
-}

@@ -1,18 +1,19 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Fragment } from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
 import clsx from 'clsx'
-import { PoolMyItem } from '@/api'
 import PoolLayout from '@/pages/Pool/Layout'
 import { useMyPools } from '@/api/get-my-pools'
 import CurrencyLogo from '@/components/CurrencyLogo'
+import { getLinkPathname } from '@/pages/Pool/utils'
 
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
   const { data, isLoading } = useMyPools()
+  const location = useLocation()
 
   return (
     <PoolLayout activeTab={'my'}>
@@ -54,7 +55,12 @@ const PoolMy = () => {
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
                     <Link
-                      to={getLinkHref(item, 'add')}
+                      to={{
+                        pathname: getLinkPathname(item, 'add'),
+                        state: {
+                          location,
+                        },
+                      }}
                       className={
                         'text-lemonYellow w-[60px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
@@ -62,7 +68,12 @@ const PoolMy = () => {
                       {'+ADD'}
                     </Link>
                     <Link
-                      to={getLinkHref(item, 'remove')}
+                      to={{
+                        pathname: getLinkPathname(item, 'remove'),
+                        state: {
+                          location,
+                        },
+                      }}
                       className={
                         'text-lemonYellow flex-grow flex-shrink-0 w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                       }
@@ -162,13 +173,3 @@ const PoolMy = () => {
 }
 
 export default PoolMy
-
-function getLinkHref(item: PoolMyItem, type: 'add' | 'remove') {
-  if (item.token0Name.toLowerCase() === 'weth') {
-    return `/pool/${type}/eth/${item.token1Contract}`
-  }
-  if (item.token1Name.toLowerCase() === 'weth') {
-    return `/pool/${type}/${item.token0Contract}/eth`
-  }
-  return `/pool/${type}/${item.token0Contract}/${item.token1Contract}`
-}
