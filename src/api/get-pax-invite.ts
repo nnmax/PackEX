@@ -28,6 +28,17 @@ export type GetPaxInviteData = {
 function getPaxInvite() {
   return fetcher<GetPaxInviteData>('/get-pax-invite', {
     method: 'GET',
+  }).then((res) => {
+    if (Array.isArray(res.invite)) {
+      return {
+        ...res,
+        invite: res.invite.map((item, index) => ({
+          ...item,
+          rank: index + 1,
+        })),
+      }
+    }
+    return res
   })
 }
 

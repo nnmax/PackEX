@@ -22,6 +22,17 @@ export type GetPaxInfoData = {
 function getPaxInfo() {
   return fetcher<GetPaxInfoData>('/get-pax-info', {
     method: 'GET',
+  }).then((res) => {
+    if (Array.isArray(res.leaderBoard)) {
+      return {
+        ...res,
+        leaderBoard: res.leaderBoard.map((item, index) => ({
+          ...item,
+          rank: index + 1,
+        })),
+      }
+    }
+    return res
   })
 }
 
