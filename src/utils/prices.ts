@@ -96,17 +96,7 @@ export function formatAmountColumn(originNumber: number) {
 }
 
 export function formatValueColumn(num: number) {
-  if (num === 0) {
-    return 0
-  }
-  if (num < 0.01) {
-    return `< 0.01`
-  }
-  const result = num.toFixed(2)
-
-  if (Number(result) === 0) {
-    return 0
-  } else {
-    return result
-  }
+  if (num <= 0) return '-'
+  if (num < 0.01) return `$ < 0.01`
+  return `$ ${num.toFixed(2)}`
 }

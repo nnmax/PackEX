@@ -39,10 +39,7 @@ const DataTable = (props: DataTableProps) => {
             </Cell>
             <Cell>{formatAmountColumn(item.totalAmount)}</Cell>
             <Cell>{formatAmountColumn(item.availableAmount)}</Cell>
-            <Cell>
-              {'$ '}
-              {formatValueColumn(item.value)}
-            </Cell>
+            <Cell>{formatValueColumn(item.value)}</Cell>
             <Cell>
               <PnL value={item.changeToday} />
             </Cell>

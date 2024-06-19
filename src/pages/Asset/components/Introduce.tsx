@@ -22,7 +22,7 @@ const Introduce = (props: IntroduceProps) => {
         <div aria-hidden className={'rhombus-bg-[--body-bg] -rhombus-top-px rhombus-w-[calc(50%-2px)] top-rhombus'} />
         <div>
           <dt>{'Total Value'}</dt>
-          <dd className={clsx('mt-4 text-base text-lemonYellow')}>{`$ ${formatValueColumn(totalVal)}`}</dd>
+          <dd className={clsx('mt-4 text-base text-lemonYellow')}>{formatValueColumn(totalVal)}</dd>
         </div>
       </dl>
 
