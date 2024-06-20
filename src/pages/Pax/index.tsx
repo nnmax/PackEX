@@ -234,12 +234,16 @@ export default function PaxPage() {
               </p>
             </div>
           </div>
-          <div className={'w-80 ml-6 flex flex-col'}>
+          <div className={'w-80 ml-6 flex flex-col gap-10'}>
             <SocialBox ref={boxTwoRef} data={last(infoData?.paxRewardRatio ?? [])} />
-            <p className={'text-xs leading-[22px] pt-2 px-5'}>
-              You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint,
-              the more you mint.
-            </p>
+            {userInfo?.invitationCode && (
+              <div className="border border-lemonYellow rounded flex-auto px-10 flex items-center">
+                <p className={'text-xs leading-8'}>
+                  You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they
+                  mint, the more you mint.
+                </p>
+              </div>
+            )}
           </div>
         </div>
         <div className={'flex gap-5 mt-[60px]'}>
@@ -364,11 +368,11 @@ const SocialBox = forwardRef<
       ref={ref}
       className={clsx(
         verticalLineClasses,
-        userInfo?.invitationCode ? 'h-32 mb-20' : 'flex-1',
+        userInfo?.invitationCode ? 'h-32' : 'flex-1',
         'relative border border-lemonYellow px-5 py-4 rounded flex flex-col',
       )}
     >
-      <span className={'self-center'}>{data?.name ?? 'SOCIAL'}</span>
+      <span className={'self-center text-xs'}>{data?.name ?? 'SOCIAL'}</span>
       {userInfo?.invitationCode ? (
         <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.ratio ?? '-'} ]</p>
       ) : (
@@ -401,6 +405,12 @@ const SocialBox = forwardRef<
               </Button>
             </>
           )}
+          <div className="flex items-center flex-1">
+            <p className={'text-xs leading-8'}>
+              You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint,
+              the more you mint.
+            </p>
+          </div>
         </>
       )}
     </div>
