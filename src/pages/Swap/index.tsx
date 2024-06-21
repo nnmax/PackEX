@@ -23,7 +23,6 @@ import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
 import SuccessModal from '@/components/Pool/SuccessModal'
-import { usePriceState } from '@/state/price/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useChainId, useGasPrice, useTransactionReceipt } from 'wagmi'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
@@ -33,6 +32,7 @@ import { useUserInfo } from '@/api/get-user'
 import { useQueryClient } from '@tanstack/react-query'
 import { ALLOWED_PRICE_IMPACT } from '@/constants'
 import { AssetListData } from '@/api'
+import { usePrice } from '@/api/price'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -42,7 +42,9 @@ export default function Swap() {
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
   const { data: gasPrice } = useGasPrice()
-  const price = usePriceState()
+  const price = usePrice({
+    refetchInterval: 1000 * 30 /* 30 seconds */,
+  })
   const isSupportedChainId = useIsSupportedChainId()
 
   // swap state
@@ -295,6 +297,7 @@ export default function Swap() {
           rhombus="top"
           error={inputErrorType === InputErrorType.InsufficientBalance ? swapInputError : undefined}
           disableCurrencySelect={!isSupportedChainId}
+          inputLoading={!trade && !showWrap && !parsedAmounts[Field.INPUT] && !!parsedAmounts[Field.OUTPUT]}
         />
 
         <Button
@@ -318,6 +321,7 @@ export default function Swap() {
           rhombus="bottom"
           className={'mt-1'}
           disableCurrencySelect={!isSupportedChainId}
+          inputLoading={!trade && !showWrap && !parsedAmounts[Field.OUTPUT] && !!parsedAmounts[Field.INPUT]}
         />
 
         <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInUSD} />

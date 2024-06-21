@@ -12,7 +12,6 @@ import { BrowserRouter, useHistory } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 import { BTCWalletProvider } from '@/hooks/useBTCWallet'
-import PriceUpdater from '@/state/price/updater'
 import { WagmiProvider } from 'wagmi'
 import wagmiConfig from '@/constants/wagmiConfig'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -33,7 +32,6 @@ function Updaters() {
       <ListsUpdater />
       <ApplicationUpdater />
       <MulticallUpdater />
-      <PriceUpdater />
     </>
   )
 }

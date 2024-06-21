@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { escapeRegExp } from 'lodash-es'
 import React, { forwardRef } from 'react'
 import { TextField, Input as AriaInput, Label as AriaLabel } from 'react-aria-components'
@@ -12,6 +13,7 @@ interface InputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'on
   fontSize?: string
   align?: 'right' | 'left'
   maxDecimals?: number
+  loading?: boolean
 }
 
 function isInputGreaterThanDecimals(value: string, maxDecimals?: number): boolean {
@@ -20,7 +22,7 @@ function isInputGreaterThanDecimals(value: string, maxDecimals?: number): boolea
 }
 
 const NumberInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ value, onUserInput, placeholder, maxDecimals, disabled, label }: InputProps, ref) => {
+  ({ value, onUserInput, placeholder, maxDecimals, disabled, label, loading }: InputProps, ref) => {
     const enforcer = (nextUserInput: string) => {
       if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
         if (isInputGreaterThanDecimals(nextUserInput, maxDecimals)) {
@@ -51,7 +53,12 @@ const NumberInput = forwardRef<HTMLInputElement, InputProps>(
           spellCheck="false"
           autoCorrect="off"
           placeholder={placeholder || '0'}
-          className={'w-full bg-transparent text-white outline-none reset-input-number placeholder:text-[#9e9e9e]'}
+          className={clsx(
+            'w-full bg-transparent text-white outline-none reset-input-number placeholder:text-[#9e9e9e]',
+            {
+              'loading placeholder:text-transparent': loading,
+            },
+          )}
         />
       </TextField>
     )

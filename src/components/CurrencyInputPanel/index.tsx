@@ -39,6 +39,7 @@ interface CurrencyInputPanelProps {
   errorRhombus?: boolean
   error?: string
   customFilter?: (token: Token) => boolean
+  inputLoading?: boolean
 }
 
 export default function CurrencyInputPanel({
@@ -58,6 +59,7 @@ export default function CurrencyInputPanel({
   disableCurrencySelect,
   errorRhombus = true,
   customFilter,
+  inputLoading,
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { address } = useAccount()
@@ -90,6 +92,7 @@ export default function CurrencyInputPanel({
           onUserInput={onUserInput}
           label={label}
           maxDecimals={currency?.decimals}
+          loading={inputLoading}
         />
         <Button
           isDisabled={disableCurrencySelect}
