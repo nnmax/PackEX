@@ -3,13 +3,12 @@ import { useState } from 'react'
 import ArrowDown from '@/components/Icons/ArrowDown'
 import { Price, Trade } from '@nnmax/uniswap-sdk-v2'
 import { computeTradePriceBreakdown } from '@/utils/prices'
-import { useLastTruthy } from '@/hooks/useLast'
 import { ALLOWED_PRICE_IMPACT, ONE_BIPS } from '@/constants'
 import { useUserSlippageTolerance } from '@/state/user/hooks'
 import { Button } from 'react-aria-components'
 
 export default function SwapDetailAccordion(props: { price?: Price; trade?: Trade; transactionFee: string }) {
-  const { price, trade: tradeProp, transactionFee } = props
+  const { price, trade, transactionFee } = props
   const [showDetail, setShowDetail] = useState(false)
   const [showInverted, setShowInverted] = useState(false)
   const formattedPrice = showInverted ? price?.toSignificant(6) : price?.invert()?.toSignificant(6)
@@ -19,10 +18,7 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
     ? `1 ${price?.baseCurrency?.symbol} = ${formattedPrice} ${price?.quoteCurrency?.symbol}`
     : `1 ${price?.quoteCurrency?.symbol} = ${formattedPrice} ${price?.baseCurrency?.symbol}`
 
-  const lastTrade = useLastTruthy(tradeProp)
   const [allowedSlippage] = useUserSlippageTolerance()
-
-  const trade = tradeProp ?? lastTrade ?? undefined
 
   const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
 

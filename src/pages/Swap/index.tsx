@@ -32,6 +32,7 @@ import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { useUserInfo } from '@/api/get-user'
 import { useQueryClient } from '@tanstack/react-query'
 import { ALLOWED_PRICE_IMPACT } from '@/constants'
+import { AssetListData } from '@/api'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -212,20 +213,35 @@ export default function Swap() {
     if (!transactionReceipt) return
     let unmounted = false
     let timer = setTimeout(() => {
-      queryClient
-        .refetchQueries(
-          {
-            queryKey: ['get-asset-list'],
-            exact: true,
-          },
-          {
-            throwOnError: false,
-          },
-        )
-        .finally(() => {
-          if (unmounted) return
-          setSwapState((prev) => ({ ...prev, loadingModalOpen: false, successModalOpen: true, transactionHash: null }))
-        })
+      const cache = queryClient.getQueryData<AssetListData>(['get-asset-list'])
+      if (cache) {
+        queryClient
+          .refetchQueries(
+            {
+              queryKey: ['get-asset-list'],
+              exact: true,
+            },
+            {
+              throwOnError: false,
+            },
+          )
+          .finally(() => {
+            if (unmounted) return
+            setSwapState((prev) => ({
+              ...prev,
+              loadingModalOpen: false,
+              successModalOpen: true,
+              transactionHash: null,
+            }))
+          })
+      } else {
+        setSwapState((prev) => ({
+          ...prev,
+          loadingModalOpen: false,
+          successModalOpen: true,
+          transactionHash: null,
+        }))
+      }
     }, 10000)
     return () => {
       clearTimeout(timer)

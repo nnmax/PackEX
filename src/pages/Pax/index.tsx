@@ -363,6 +363,8 @@ const SocialBox = forwardRef<
       })
   }
 
+  console.log(data)
+
   return (
     <div
       ref={ref}
@@ -372,7 +374,9 @@ const SocialBox = forwardRef<
         'relative border border-lemonYellow px-5 py-4 rounded flex flex-col',
       )}
     >
-      <span className={'self-center text-xs'}>{data?.name ?? 'SOCIAL'}</span>
+      <span className={'self-center text-xs'}>
+        {data?.name} <span className="text-lemonYellow">{!userInfo?.invitationCode && `[ ${data?.ratio} ]`}</span>
+      </span>
       {userInfo?.invitationCode ? (
         <p className={'text-lemonYellow mt-8 text-center'}>[ {data?.ratio ?? '-'} ]</p>
       ) : (
