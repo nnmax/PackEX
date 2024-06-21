@@ -42,9 +42,6 @@ export default function Swap() {
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()
   const { data: gasPrice } = useGasPrice()
-  const price = usePrice({
-    refetchInterval: 1000 * 30 /* 30 seconds */,
-  })
   const isSupportedChainId = useIsSupportedChainId()
 
   // swap state
@@ -129,9 +126,19 @@ export default function Swap() {
     gasLimit: swapGasLimit,
   } = useSwapCallback(trade, allowedSlippage, deadline, recipient)
 
+  const { data: price } = usePrice({
+    refetchInterval: 1000 * 30 /* 30 seconds */,
+    enabled: !!swapGasLimit && !!gasPrice,
+  })
+
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   const transactionFeeInUSD = useMemo(() => {
+    console.log({
+      swapGasLimit,
+      gasPrice,
+      price,
+    })
     if (!swapGasLimit || !gasPrice || !price) return '-'
     let value: BigNumber
     if (approveGas) {
