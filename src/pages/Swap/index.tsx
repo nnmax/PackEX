@@ -109,7 +109,10 @@ export default function Swap() {
 
   const route = trade?.route
   const userHasSpecifiedInputOutput = Boolean(
-    currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0)),
+    currencies[Field.INPUT] &&
+      currencies[Field.OUTPUT] &&
+      parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0)) &&
+      parsedAmounts[dependentField]?.greaterThan(JSBI.BigInt(0)),
   )
   const noRoute = !route
 
@@ -134,11 +137,6 @@ export default function Swap() {
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   const transactionFeeInUSD = useMemo(() => {
-    console.log({
-      swapGasLimit,
-      gasPrice,
-      price,
-    })
     if (!swapGasLimit || !gasPrice || !price) return '-'
     let value: BigNumber
     if (approveGas) {

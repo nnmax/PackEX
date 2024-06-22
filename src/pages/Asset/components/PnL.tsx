@@ -23,10 +23,9 @@ export default function PnL(props: { value: number }) {
         'text-[#9E9E9E]': neutral,
       })}
     >
-      {(positive || neutral) && '+'}
+      {positive && '+'}
       {negative && '-'}
-      {' $ '}
-      {`${Math.abs(value)}%`}
+      {neutral ? '-' : ` $ ${Math.abs(value)}%`}
     </span>
   )
 }

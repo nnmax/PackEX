@@ -11,7 +11,6 @@ import { forwardRef, useState } from 'react'
 import { Button, Cell, Column, Heading, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
-import Clock from '@/components/Icons/Clock'
 import { useChainId, useConnectorClient, useSwitchChain } from 'wagmi'
 import { watchAsset } from 'viem/actions'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
@@ -228,10 +227,6 @@ export default function PaxPage() {
                   <img src={Diamond3Svg} alt="" />
                 </Button>
               </p>
-              <p className="flex gap-3 items-center text-xs text-white">
-                <Clock className={'text-2xl'} />
-                $PAX minted will be claimed automatically at 0:00 UTC every day.
-              </p>
             </div>
           </div>
           <div className={'w-80 ml-6 flex flex-col gap-10'}>
@@ -362,8 +357,6 @@ const SocialBox = forwardRef<
         setLoading(false)
       })
   }
-
-  console.log(data)
 
   return (
     <div
