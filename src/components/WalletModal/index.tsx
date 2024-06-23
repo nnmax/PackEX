@@ -306,7 +306,9 @@ function useOrderedConnections() {
     const orderedConnectors: Connector[] = []
 
     // Injected connectors should appear next in the list, as the user intentionally installed/uses them.
-    orderedConnectors.push(...injectedConnectors)
+    orderedConnectors.push(
+      ...injectedConnectors.filter((item) => ['com.okex.wallet', 'io.metamask'].indexOf(item.id) !== -1),
+    )
 
     // WalletConnect and Coinbase are added last in the list.
     orderedConnectors.push(walletConnectConnector)
