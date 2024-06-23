@@ -8,6 +8,7 @@ import { useMyPools } from '@/api/get-my-pools'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import { getLinkPathname } from '@/pages/Pool/utils'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import { isNumber } from 'lodash-es'
 
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
@@ -57,7 +58,7 @@ const PoolMy = () => {
                 </Cell>
                 <Cell>{`${item.poolShare} %`}</Cell>
                 <Cell>{item.paxEarnedToday}</Cell>
-                <Cell>{item.lpTokenAmount}</Cell>
+                <Cell>{formatLpToken(item.lpTokenAmount)}</Cell>
                 <Cell>
                   <div className={'flex items-center justify-center gap-6'}>
                     <Link
@@ -179,3 +180,12 @@ const PoolMy = () => {
 }
 
 export default PoolMy
+
+function formatLpToken(lpTokenAmount: number | null) {
+  if (isNumber(lpTokenAmount)) {
+    if (lpTokenAmount === 0) return '0'
+    if (lpTokenAmount < 0.01) return '< 0.01'
+    return lpTokenAmount.toFixed(2)
+  }
+  return '-'
+}
