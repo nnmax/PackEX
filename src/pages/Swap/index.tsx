@@ -33,11 +33,12 @@ import { useQueryClient } from '@tanstack/react-query'
 import { ALLOWED_PRICE_IMPACT } from '@/constants'
 import { AssetListData } from '@/api'
 import { usePrice } from '@/api/price'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
   const { data: userInfo } = useUserInfo()
-
+  useDocumentTitle('Dex')
   // get custom setting values for user
   const [deadline] = useUserDeadline()
   const [allowedSlippage] = useUserSlippageTolerance()

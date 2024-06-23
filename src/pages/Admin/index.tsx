@@ -1,11 +1,13 @@
 import { useUserInfo } from '@/api/get-user'
 import { useWithdrawRunesAdmin } from '@/api/withdraw-runes-admin'
 import ShortenAddressCopy from '@/components/ShortenAddressCopy'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 import isAdmin from '@/utils/isAdmin'
 import clsx from 'clsx'
 import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 
 export default function Admin() {
+  useDocumentTitle('Admin')
   const { data: userInfo, isLoading: isLoadingUserInfo } = useUserInfo()
   const { data: tableData, isLoading: isLoadingTableData } = useWithdrawRunesAdmin({
     enabled: isAdmin(userInfo?.ethAddress),

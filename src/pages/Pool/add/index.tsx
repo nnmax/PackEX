@@ -27,6 +27,7 @@ import { currencyId } from '@/utils/currencyId'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { PairState } from '@/data/Reserves'
 import { useQueryClient } from '@tanstack/react-query'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -39,7 +40,7 @@ export default function PoolAdd() {
   const provider = useEthersProvider()
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
-
+  useDocumentTitle('Add Liquidity')
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState()
   const {

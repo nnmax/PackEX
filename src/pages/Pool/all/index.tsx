@@ -7,6 +7,7 @@ import { useAllPools } from '@/api'
 // import SortIcon from '@/components/Icons/sortIcon'
 import PoolLayout from '@/pages/Pool/Layout'
 import { getLinkPathname } from '@/pages/Pool/utils'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 const PoolAll = () => {
   const [isOpen, setOpen] = useState(false)
@@ -14,6 +15,7 @@ const PoolAll = () => {
   const [selectedFlagTwo, setSelectedFlagTwo] = useState(false)
   const { data: poolAllList, isLoading } = useAllPools()
   const location = useLocation()
+  useDocumentTitle('All Pools')
 
   // function GearIconLogo() {
   //   return (

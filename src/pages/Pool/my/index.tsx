@@ -7,6 +7,7 @@ import PoolLayout from '@/pages/Pool/Layout'
 import { useMyPools } from '@/api/get-my-pools'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import { getLinkPathname } from '@/pages/Pool/utils'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
@@ -14,6 +15,7 @@ const PoolMy = () => {
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
   const { data, isLoading } = useMyPools()
   const location = useLocation()
+  useDocumentTitle('My Pools')
 
   return (
     <PoolLayout activeTab={'my'}>
@@ -26,7 +28,11 @@ const PoolMy = () => {
           <Column>{'MY LP TOKEN'}</Column>
           <Column>{''}</Column>
         </TableHeader>
-        <TableBody items={data?.myPools} className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}>
+        <TableBody
+          renderEmptyState={() => <p className={'mt-2 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}
+          items={data?.myPools}
+          className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
+        >
           {(item) => (
             <Fragment key={item.id}>
               <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>

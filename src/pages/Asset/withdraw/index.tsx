@@ -10,10 +10,12 @@ import FormCard, { type FormField } from '../components/FormCard'
 import { useSendTransaction } from 'wagmi'
 import { WithdrawRunesParams, useWithdrawRunes } from '@/api/withdraw-runes'
 import { useWithdrawRunesConfirm } from '@/api/withdraw-runes-confirm'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 const DOG_MIN_AMOUNT = 1000
 
 export default function Withdraw() {
+  useDocumentTitle('Withdraw')
   const [isOpen, setOpen] = useState<boolean>(false)
   const { search } = useLocation()
   const { sendTransactionAsync, isPending: sendingTransaction } = useSendTransaction()

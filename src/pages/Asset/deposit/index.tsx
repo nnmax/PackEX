@@ -8,8 +8,10 @@ import useBTCWallet from '@/hooks/useBTCWallet'
 import { toast } from 'react-toastify'
 import { useRef, useState } from 'react'
 import { useRunesBalance } from '@/api/get-runes-balance'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 export default function Deposit() {
+  useDocumentTitle('Deposit')
   const { search } = useLocation()
   const [loading, setLoading] = useState(false)
   const data = QueryString.parse(search, {

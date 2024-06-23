@@ -29,11 +29,13 @@ import ToggleButton from '@/components/ToggleButton'
 import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { PairState } from '@/data/Reserves'
 import { useQueryClient } from '@tanstack/react-query'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 const commonButtonClasses =
   'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E] aria-pressed:border-lemonYellow transition-colors aria-pressed:text-lemonYellow'
 
 export default function PoolRemove() {
+  useDocumentTitle('Remove Liquidity')
   const history = useHistory()
   const { currencyIdA, currencyIdB } = useParams<{
     currencyIdA: string

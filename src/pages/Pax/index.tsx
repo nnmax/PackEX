@@ -22,13 +22,14 @@ import Diamond1Svg from '@/assets/images/diamond-1.svg'
 import Diamond3Svg from '@/assets/images/diamond-3.svg'
 import AriaModal from '@/components/AriaModal'
 import CurrencyLogo from '@/components/CurrencyLogo'
+import useDocumentTitle from '@/hooks/useDocumentTitle'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
   const [boxTwoRef, { width: boxTwoWidth }] = useMeasure<HTMLDivElement>()
   const { data: connectorClient } = useConnectorClient()
   const isSupportedChainId = useIsSupportedChainId()
-
+  useDocumentTitle('PAX')
   const { data: userInfo } = useUserInfo()
   const toggleWalletModal = useWalletModalToggle()
   const { data: inviteData } = usePaxInvite()
