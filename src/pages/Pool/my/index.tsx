@@ -1,7 +1,18 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Fragment } from 'react'
-import { Cell, Column, Row, Table, TableBody, TableHeader, ModalOverlay, Modal, Checkbox } from 'react-aria-components'
+import {
+  Cell,
+  Column,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+  ModalOverlay,
+  Modal,
+  Checkbox,
+  ResizableTableContainer,
+} from 'react-aria-components'
 import clsx from 'clsx'
 import PoolLayout from '@/pages/Pool/Layout'
 import { useMyPools } from '@/api/get-my-pools'
@@ -9,91 +20,105 @@ import CurrencyLogo from '@/components/CurrencyLogo'
 import { getLinkPathname } from '@/pages/Pool/utils'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import { isNumber } from 'lodash-es'
+import Tooltip from '@/components/Tooltip'
 
 const PoolMy = () => {
   const [isOpen, setOpen] = useState<boolean>(false)
   const [selectedFlagOne, setSelectedFlagOne] = useState<boolean>(true)
   const [selectedFlagTwo, setSelectedFlagTwo] = useState<boolean>(false)
   const { data, isLoading } = useMyPools()
+
   const location = useLocation()
   useDocumentTitle('My Pools')
 
   return (
     <PoolLayout activeTab={'my'}>
-      <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { 'loading text-2xl': isLoading })}>
-          <Column isRowHeader>{'POOL NAME'}</Column>
-          <Column>{'AMOUNT'}</Column>
-          <Column>{'POOL SHARE'}</Column>
-          <Column>{'PAX EARNED (TODAY)'}</Column>
-          <Column>{'MY LP TOKEN'}</Column>
-          <Column>{''}</Column>
-        </TableHeader>
-        <TableBody
-          renderEmptyState={() => <p className={'mt-2 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}
-          items={data?.myPools}
-          className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
-        >
-          {(item) => (
-            <Fragment key={item.id}>
-              <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[100px]'}>
-                <Cell>
-                  <div className={'flex justify-center'}>
-                    <div className={'relative flex items-center'}>
-                      {/* {item.id === 1 && <GearIconLogo />} */}
+      <ResizableTableContainer className="w-full">
+        <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
+          <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal')}>
+            <Column width={160} isRowHeader>
+              {'POOL NAME'}
+            </Column>
+            <Column>{'AMOUNT'}</Column>
+            <Column width={148}>{'POOL SHARE'}</Column>
+            <Column width={180}>
+              {'PAX EARNED'}
+              <br />
+              {'(TODAY)'}
+            </Column>
+            <Column width={160}>{'MY LP TOKEN'}</Column>
+            <Column width={180}>{''}</Column>
+          </TableHeader>
+          <TableBody
+            renderEmptyState={
+              isLoading
+                ? () => <span className={clsx({ 'loading text-2xl': isLoading })} />
+                : () => <p className={'mt-2 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>
+            }
+            items={data?.myPools}
+            className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
+          >
+            {(item) => (
+              <Fragment key={item.id}>
+                <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4'}>
+                  <Cell>
+                    <div className={'flex justify-center items-center'}>
                       <span className={'text-xs mr-2'}>{item.token0Name}</span> /
                       <span className={'text-xs ml-2'}>{item.token1Name}</span>
                     </div>
-                  </div>
-                </Cell>
-                <Cell>
-                  <div className={'flex items-center justify-center gap-4'}>
-                    <div className={'flex items-center justify-start'}>
+                  </Cell>
+                  <Cell>
+                    <div className={'flex items-center justify-center'}>
                       <CurrencyLogo size="24px" src={item.token0LogoUri} />{' '}
-                      <span className={'text-xs ml-2 mr-2'}>{item.token0Amount}</span> /
+                      <Tooltip title={item.token0Amount}>
+                        <span className={'text-xs ml-2 mr-2 truncate'}>{item.token0Amount}</span>
+                      </Tooltip>{' '}
+                      /
                       <CurrencyLogo size="24px" className={'ml-2'} src={item.token1LogoUri} />{' '}
-                      <span className={'text-xs ml-2'}>{item.token1Amount}</span>
+                      <Tooltip title={item.token1Amount}>
+                        <span className={'text-xs ml-2 truncate'}>{item.token1Amount}</span>
+                      </Tooltip>
                     </div>
-                  </div>
-                </Cell>
-                <Cell>{`${item.poolShare} %`}</Cell>
-                <Cell>{item.paxEarnedToday}</Cell>
-                <Cell>{formatLpToken(item.lpTokenAmount)}</Cell>
-                <Cell>
-                  <div className={'flex items-center justify-center gap-6'}>
-                    <Link
-                      to={{
-                        pathname: getLinkPathname(item, 'add'),
-                        state: {
-                          location,
-                        },
-                      }}
-                      className={
-                        'text-lemonYellow w-[60px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
-                      }
-                    >
-                      {'+ADD'}
-                    </Link>
-                    <Link
-                      to={{
-                        pathname: getLinkPathname(item, 'remove'),
-                        state: {
-                          location,
-                        },
-                      }}
-                      className={
-                        'text-lemonYellow flex-grow flex-shrink-0 w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
-                      }
-                    >
-                      {'—REMOVE'}
-                    </Link>
-                  </div>
-                </Cell>
-              </Row>
-            </Fragment>
-          )}
-        </TableBody>
-      </Table>
+                  </Cell>
+                  <Cell>{`${item.poolShare} %`}</Cell>
+                  <Cell>{item.paxEarnedToday}</Cell>
+                  <Cell>{formatLpToken(item.lpTokenAmount)}</Cell>
+                  <Cell>
+                    <div className={'flex items-center justify-center gap-6'}>
+                      <Link
+                        to={{
+                          pathname: getLinkPathname(item, 'add'),
+                          state: {
+                            location,
+                          },
+                        }}
+                        className={
+                          'text-lemonYellow w-[60px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
+                        }
+                      >
+                        {'+ADD'}
+                      </Link>
+                      <Link
+                        to={{
+                          pathname: getLinkPathname(item, 'remove'),
+                          state: {
+                            location,
+                          },
+                        }}
+                        className={
+                          'text-lemonYellow flex-grow flex-shrink-0 w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
+                        }
+                      >
+                        {'—REMOVE'}
+                      </Link>
+                    </div>
+                  </Cell>
+                </Row>
+              </Fragment>
+            )}
+          </TableBody>
+        </Table>
+      </ResizableTableContainer>
       <ModalOverlay
         className={
           'fixed left-0 top-0 z-20 flex h-[--visual-viewport-height] w-screen items-start justify-center bg-black/50 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in data-[exiting]:fade-out'

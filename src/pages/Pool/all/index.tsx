@@ -17,29 +17,13 @@ const PoolAll = () => {
   const location = useLocation()
   useDocumentTitle('All Pools')
 
-  // function GearIconLogo() {
-  //   return (
-  //     <div
-  //       onClick={() => {
-  //         setOpen(true)
-  //       }}
-  //       className={'h-5 w-5 absolute left-[-30px] rounded-full cursor-pointer'}
-  //     >
-  //       <GearIcon className={'h-full w-full rounded-full'} />
-  //     </div>
-  //   )
-  // }
-
   return (
     <PoolLayout activeTab={'all'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', isLoading ? 'loading text-2xl' : '')}>
+        <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal')}>
           <Column isRowHeader>{'POOL NAME'}</Column>
           <Column>
-            <span className={'relative'}>
-              {'TVL '}
-              {/* <SortIcon className={'inline'} /> */}
-            </span>
+            <span className={'relative'}>{'TVL '}</span>
           </Column>
           <Column>{'VOLUME (24H)'}</Column>
           <Column>{'VOLUME (7D)'}</Column>
@@ -47,6 +31,11 @@ const PoolAll = () => {
           <Column>{'ACTION'}</Column>
         </TableHeader>
         <TableBody
+          renderEmptyState={
+            isLoading
+              ? () => <span className={clsx({ 'loading text-2xl': isLoading })} />
+              : () => <p className={'mt-2 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>
+          }
           items={poolAllList?.allPools}
           className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
         >

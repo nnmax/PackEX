@@ -30,7 +30,11 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
       className={'after:bottom-rhombus relative mt-1 rounded-md bg-[#242424] px-6 py-4 text-xs'}
     >
       <div className={'flex items-center justify-between'}>
-        <Button isDisabled={!show} onPress={() => setShowInverted((prev) => !prev)} className={'text-white'}>
+        <Button
+          isDisabled={!show}
+          onPress={() => setShowInverted((prev) => !prev)}
+          className={'text-white text-nowrap'}
+        >
           {show ? label : '-'}
         </Button>
         <Button

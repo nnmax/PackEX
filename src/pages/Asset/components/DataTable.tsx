@@ -17,7 +17,7 @@ const DataTable = (props: DataTableProps) => {
 
   return (
     <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
-      <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal', { 'loading text-2xl': isLoading })}>
+      <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal')}>
         <Column isRowHeader>{'TOKEN'}</Column>
         <Column>{'AMOUNT'}</Column>
         <Column>{'AVAILABLE'}</Column>
@@ -25,7 +25,15 @@ const DataTable = (props: DataTableProps) => {
         <Column>{'CHANGE (TODAY)'}</Column>
         <Column> </Column>
       </TableHeader>
-      <TableBody items={assetsList} className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}>
+      <TableBody
+        renderEmptyState={
+          isLoading
+            ? () => <span className={clsx({ 'loading text-2xl': isLoading })} />
+            : () => <p className={'mt-2 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>
+        }
+        items={assetsList}
+        className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
+      >
         {(item) => (
           <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
             <Cell>
