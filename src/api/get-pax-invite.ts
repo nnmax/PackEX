@@ -17,7 +17,8 @@ export type Bonus = {
 
 export type GetPaxInviteData = {
   inviteCode: string
-  invite: PaxTableData[]
+  inviteList: PaxTableData[]
+  userPax?: PaxTableData
   unclaimed: number
   totalMinted: number
   unclaimedBonusList: Bonus[]
@@ -29,10 +30,10 @@ function getPaxInvite() {
   return fetcher<GetPaxInviteData>('/get-pax-invite', {
     method: 'GET',
   }).then((res) => {
-    if (Array.isArray(res.invite)) {
+    if (Array.isArray(res.inviteList)) {
       return {
         ...res,
-        invite: res.invite.map((item, index) => ({
+        inviteList: res.inviteList.map((item, index) => ({
           ...item,
           rank: index + 1,
         })),

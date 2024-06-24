@@ -86,8 +86,7 @@ export function formatAmountColumn(originNumber: number) {
 }
 
 export function formatValueColumn(num: number | null | undefined) {
-  if (num === null || num === undefined) return '-'
-  if (num === 0) return '0'
+  if (num === null || num === undefined || num <= 0) return '-'
   if (num < 0.01) return `$ < 0.01`
   return `$ ${num.toFixed(2)}`
 }

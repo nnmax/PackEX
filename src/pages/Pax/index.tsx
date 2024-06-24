@@ -247,7 +247,7 @@ export default function PaxPage() {
             <h3 className={'text-lemonYellow'} id={'leaderboard-id'}>
               Leaderboard
             </h3>
-            <MyTable data={infoData?.leaderBoard ?? []} />
+            <MyTable data={infoData?.leaderBoard ?? []} firstItem={inviteData?.userPax} />
           </div>
 
           <div className={'border flex-1 border-lemonYellow rounded py-8 px-4 overflow-hidden'}>
@@ -265,7 +265,7 @@ export default function PaxPage() {
                 </div>
               )}
             </div>
-            <MyTable data={inviteData?.invite ?? []} />
+            <MyTable data={inviteData?.inviteList ?? []} />
           </div>
         </div>
       </Section>
@@ -289,8 +289,16 @@ const boxClasses = clsx(
   'relative flex-1 border border-lemonYellow rounded flex flex-col items-center h-32',
 )
 
-function MyTable(props: { data: PaxTableData[] }) {
-  const { data } = props
+function MyTable(props: { data: PaxTableData[]; firstItem?: PaxTableData }) {
+  const { data, firstItem } = props
+
+  type TableData = PaxTableData & { highlight?: boolean }
+
+  const tableData: TableData[] = (firstItem ? [firstItem, ...data] : data).map((item) => ({
+    ...item,
+    highlight: item.address === firstItem?.address,
+    address: item.address === firstItem?.address ? 'YOU' : item.address,
+  }))
 
   return (
     <div className={'h-[600px] overflow-y-auto'}>
@@ -300,12 +308,15 @@ function MyTable(props: { data: PaxTableData[] }) {
           <Column isRowHeader>NAME</Column>
           <Column>$PAX</Column>
         </TableHeader>
-        <TableBody items={data} renderEmptyState={() => <p className={'mt-36 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}>
+        <TableBody
+          items={tableData}
+          renderEmptyState={() => <p className={'mt-36 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}
+        >
           {(item) => (
-            <Row id={item.rank} className={'h-[60px]'}>
+            <Row id={item.rank} className={clsx('h-[60px]', item.highlight && 'text-lemonYellow')}>
               <Cell>{item.rank}</Cell>
               <Cell>
-                <ShortenAddressOrENSName address={item.address} />
+                {item.address.toLowerCase() === 'you' ? 'YOU' : <ShortenAddressOrENSName address={item.address} />}
               </Cell>
               <Cell>
                 <span title={item.totalAmount.toString()}>{item.totalAmount}</span>

@@ -35,7 +35,7 @@ const DataTable = (props: DataTableProps) => {
         className={clsx('[&>tr]:h-[76px] [&>tr]:border-b [&>tr]:border-[#333]')}
       >
         {(item) => (
-          <Row id={item.symbol} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
+          <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
             <Cell>
               <div className={'flex items-center gap-4'}>
                 <CurrencyLogo size="24px" src={item.logoUri} />
