@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
@@ -34,6 +34,7 @@ import { ALLOWED_PRICE_IMPACT } from '@/constants'
 import { AssetListData } from '@/api'
 import { usePrice } from '@/api/price'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import { toast } from 'react-toastify'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -196,11 +197,11 @@ export default function Swap() {
 
   const handleOutputSelect = (outputCurrency: Currency) => onCurrencySelection(Field.OUTPUT, outputCurrency)
 
-  const clearInputData = () => {
+  const clearInputData = useCallback(() => {
     onUserInput(Field.INPUT, '')
     onUserInput(Field.OUTPUT, '')
     onCleanSelectedCurrencies()
-  }
+  }, [onCleanSelectedCurrencies, onUserInput])
 
   const handleCloseSuccess = () => {
     setSwapState((prev) => ({ ...prev, successModalOpen: false }))
@@ -219,6 +220,16 @@ export default function Swap() {
   const queryClient = useQueryClient()
   useEffect(() => {
     if (!transactionReceipt) return
+    if (transactionReceipt.status !== 'success') {
+      setSwapState((prev) => ({
+        ...prev,
+        loadingModalOpen: false,
+        transactionHash: null,
+      }))
+      toast.error('Transaction failed')
+      clearInputData()
+      return
+    }
     let unmounted = false
     let timer = setTimeout(() => {
       const cache = queryClient.getQueryData<AssetListData>(['get-asset-list'])
@@ -255,7 +266,7 @@ export default function Swap() {
       clearTimeout(timer)
       unmounted = true
     }
-  }, [queryClient, transactionReceipt])
+  }, [clearInputData, queryClient, transactionReceipt])
 
   const handleWrap = async () => {
     if (!onWrap) return
