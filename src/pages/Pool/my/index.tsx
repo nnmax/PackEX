@@ -36,12 +36,12 @@ const PoolMy = () => {
       <ResizableTableContainer className="w-full">
         <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
           <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal')}>
-            <Column width={160} isRowHeader>
+            <Column width={100} className={'text-start'} isRowHeader>
               {'POOL NAME'}
             </Column>
             <Column>{'AMOUNT'}</Column>
             <Column width={148}>{'POOL SHARE'}</Column>
-            <Column width={180}>
+            <Column width={180} className={'pt-[15px]'}>
               {'PAX EARNED'}
               <br />
               {'(TODAY)'}
@@ -60,9 +60,9 @@ const PoolMy = () => {
           >
             {(item) => (
               <Fragment key={item.id}>
-                <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4'}>
+                <Row id={item.id} className={'[&>td]:pt-4'}>
                   <Cell>
-                    <div className={'flex justify-center items-center'}>
+                    <div className={'flex items-center'}>
                       <span className={'text-xs mr-2'}>{item.token0Name}</span> /
                       <span className={'text-xs ml-2'}>{item.token1Name}</span>
                     </div>
@@ -106,7 +106,7 @@ const PoolMy = () => {
                           },
                         }}
                         className={
-                          'text-lemonYellow flex-grow flex-shrink-0 w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
+                          'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
                         }
                       >
                         {'—REMOVE'}

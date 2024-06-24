@@ -21,19 +21,10 @@ export default function DoubleCurrencyLogo({
         marginRight: margin ? (size / 3 + 8).toString() + 'px' : '0px',
       }}
     >
-      {currency0 && (
-        <CurrencyLogo
-          style={{
-            zIndex: 2,
-          }}
-          currency={currency0}
-          className={'z-[2]'}
-          size={size.toString() + 'px'}
-        />
-      )}
+      {currency0 && <CurrencyLogo currency={currency0} className={'z-[2]'} size={size.toString() + 'px'} />}
       {currency1 && (
         <CurrencyLogo
-          className={'absolute'}
+          className={'absolute z-[3]'}
           style={{
             left: (size / 2).toString() + 'px',
           }}

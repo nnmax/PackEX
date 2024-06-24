@@ -5,6 +5,8 @@ import {
   clearAllTransactions,
   finalizeTransaction,
   SerializableTransactionReceipt,
+  updateFailedModalOpen,
+  updateInProgressModalOpen,
 } from './actions'
 
 const now = () => new Date().getTime()
@@ -21,12 +23,17 @@ export interface TransactionDetails {
 }
 
 export interface TransactionState {
+  inProgressModalOpen: boolean
+  failedModalOpen: boolean
   [chainId: number]: {
     [txHash: string]: TransactionDetails
   }
 }
 
-export const initialState: TransactionState = {}
+export const initialState: TransactionState = {
+  inProgressModalOpen: false,
+  failedModalOpen: false,
+}
 
 export default createReducer(initialState, (builder) =>
   builder
@@ -60,5 +67,11 @@ export default createReducer(initialState, (builder) =>
       }
       tx.receipt = receipt
       tx.confirmedTime = now()
+    })
+    .addCase(updateInProgressModalOpen, (transactions, { payload }) => {
+      transactions.inProgressModalOpen = payload
+    })
+    .addCase(updateFailedModalOpen, (transactions, { payload }) => {
+      transactions.failedModalOpen = payload
     }),
 )

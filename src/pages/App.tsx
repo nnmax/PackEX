@@ -13,11 +13,14 @@ import PoolMy from './Pool/my'
 import Pax from './Pax'
 import Footer from '@/components/Footer'
 import Admin from './Admin'
+import { TransactionFailedModal, TransactionInProgressModal } from '@/components/TransactionModal'
 
 export default function App() {
   return (
     <Suspense fallback={null}>
       <AppBar />
+      <TransactionFailedModal />
+      <TransactionInProgressModal />
       <main className={'flex min-h-[calc(100vh-80px)] justify-center px-[--main-x-padding] overflow-auto py-20'}>
         <div className={'flex w-full max-w-[--main-max-width] flex-col'}>
           <Switch>

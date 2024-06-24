@@ -30,3 +30,5 @@ export const checkedTransaction = createAction<{
   hash: string
   blockNumber: number
 }>('transactions/checkedTransaction')
+export const updateInProgressModalOpen = createAction<boolean>('transactions/updateInProgressModalOpen')
+export const updateFailedModalOpen = createAction<boolean>('transactions/updateFailedModalOpen')

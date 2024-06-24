@@ -2,7 +2,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from '../index'
-import { addTransaction } from './actions'
+import { addTransaction, updateFailedModalOpen, updateInProgressModalOpen } from './actions'
 import { TransactionDetails } from './reducer'
 import { useAccount, useChainId } from 'wagmi'
 
@@ -78,4 +78,23 @@ export function useHasPendingApproval(tokenAddress: string | undefined, spender:
       }),
     [allTransactions, spender, tokenAddress],
   )
+}
+
+export function useTransactionInProgressModalOpen() {
+  const dispatch = useDispatch<AppDispatch>()
+  const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions)
+  const update = (isOpen: boolean) => {
+    dispatch(updateInProgressModalOpen(isOpen))
+  }
+  return [state.inProgressModalOpen, update] as const
+}
+
+export function useTransactionFailedModalOpen() {
+  const dispatch = useDispatch<AppDispatch>()
+  const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions)
+  const update = (isOpen: boolean) => {
+    dispatch(updateFailedModalOpen(isOpen))
+  }
+
+  return [state.failedModalOpen, update] as const
 }

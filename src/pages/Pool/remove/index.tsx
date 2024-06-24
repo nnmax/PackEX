@@ -3,7 +3,6 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import clsx from 'clsx'
-import { Heading } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/burn/actions'
@@ -18,18 +17,18 @@ import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '
 import useDebouncedChangeHandler from '@/utils/useDebouncedChangeHandler'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
-import AriaModal from '@/components/AriaModal'
 import { toast } from 'react-toastify'
-import SuccessModal from '@/components/Pool/SuccessModal'
-import { useAccount, useChainId, useTransactionReceipt } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
-import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { PairState } from '@/data/Reserves'
 import { useQueryClient } from '@tanstack/react-query'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import useIntervalTxAndHandle from '@/hooks/useIntervalTxAndHandle'
+import { TransactionSuccessModal } from '@/components/TransactionModal'
+import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
 
 const commonButtonClasses =
   'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E] aria-pressed:border-lemonYellow transition-colors aria-pressed:text-lemonYellow'
@@ -58,9 +57,7 @@ export default function PoolRemove() {
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
-  // modal and loading
-  const [loadingModalOpen, setLoadingModalOpen] = useState(false)
-  const [inProgressModalOpen, setInProgressModalOpen] = useState(false)
+  const [inProgressModalOpen, updateInProgressModalOpen] = useTransactionInProgressModalOpen()
   const [successModalOpen, setSuccessModalOpen] = useState(false)
 
   // txn values
@@ -82,73 +79,9 @@ export default function PoolRemove() {
       independentField === Field.CURRENCY_B ? typedValue : parsedAmounts[Field.CURRENCY_B]?.toSignificant(6) ?? '',
   }
 
-  // pair contract
-  // const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
-
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
-
-  // async function onAttemptToApprove() {
-  // if (!pairContract || !pair || !library) throw new Error('missing dependencies')
-  // const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
-  // if (!liquidityAmount) throw new Error('missing liquidity amount')
-  // try to gather a signature for permission
-  // const nonce = await pairContract.nonces(account)
-  // const deadlineForSignature: number = Math.ceil(Date.now() / 1000) + deadline
-  // const EIP712Domain = [
-  //   { name: 'name', type: 'string' },
-  //   { name: 'version', type: 'string' },
-  //   { name: 'chainId', type: 'uint256' },
-  //   { name: 'verifyingContract', type: 'address' },
-  // ]
-  // const domain = {
-  //   name: 'Uniswap V2',
-  //   version: '1',
-  //   chainId: chainId,
-  //   verifyingContract: pair.liquidityToken.address,
-  // }
-  // const Permit = [
-  //   { name: 'owner', type: 'address' },
-  //   { name: 'spender', type: 'address' },
-  //   { name: 'value', type: 'uint256' },
-  //   { name: 'nonce', type: 'uint256' },
-  //   { name: 'deadline', type: 'uint256' },
-  // ]
-  // const message = {
-  //   owner: account,
-  //   spender: ROUTER_ADDRESS,
-  //   value: liquidityAmount.raw.toString(),
-  //   nonce: nonce.toHexString(),
-  //   deadline: deadlineForSignature,
-  // }
-  // const data = JSON.stringify({
-  //   types: {
-  //     EIP712Domain,
-  //     Permit,
-  //   },
-  //   domain,
-  //   primaryType: 'Permit',
-  //   message,
-  // })
-  // library
-  //   .send('eth_signTypedData_v4', [account, data])
-  //   .then(splitSignature)
-  //   .then((signature) => {
-  //     setSignatureData({
-  //       v: signature.v,
-  //       r: signature.r,
-  //       s: signature.s,
-  //       deadline: deadlineForSignature,
-  //     })
-  //   })
-  //   .catch((error) => {
-  //     // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
-  //     if (error?.code !== 4001) {
-  //       approveCallback()
-  //     }
-  //   })
-  // }
 
   const { state, pathname } = useLocation<{ location: ReturnType<typeof useLocation> }>()
   const goBack = state?.location ?? '/pool/my'
@@ -301,21 +234,18 @@ export default function PoolRemove() {
   )
 
   const handleConfirm = async () => {
-    setLoadingModalOpen(true)
+    updateInProgressModalOpen(true)
     try {
-      console.log('%c [ approval ]-303', 'font-size:13px; background:pink; color:#bf2c9f;', approval)
       if ((approval === ApprovalState.NOT_APPROVED || approval === ApprovalState.UNKNOWN) && signatureData === null) {
         await approveCallback().catch((e) => {
           console.error(e)
         })
       }
       await onRemove(ApprovalState.APPROVED)
-      setInProgressModalOpen(true)
     } catch (error) {
+      updateInProgressModalOpen(false)
       console.error(error)
       toast.error('Error removing liquidity')
-    } finally {
-      setLoadingModalOpen(false)
     }
   }
 
@@ -327,43 +257,24 @@ export default function PoolRemove() {
     if (pathname) resetInput()
   }, [resetInput, pathname])
 
-  const { data: txReceipt } = useTransactionReceipt({
-    hash: txHash as `0x${string}`,
-    chainId,
-    query: {
-      refetchInterval: 1000,
-      enabled: !!txHash,
+  const queryClient = useQueryClient()
+  useIntervalTxAndHandle(txHash, {
+    onFailed: () => {
+      setTxHash('')
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries(
+        {
+          queryKey: ['get-my-pools'],
+          exact: true,
+        },
+        {
+          throwOnError: false,
+        },
+      )
+      setSuccessModalOpen(true)
     },
   })
-
-  const queryClient = useQueryClient()
-  useEffect(() => {
-    if (!txReceipt) return
-
-    let unmounted = false
-    const timer = setTimeout(() => {
-      queryClient
-        .refetchQueries(
-          {
-            queryKey: ['get-my-pools'],
-            exact: true,
-          },
-          {
-            throwOnError: false,
-          },
-        )
-        .finally(() => {
-          if (unmounted) return
-          setInProgressModalOpen(false)
-          setSuccessModalOpen(true)
-        })
-    }, 10000)
-
-    return () => {
-      unmounted = true
-      clearTimeout(timer)
-    }
-  }, [queryClient, txReceipt])
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false)
@@ -373,7 +284,7 @@ export default function PoolRemove() {
       onUserInput(Field.LIQUIDITY_PERCENT, '0')
     }
     setTxHash('')
-    history.push('/pool/my')
+    history.push(goBack)
   }
 
   return (
@@ -384,19 +295,7 @@ export default function PoolRemove() {
           {'Remove'}
         </Link>
       </div>
-
-      <AriaModal
-        isOpen={loadingModalOpen}
-        onOpenChange={setLoadingModalOpen}
-        isKeyboardDismissDisabled
-        contentClassName={'flex flex-col items-center gap-4'}
-      >
-        <span aria-hidden className={'loading !w-20 text-lemonYellow'} />
-        <Heading slot="title">CONFIRMATION</Heading>
-        <p className={'text-xs'}>CONFIRM TRANSACTION IN YOUR WALLET</p>
-      </AriaModal>
-      <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
-      <TransactionInProgressModal isOpen={inProgressModalOpen} />
+      <TransactionSuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
       <div className={'flex justify-center'}>
         <div
           className={'flex w-full justify-center relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
@@ -507,7 +406,7 @@ export default function PoolRemove() {
                     className={'w-full max-w-60'}
                     onPress={handleConfirm}
                     isLoading={
-                      pairState === PairState.LOADING || loadingModalOpen || approval === ApprovalState.UNKNOWN
+                      pairState === PairState.LOADING || inProgressModalOpen || approval === ApprovalState.UNKNOWN
                     }
                     isDisabled={!isValid}
                     isError={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}

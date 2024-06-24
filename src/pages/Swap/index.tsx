@@ -1,5 +1,5 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { formatUnits } from '@ethersproject/units'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
@@ -22,19 +22,19 @@ import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
-import SuccessModal from '@/components/Pool/SuccessModal'
 import { BigNumber } from '@ethersproject/bignumber'
-import { useChainId, useGasPrice, useTransactionReceipt } from 'wagmi'
+import { useGasPrice } from 'wagmi'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
-import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { useUserInfo } from '@/api/get-user'
 import { useQueryClient } from '@tanstack/react-query'
 import { ALLOWED_PRICE_IMPACT } from '@/constants'
 import { AssetListData } from '@/api'
 import { usePrice } from '@/api/price'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
-import { toast } from 'react-toastify'
+import useIntervalTxAndHandle from '@/hooks/useIntervalTxAndHandle'
+import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
+import { TransactionSuccessModal } from '@/components/TransactionModal'
 
 export default function Swap() {
   useDefaultsFromURLSearch()
@@ -88,18 +88,16 @@ export default function Swap() {
   }
 
   // modal and loading
-  const [{ showConfirm, activeStep, successModalOpen, transactionHash, loadingModalOpen }, setSwapState] = useState<{
+  const [{ showConfirm, activeStep, successModalOpen, transactionHash }, setSwapState] = useState<{
     showConfirm: boolean
     activeStep: number
     transactionHash: string | null
     successModalOpen: boolean
-    loadingModalOpen: boolean
   }>({
     showConfirm: false,
     activeStep: 0,
     transactionHash: null,
     successModalOpen: false,
-    loadingModalOpen: false,
   })
 
   const formattedAmounts = {
@@ -120,7 +118,6 @@ export default function Swap() {
 
   // check whether the user has approved the router on the input token
   const [approval, approveCallback, approveGas] = useApproveCallbackFromTrade(trade, allowedSlippage)
-
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
 
@@ -150,6 +147,8 @@ export default function Swap() {
     return result === 0 ? '< 0.00000001' : result.toString()
   }, [swapGasLimit, gasPrice, price, approveGas])
 
+  const [, updateInProgressModalOpen] = useTransactionInProgressModalOpen()
+
   const handleSwap = async () => {
     if (!swapCallback) {
       return
@@ -161,7 +160,8 @@ export default function Swap() {
     }
     swapCallback()
       .then((txHash) => {
-        setSwapState((prev) => ({ ...prev, transactionHash: txHash, loadingModalOpen: true }))
+        updateInProgressModalOpen(true)
+        setSwapState((prev) => ({ ...prev, transactionHash: txHash }))
       })
       .finally(() => {
         setSwapState((prev) => ({ ...prev, activeStep: 0, showConfirm: false }))
@@ -207,66 +207,41 @@ export default function Swap() {
     setSwapState((prev) => ({ ...prev, successModalOpen: false }))
     clearInputData()
   }
-  const chainId = useChainId()
-  const { data: transactionReceipt } = useTransactionReceipt({
-    hash: transactionHash as `0x${string}`,
-    chainId,
-    query: {
-      refetchInterval: 1000,
-      enabled: !!transactionHash,
-    },
-  })
 
   const queryClient = useQueryClient()
-  useEffect(() => {
-    if (!transactionReceipt) return
-    if (transactionReceipt.status !== 'success') {
+  useIntervalTxAndHandle(transactionHash, {
+    onFailed() {
       setSwapState((prev) => ({
         ...prev,
-        loadingModalOpen: false,
         transactionHash: null,
       }))
-      toast.error('Transaction failed')
-      clearInputData()
-      return
-    }
-    let unmounted = false
-    let timer = setTimeout(() => {
+    },
+    async onSuccess() {
       const cache = queryClient.getQueryData<AssetListData>(['get-asset-list'])
       if (cache) {
-        queryClient
-          .refetchQueries(
-            {
-              queryKey: ['get-asset-list'],
-              exact: true,
-            },
-            {
-              throwOnError: false,
-            },
-          )
-          .finally(() => {
-            if (unmounted) return
-            setSwapState((prev) => ({
-              ...prev,
-              loadingModalOpen: false,
-              successModalOpen: true,
-              transactionHash: null,
-            }))
-          })
+        await queryClient.refetchQueries(
+          {
+            queryKey: ['get-asset-list'],
+            exact: true,
+          },
+          {
+            throwOnError: false,
+          },
+        )
+        setSwapState((prev) => ({
+          ...prev,
+          successModalOpen: true,
+          transactionHash: null,
+        }))
       } else {
         setSwapState((prev) => ({
           ...prev,
-          loadingModalOpen: false,
           successModalOpen: true,
           transactionHash: null,
         }))
       }
-    }, 10000)
-    return () => {
-      clearTimeout(timer)
-      unmounted = true
-    }
-  }, [clearInputData, queryClient, transactionReceipt])
+    },
+  })
 
   const handleWrap = async () => {
     if (!onWrap) return
@@ -286,9 +261,7 @@ export default function Swap() {
         />
       )}
 
-      <TransactionInProgressModal isOpen={loadingModalOpen} />
-
-      <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccess} content={'SWAP COMPLETED'} />
+      <TransactionSuccessModal isOpen={successModalOpen} onClose={handleCloseSuccess} content={'SWAP COMPLETED'} />
       <PriceImpactWarningModal
         isOpen={priceImpactWarningModalOpen}
         onClose={() => setPriceImpactWarningModalOpen(false)}

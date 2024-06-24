@@ -19,15 +19,16 @@ import { ROUTER_ADDRESS } from '@/constants'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import { toast } from 'react-toastify'
 import ReviewModal from '@/components/Pool/ReviewModal'
-import SuccessModal from '@/components/Pool/SuccessModal'
-import { useAccount, useChainId, useTransactionReceipt } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { currencyId } from '@/utils/currencyId'
-import TransactionInProgressModal from '@/components/TransactionInProgressModal'
 import { PairState } from '@/data/Reserves'
 import { useQueryClient } from '@tanstack/react-query'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import useIntervalTxAndHandle from '@/hooks/useIntervalTxAndHandle'
+import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
+import { TransactionSuccessModal } from '@/components/TransactionModal'
 
 export default function PoolAdd() {
   const history = useHistory()
@@ -61,7 +62,6 @@ export default function PoolAdd() {
   const isSupportedChainId = useIsSupportedChainId()
   const [reviewModalOpen, setReviewModalOpen] = useState(false)
   const [successModalOpen, setSuccessModalOpen] = useState(false)
-  const [loadingModalOpen, setLoadingModalOpen] = useState(false)
 
   // txn values
   const [deadline] = useUserDeadline() // custom from users settings
@@ -193,6 +193,7 @@ export default function PoolAdd() {
 
   const [submitting, setSubmitting] = useState(false)
 
+  const [, updateInProgressModalOpen] = useTransactionInProgressModalOpen()
   const handleConfirm = useCallback(async () => {
     setSubmitting(true)
     setReviewModalOpen(true)
@@ -206,20 +207,22 @@ export default function PoolAdd() {
       }
 
       await onAdd()
-      setLoadingModalOpen(true)
+      updateInProgressModalOpen(true)
     } catch (error) {
       console.dir(error)
       toast.error('Error adding liquidity')
-      setLoadingModalOpen(false)
+      updateInProgressModalOpen(false)
     } finally {
       setSubmitting(false)
       setReviewModalOpen(false)
     }
-  }, [approvalA, approvalB, approveACallback, approveBCallback, onAdd])
+  }, [approvalA, approvalB, approveACallback, approveBCallback, onAdd, updateInProgressModalOpen])
 
   const handleCloseSuccessModal = () => {
     setSuccessModalOpen(false)
-    history.push('/pool/my')
+    resetInput()
+    setTxHash('')
+    history.push(goBack)
   }
 
   const handleCurrencyASelect = (currencyA: Currency) => {
@@ -230,46 +233,36 @@ export default function PoolAdd() {
     history.push(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
   }
 
-  const { data: txReceipt } = useTransactionReceipt({
-    hash: txHash as `0x${string}`,
-    chainId,
-    query: {
-      refetchInterval: 1000,
-      enabled: !!txHash,
+  const queryClient = useQueryClient()
+  useIntervalTxAndHandle(txHash, {
+    onFailed: () => {
+      setTxHash('')
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries(
+        {
+          queryKey: ['get-all-pools'],
+          exact: true,
+        },
+        {
+          throwOnError: false,
+        },
+      )
+      await queryClient.refetchQueries(
+        {
+          queryKey: ['get-my-pools'],
+          exact: true,
+        },
+        {
+          throwOnError: false,
+        },
+      )
+      setSuccessModalOpen(true)
+      setTxHash('')
+      onFieldAInput('')
+      onFieldBInput('')
     },
   })
-
-  const queryClient = useQueryClient()
-  useEffect(() => {
-    if (!txReceipt) return
-
-    let unmounted = false
-    const timer = setTimeout(() => {
-      queryClient
-        .refetchQueries(
-          {
-            queryKey: ['get-my-pools'],
-            exact: true,
-          },
-          {
-            throwOnError: false,
-          },
-        )
-        .finally(() => {
-          if (unmounted) return
-          setLoadingModalOpen(false)
-          setSuccessModalOpen(true)
-          setTxHash('')
-          onFieldAInput('')
-          onFieldBInput('')
-        })
-    }, 10000)
-
-    return () => {
-      unmounted = true
-      clearTimeout(timer)
-    }
-  }, [onFieldAInput, onFieldBInput, queryClient, txReceipt])
 
   return (
     <div className={'py-4'}>
@@ -290,8 +283,7 @@ export default function PoolAdd() {
         txHash={txHash}
         liquidityMinted={liquidityMinted}
       />
-      <SuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
-      <TransactionInProgressModal isOpen={loadingModalOpen} />
+      <TransactionSuccessModal isOpen={successModalOpen} onClose={handleCloseSuccessModal} />
       <div className={'flex w-full justify-center'}>
         <div className={'px-16 py-8'}>
           <div className={'flex flex-col items-center'}>
