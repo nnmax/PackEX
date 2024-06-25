@@ -138,7 +138,7 @@ export default function PaxPage() {
       <Section>
         <H2>THE REWARDS FOR $PAX HOLDERS:</H2>
         <ul className={'leading-8'}>
-          <li>1. Points, Gold and Blast tokens received from Blast network</li>
+          <li>1. Blast tokens received from Blast network</li>
           <li>2. Gas fee earned from Blast network </li>
           <li>3. All the native yields for ETH and USDB that are belongs to PackEX</li>
           <li>4. Fees earned from all the liquidity pools</li>
@@ -152,7 +152,7 @@ export default function PaxPage() {
       </Section>
 
       <Section>
-        <H2>$PAX MINTED</H2>
+        <H2>PAX MINTED</H2>
         <div className={'flex justify-center mb-2'}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -209,11 +209,11 @@ export default function PaxPage() {
               className={'mt-10 flex flex-col gap-6 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}
             >
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>TOTAL $PAX MINTED</span>
+                <span className={'w-[200px]'}>TOTAL PAX MINTED</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.totalMinted : '-'}</span>
               </p>
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>$PAX MINTED TODAY</span>
+                <span className={'w-[200px]'}>PAX MINTED TODAY</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.unclaimed : '-'}</span>
               </p>
               <p className={'flex gap-6 items-center'}>
@@ -309,7 +309,7 @@ function MyTable(props: { data: PaxTableData[]; firstItem?: PaxTableData }) {
         <TableHeader className={'h-10 text-xs text-[#9E9E9E] bg-[--body-bg] sticky top-0 z-[1]'}>
           <Column>RANK</Column>
           <Column isRowHeader>NAME</Column>
-          <Column>$PAX</Column>
+          <Column>PAX</Column>
         </TableHeader>
         <TableBody
           items={tableData}
