@@ -7,7 +7,7 @@ import useENS from '@/hooks/useENS'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import clsx from 'clsx'
 import { last } from 'lodash-es'
-import { forwardRef, useState } from 'react'
+import { forwardRef, useMemo, useState } from 'react'
 import { Button, Cell, Column, Heading, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 import { toast } from 'react-toastify'
 import { useMeasure } from 'react-use'
@@ -247,10 +247,7 @@ export default function PaxPage() {
             <h3 className={'text-lemonYellow'} id={'leaderboard-id'}>
               Leaderboard
             </h3>
-            <MyTable
-              data={(infoData?.leaderBoard ?? []).filter((item) => item.address !== inviteData?.userPax?.address)}
-              firstItem={inviteData?.userPax}
-            />
+            <MyTable data={infoData?.leaderBoard ?? []} yourData={inviteData?.userPax} />
           </div>
 
           <div className={'border flex-1 border-lemonYellow rounded py-8 px-4 overflow-hidden'}>
@@ -292,16 +289,17 @@ const boxClasses = clsx(
   'relative flex-1 border border-lemonYellow rounded flex flex-col items-center h-32',
 )
 
-function MyTable(props: { data: PaxTableData[]; firstItem?: PaxTableData }) {
-  const { data, firstItem } = props
+function MyTable(props: { data: PaxTableData[]; yourData?: PaxTableData }) {
+  const { data, yourData } = props
 
   type TableData = PaxTableData & { highlight?: boolean }
 
-  const tableData: TableData[] = (firstItem ? [firstItem, ...data] : data).map((item) => ({
-    ...item,
-    highlight: item.address === firstItem?.address,
-    address: item.address === firstItem?.address ? 'YOU' : item.address,
-  }))
+  const tableData: TableData[] = useMemo(() => {
+    if (yourData) {
+      return [{ ...yourData, highlight: true, address: 'YOU' }, ...data]
+    }
+    return data
+  }, [data, yourData])
 
   return (
     <div className={'h-[600px] overflow-y-auto'}>
