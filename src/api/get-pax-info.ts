@@ -1,7 +1,9 @@
 import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
+import { uniqueId } from 'lodash-es'
 
 export type PaxTableData = {
+  id: string
   totalAmount: number
   address: string
   rank: number
@@ -29,6 +31,7 @@ function getPaxInfo() {
         leaderBoard: res.leaderBoard.map((item, index) => ({
           ...item,
           rank: index + 1,
+          id: uniqueId('pax-table-'),
         })),
       }
     }

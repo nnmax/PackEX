@@ -1,6 +1,7 @@
 import { PaxTableData } from '@/api/get-pax-info'
 import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
+import { uniqueId } from 'lodash-es'
 
 export type Bonus = {
   id: number
@@ -30,16 +31,21 @@ function getPaxInvite() {
   return fetcher<GetPaxInviteData>('/get-pax-invite', {
     method: 'GET',
   }).then((res) => {
-    if (Array.isArray(res.inviteList)) {
-      return {
-        ...res,
-        inviteList: res.inviteList.map((item, index) => ({
-          ...item,
-          rank: index + 1,
-        })),
+    const result = { ...res }
+    if (Array.isArray(result.inviteList)) {
+      result.inviteList = result.inviteList.map((item, index) => ({
+        ...item,
+        rank: index + 1,
+        id: uniqueId('pax-table-'),
+      }))
+    }
+    if (result.userPax) {
+      result.userPax = {
+        ...result.userPax,
+        id: uniqueId('userPax-'),
       }
     }
-    return res
+    return result
   })
 }
 

@@ -247,7 +247,10 @@ export default function PaxPage() {
             <h3 className={'text-lemonYellow'} id={'leaderboard-id'}>
               Leaderboard
             </h3>
-            <MyTable data={infoData?.leaderBoard ?? []} firstItem={inviteData?.userPax} />
+            <MyTable
+              data={(infoData?.leaderBoard ?? []).filter((item) => item.address !== inviteData?.userPax?.address)}
+              firstItem={inviteData?.userPax}
+            />
           </div>
 
           <div className={'border flex-1 border-lemonYellow rounded py-8 px-4 overflow-hidden'}>
@@ -313,7 +316,7 @@ function MyTable(props: { data: PaxTableData[]; firstItem?: PaxTableData }) {
           renderEmptyState={() => <p className={'mt-36 text-sm text-[#9e9e9e]'}>{'NO DATA'}</p>}
         >
           {(item) => (
-            <Row id={item.rank} className={clsx('h-[60px]', item.highlight && 'text-lemonYellow')}>
+            <Row id={item.id} className={clsx('h-[60px]', item.highlight && 'text-lemonYellow')}>
               <Cell>{item.rank}</Cell>
               <Cell>
                 {item.address.toLowerCase() === 'you' ? 'YOU' : <ShortenAddressOrENSName address={item.address} />}
