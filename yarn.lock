@@ -3553,9 +3553,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nnmax/uniswap-sdk-v2@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "@nnmax/uniswap-sdk-v2@npm:1.0.5"
+"@nnmax/uniswap-sdk-v2@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@nnmax/uniswap-sdk-v2@npm:1.0.6"
   dependencies:
     "@uniswap/v2-core": "npm:^1.0.0"
     big.js: "npm:^5.2.2"
@@ -3570,7 +3570,7 @@ __metadata:
     "@ethersproject/networks": ^5.0.0-beta
     "@ethersproject/providers": ^5.0.0-beta
     "@ethersproject/solidity": ^5.0.0-beta
-  checksum: 10c0/1206b1cc49cf32e016d30901c1ace015b33d18b6722605fce961d926de031b2e532d9a9f6ab033c573b4b8b4ff9af14a4942604eb47375dcdad6bb71612dbf5c
+  checksum: 10c0/08d251867c24ac8728417e80235cbc1f5182deb209ff0d4ed15387e5fa11323a3e33aa488db6c662c3a1557a01d37284b227cae2e597658b23b5384e4cdcd12e
   languageName: node
   linkType: hard
 
@@ -6761,7 +6761,7 @@ __metadata:
     "@floating-ui/react": "npm:^0.26.18"
     "@iconify/json": "npm:^2.2.222"
     "@iconify/tailwind": "npm:^1.1.1"
-    "@nnmax/uniswap-sdk-v2": "npm:^1.0.5"
+    "@nnmax/uniswap-sdk-v2": "npm:^1.0.6"
     "@react-aria/optimize-locales-plugin": "npm:^1.1.1"
     "@reduxjs/toolkit": "npm:^1.9.7"
     "@tanstack/react-query": "npm:^5.48.0"
