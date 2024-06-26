@@ -48,6 +48,7 @@ export default function WalletModal() {
           address: accounts[0],
           signature: s,
           message: m,
+          disabledErrorToast: true,
         }).catch((err) => {
           console.error(err)
           return false

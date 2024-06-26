@@ -8,6 +8,7 @@ type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
 
+// @ts-ignore
 const WETH_ONLY: ChainTokenList = {
   [ChainId.BLAST]: [WETH[ChainId.BLAST]],
   [ChainId.BLAST_TESTNET]: [WETH[ChainId.BLAST_TESTNET]],
@@ -62,6 +63,7 @@ export const BODY_BG_COLOR: HexColor = '#0f0f0f'
 export const SIGNATURE_KEY = 'packex.signature'
 export const MESSAGE_KEY = 'packex.message'
 export const CURRENT_BTC_WALLET = 'packex.btc.wallet'
+export const AGREED_KEY = 'packex.agreed'
 
 export const API_BASE = '/packex'
 

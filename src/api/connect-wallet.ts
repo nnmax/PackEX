@@ -15,9 +15,11 @@ export type ConnectWalletData = {
   ethAddress: string
 }
 
-export default function connectWallet(params: ConnectWalletParams) {
+export default function connectWallet(params: ConnectWalletParams & { disabledErrorToast?: boolean }) {
+  const { disabledErrorToast, ...restParams } = params
   return fetcher<ConnectWalletData | string>('/connect-wallet', {
     method: 'POST',
-    body: JSON.stringify(params),
+    body: JSON.stringify(restParams),
+    disabledErrorToast,
   })
 }

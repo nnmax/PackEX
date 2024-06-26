@@ -1,4 +1,3 @@
-import LogoBoxSvg from '../../assets/images/logo-box.svg'
 import NavTabs from '../NavTabs'
 import LinkTab from '../LinkTab'
 import { Link } from 'react-router-dom'
@@ -8,6 +7,7 @@ import { useWalletModalToggle } from '@/state/application/hooks'
 import clsx from 'clsx'
 import { useUserInfo } from '@/api/get-user'
 import isAdmin from '@/utils/isAdmin'
+import LogoBox from '@/components/Icons/LogoBox'
 
 export default function AppBar() {
   const { data: userInfo } = useUserInfo()
@@ -25,7 +25,7 @@ export default function AppBar() {
       <div className={'flex w-full max-w-[--main-max-width] flex-row items-center'}>
         <Link to={'/'} className={'mr-10'}>
           <h1 className={'flex items-center gap-2'}>
-            <img src={LogoBoxSvg} alt={''} />
+            <LogoBox />
             <span className={'text-[25px] text-lemonYellow'}>PACKEX</span>
           </h1>
         </Link>
