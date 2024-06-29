@@ -14,8 +14,9 @@ import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
 import { isString } from 'lodash-es'
 import AriaModal from '@/components/AriaModal'
 import { Heading } from 'react-aria-components'
-import { Connector, ConnectorAlreadyConnectedError, useChainId, useConnect, useSignMessage } from 'wagmi'
+import { Connector, ConnectorAlreadyConnectedError, useAccount, useChainId, useConnect, useSignMessage } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
+import { useUserInfo } from '@/api/get-user'
 
 export default function WalletModal() {
   const [pendingWallet, setPendingWallet] = useState<Connector>()
@@ -23,7 +24,9 @@ export default function WalletModal() {
   const walletModalOpen = useWalletModalOpen()
   const toggleWalletModal = useWalletModalToggle()
   const { connectAsync } = useConnect()
+  const { data: userInfo } = useUserInfo()
   const chainId = useChainId()
+  const { addresses: accountAddresses } = useAccount()
   const { signMessageAsync } = useSignMessage()
 
   const updateUserInfo = (data: ConnectWalletData) => {
@@ -37,6 +40,16 @@ export default function WalletModal() {
       const { accounts } = await connectAsync({
         connector,
         chainId,
+      }).catch((error) => {
+        if (error instanceof ConnectorAlreadyConnectedError) {
+          if (userInfo) {
+            toggleWalletModal()
+            throw error
+          } else if (accountAddresses) {
+            return { accounts: accountAddresses }
+          }
+        }
+        throw error
       })
 
       const s = window.localStorage.getItem(SIGNATURE_KEY)
@@ -83,10 +96,7 @@ export default function WalletModal() {
       setPendingWallet(undefined)
       toggleWalletModal()
     } catch (error) {
-      console.error(error)
-      if (error instanceof ConnectorAlreadyConnectedError) {
-        toggleWalletModal()
-      }
+      console.log('%c [ error ]-93', 'font-size:13px; background:pink; color:#bf2c9f;', error)
       setPendingWallet(undefined)
     }
   }
