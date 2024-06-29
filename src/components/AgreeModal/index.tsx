@@ -1,40 +1,35 @@
+import useAgree from '@/api/agree'
 import { useUserInfo } from '@/api/get-user'
 import AriaModal from '@/components/AriaModal'
 import { ButtonPrimary } from '@/components/Button'
 import LogoBox from '@/components/Icons/LogoBox'
-import { AGREED_KEY } from '@/constants'
 import { useEffect, useState } from 'react'
 import { Heading } from 'react-aria-components'
 
-function useAgreed() {
+function useAgreedLogic() {
   const { data: userInfo } = useUserInfo()
   const [agreed, _setAgree] = useState(true)
+  const { mutateAsync: agreeAsync, isPending } = useAgree()
 
   useEffect(() => {
-    if (!userInfo) {
+    if (!userInfo || userInfo.agreed) {
       _setAgree(true)
       return
     }
-    const agreedList = window.localStorage.getItem(AGREED_KEY)
-    if (agreedList && agreedList.indexOf(userInfo.ethAddress) !== -1) {
-      _setAgree(true)
-    } else {
-      _setAgree(false)
-    }
+    _setAgree(false)
   }, [userInfo])
 
-  const setAgreed = () => {
-    if (!userInfo) return
-    const agreeList = window.localStorage.getItem(AGREED_KEY)
-    window.localStorage.setItem(AGREED_KEY, `${agreeList ? agreeList + ',' : ''}${userInfo.ethAddress}`)
+  const setAgreed = async () => {
+    if (!userInfo || userInfo.agreed) return
+    await agreeAsync()
     _setAgree(true)
   }
 
-  return [agreed, setAgreed] as const
+  return [agreed, isPending, setAgreed] as const
 }
 
 export default function AgreeModal() {
-  const [agreed, setAgreed] = useAgreed()
+  const [agreed, agreeing, setAgreed] = useAgreedLogic()
 
   return (
     <AriaModal
@@ -60,7 +55,7 @@ export default function AgreeModal() {
           frontend or directly with the smart contracts is at the user's discretion and risk. PackEX Protocol does not
           oversee or ensure the performance of the underlying smart contract technology.
         </p>
-        <ButtonPrimary onPress={setAgreed} className={'max-w-[280px] w-full mt-14'}>
+        <ButtonPrimary isLoading={agreeing} onPress={setAgreed} className={'max-w-[280px] w-full mt-14'}>
           Agree and Continue
         </ButtonPrimary>
       </div>

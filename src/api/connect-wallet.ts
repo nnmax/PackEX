@@ -13,6 +13,7 @@ export type ConnectWalletData = {
   invitationCode: string | null
   /** 用户 eth 钱包地址 */
   ethAddress: string
+  agreed: 0 | 1
 }
 
 export default function connectWallet(params: ConnectWalletParams & { disabledErrorToast?: boolean }) {
