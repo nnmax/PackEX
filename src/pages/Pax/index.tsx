@@ -23,6 +23,7 @@ import Diamond3Svg from '@/assets/images/diamond-3.svg'
 import AriaModal from '@/components/AriaModal'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import Tooltip from '@/components/Tooltip'
 
 export default function PaxPage() {
   const [boxOneRef, { width: boxOneWidth }] = useMeasure<HTMLDivElement>()
@@ -230,7 +231,7 @@ export default function PaxPage() {
               </p>
             </div>
           </div>
-          <div className={'w-80 ml-6 flex flex-col gap-10'}>
+          <div className={'flex-[0_0_20rem] ml-6 flex flex-col gap-10'}>
             <SocialBox ref={boxTwoRef} data={last(infoData?.paxRewardRatio ?? [])} />
             {userInfo?.invitationCode && (
               <div className="border border-lemonYellow rounded flex-auto px-10 flex items-center">
@@ -471,9 +472,11 @@ function BonusModal(props: { type: 'daily' | 'total' | null; onClose: () => void
         {dataList?.map((item) => (
           <li key={item.id} className={'w-full gap-4 p-4 rounded-md bg-black flex items-center'}>
             <CurrencyLogo src={item.logoUri} size="40px" />
-            <div className="flex flex-col text-sm">
+            <div className="flex flex-col text-sm min-w-0">
               <span className={'text-[#B5B5B5]'}>{item.symbol}</span>
-              <span>{item.bonusAmount}</span>
+              <Tooltip title={item.bonusAmount}>
+                <p className={'truncate'}>{item.bonusAmount}sldkflklsdf</p>
+              </Tooltip>
             </div>
           </li>
         ))}
