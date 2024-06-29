@@ -13,7 +13,7 @@ env:
   ECS_CLUSTER: flip-god
   ECS_TASK_DEFINITION: .aws/ecs/task-definition.json
   CONTAINER_NAME: app
-  PROXY_PASS: https://api.packex.io
+  PROXY_PASS: packex-backend.prod.local:8089
   SERVER_NAME: packex.io
   REACT_APP_APP_ENV: prod
 
