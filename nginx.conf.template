@@ -27,9 +27,9 @@ server {
   }
 
   location / {
-    if ($allowed_country = no) {
-      return 451;
-    }
+    # if ($allowed_country = no) {
+    #   return 451;
+    #   }
     try_files $uri $uri/ /index.html;
   }
 }
