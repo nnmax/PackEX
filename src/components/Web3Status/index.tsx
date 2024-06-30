@@ -14,6 +14,8 @@ import { TokenEth } from '@/components/Icons/TokenEth'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import { useMemo } from 'react'
 import GoldIcon from '@/components/Icons/GoldIcon'
+import usePointGold from '@/api/get-point-gold-info'
+import clsx from 'clsx'
 
 const chainLogos = new Map([
   [1, TokenEth],
@@ -25,6 +27,7 @@ function Web3StatusInner() {
   const { disconnect } = useDisconnect()
   const { isConnecting, chainId } = useAccount()
   const { data: userInfo } = useUserInfo()
+  const { data: pointGoldInfo, isLoading: isLoadingPointGoldInfo } = usePointGold()
 
   const toggleWalletModal = useWalletModalToggle()
 
@@ -53,13 +56,13 @@ function Web3StatusInner() {
           </Button>
 
           <Popover crossOffset={-50} className={'rounded bg-[#1D1D1D] p-4 max-w-[366px] w-full'}>
-            <Dialog className={'flex flex-col w-full'}>
+            <Dialog className={'flex flex-col w-full outline-none'}>
               <div className={'text-xs flex justify-between items-center'}>
                 <div className={'text-[#FCFE03] flex items-center gap-3'}>
                   <TokenBlast color={'#FCFE03'} className={'text-[24px]'} />
                   <span>BLAST POINTS</span>
                 </div>
-                <span>400</span>
+                <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.pointAmount}</span>
               </div>
 
               <hr className={'border-white/30 h-px w-full my-[18px]'} />
@@ -69,7 +72,7 @@ function Web3StatusInner() {
                   <GoldIcon className={'text-[24px]'} />
                   <span>BLAST GOLD</span>
                 </div>
-                <span>400</span>
+                <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.goldAmount}</span>
               </div>
               <p className={'text-[#9E9E9E] text-xs leading-5 mt-[14px] ml-9'}>
                 BLAST GOLD will be distributed in proportion to the amount of $PAX
