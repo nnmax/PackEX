@@ -38,7 +38,7 @@ export default function PaxPage() {
   const { switchChain } = useSwitchChain()
   const chainId = useChainId()
   const [watchingAsset, setWatchingAsset] = useState(false)
-  const [showBonusModalType, setShowBonusModalType] = useState<'daily' | 'total' | null>(null)
+  const [showBonusModalType, setShowBonusModalType] = useState<'week' | 'total' | null>(null)
 
   const handleWatchAsset = async () => {
     if (!userInfo) {
@@ -94,7 +94,7 @@ export default function PaxPage() {
     >
       <BonusModal
         type={showBonusModalType}
-        dataList={showBonusModalType === 'daily' ? inviteData?.dailyBonusList : inviteData?.totalBonusList}
+        dataList={showBonusModalType === 'week' ? inviteData?.dailyBonusList : inviteData?.totalBonusList}
         onClose={() => {
           setShowBonusModalType(null)
         }}
@@ -210,21 +210,21 @@ export default function PaxPage() {
               className={'mt-10 flex flex-col gap-6 border border-lemonYellow rounded py-8 px-[102px] text-lemonYellow'}
             >
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>TOTAL PAX MINTED</span>
+                <span className={'w-[215px]'}>TOTAL PAX MINTED</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.totalMinted : '-'}</span>
               </p>
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>PAX MINTED TODAY</span>
+                <span className={'w-[215px]'}>PAX MINTED TODAY</span>
                 <span className={'text-[#9E9E9E]'}>{userInfo && inviteData ? inviteData.unclaimed : '-'}</span>
               </p>
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>DAILY BONUS</span>
-                <Button aria-label="Click to show daily bonus" onPress={() => setShowBonusModalType('daily')}>
+                <span className={'w-[215px]'}>BONUS ( LAST WEEK )</span>
+                <Button aria-label="Click to show daily bonus" onPress={() => setShowBonusModalType('week')}>
                   <img src={Diamond1Svg} alt="" />
                 </Button>
               </p>
               <p className={'flex gap-6 items-center'}>
-                <span className={'w-[200px]'}>TOTAL BONUS</span>
+                <span className={'w-[215px]'}>BONUS ( TOTAL )</span>
                 <Button aria-label="Click to show total bonus" onPress={() => setShowBonusModalType('total')}>
                   <img src={Diamond3Svg} alt="" />
                 </Button>
@@ -444,27 +444,31 @@ function H2({ children }: { children: React.ReactNode }) {
   )
 }
 
-function BonusModal(props: { type: 'daily' | 'total' | null; onClose: () => void; dataList: Bonus[] | undefined }) {
+function BonusModal(props: { type: 'week' | 'total' | null; onClose: () => void; dataList: Bonus[] | undefined }) {
   const { type, onClose, dataList } = props
 
   const open = !!type
 
   const title =
-    type === 'daily' ? (
+    type === 'week' ? (
       <>
         <img src={Diamond1Svg} alt="" />
-        <span>DAILY BONUS</span>
+        <span>
+          BONUS <span className={'text-xs align-bottom'}>( LAST WEEK )</span>
+        </span>
       </>
     ) : (
       <>
         <img src={Diamond3Svg} alt="" />
-        <span>TOTAL BONUS</span>
+        <span>
+          BONUS <span className={'text-xs align-bottom'}>( TOTAL )</span>
+        </span>
       </>
     )
 
   return (
     <AriaModal padding="44px 40px" maxWidth={'360px'} isOpen={open} onClose={onClose} showRhombus={false}>
-      <Heading slot="title" className={'flex gap-4 items-center justify-center mb-6'}>
+      <Heading slot="title" className={'flex gap-4 items-center mb-6'}>
         {title}
       </Heading>
       <ul className={'flex flex-col gap-2'}>
@@ -475,7 +479,7 @@ function BonusModal(props: { type: 'daily' | 'total' | null; onClose: () => void
             <div className="flex flex-col text-sm min-w-0">
               <span className={'text-[#B5B5B5]'}>{item.symbol}</span>
               <Tooltip title={item.bonusAmount}>
-                <p className={'truncate'}>{item.bonusAmount}sldkflklsdf</p>
+                <p className={'truncate'}>{item.bonusAmount}</p>
               </Tooltip>
             </div>
           </li>
