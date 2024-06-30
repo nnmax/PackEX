@@ -10,10 +10,19 @@ import { useAccount, useDisconnect } from 'wagmi'
 import { ButtonBase } from '@/components/Button'
 import { useUserInfo } from '@/api/get-user'
 import verify451Pathname from '@/utils/verify451Pathname'
+import { TokenEth } from '@/components/Icons/TokenEth'
+import TokenBlast from '@/components/Icons/TokenBlast'
+import { useMemo } from 'react'
+
+const chainLogos = new Map([
+  [1, TokenEth],
+  [81457, TokenBlast],
+  [168587773, TokenBlast],
+])
 
 function Web3StatusInner() {
   const { disconnect } = useDisconnect()
-  const { isConnecting } = useAccount()
+  const { isConnecting, chainId } = useAccount()
   const { data: userInfo } = useUserInfo()
 
   const toggleWalletModal = useWalletModalToggle()
@@ -30,10 +39,13 @@ function Web3StatusInner() {
     hasError = true
   }
 
+  const ChainLogo = useMemo(() => (chainId ? chainLogos.get(chainId) : undefined), [chainId])
+
   if (!hasError && userInfo) {
     return (
       <MenuTrigger>
         <Button className={'flex items-center text-xs h-9 px-2 rounded gap-2 bg-[#192129] outline-none'}>
+          {ChainLogo && <ChainLogo className={'text-[20px]'} />}
           <span>{shortenAddress(userInfo.ethAddress)}</span>
           <ArrowDown className={'text-lemonYellow text-xl'} />
         </Button>
