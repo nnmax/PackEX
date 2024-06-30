@@ -139,11 +139,10 @@ export default function PaxPage() {
       <Section>
         <H2>THE REWARDS FOR $PAX HOLDERS:</H2>
         <ul className={'leading-8'}>
-          <li>1. Blast tokens received from Blast network</li>
+          <li>1. Blast Gold received from Blast network</li>
           <li>2. Gas fee earned from Blast network </li>
           <li>3. All the native yields for ETH and USDB that are belongs to PackEX</li>
           <li>4. Fees earned from all the liquidity pools</li>
-          <li>5. Withdrawal fees earned from users (minus the portion spent)</li>
         </ul>
         <p className={'leading-8 mt-6'}>
           Since the team has distributed all the profits from PackEX Protocol to the $PAX holders and has not reserved
