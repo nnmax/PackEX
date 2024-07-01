@@ -21,7 +21,7 @@ import type { Placement } from '@floating-ui/react'
 
 interface TooltipProps {
   title: React.ReactNode
-  children: React.ReactElement
+  children: React.ReactElement<any>
   floatingClassName?: string
   placement?: Placement
   defaultOpen?: boolean

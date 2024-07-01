@@ -5,7 +5,7 @@ export default function GoldIcon(props: React.SVGProps<SVGSVGElement>) {
       fill="none"
       version="1.1"
       width="1em"
-      height="rem"
+      height="1em"
       viewBox="0 0 20 20"
       {...props}
     >
