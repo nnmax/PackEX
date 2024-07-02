@@ -1,5 +1,4 @@
-import { BigNumber } from '@ethersproject/bignumber'
-import { TransactionResponse } from '@ethersproject/providers'
+import { TransactionResponse } from 'ethers'
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import clsx from 'clsx'
@@ -101,7 +100,7 @@ export default function PoolRemove() {
     if (!currencyAmountA || !currencyAmountB) {
       throw new Error('missing currency amounts')
     }
-    const router = getRouterContract(chainId, library, account)
+    const router = await getRouterContract(chainId, library, account)
 
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
@@ -186,19 +185,20 @@ export default function PoolRemove() {
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
     }
 
-    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+    const safeGasEstimates: bigint[] = await Promise.all(
       methodNames.map((methodName) =>
-        router.estimateGas[methodName](...args)
+        router[methodName]
+          .estimateGas(...args)
           .then(calculateGasMargin)
           .catch((error) => {
             console.error(`estimateGas failed`, methodName, args, error)
-            return BigNumber.from(500000)
+            return 500000n
           }),
       ),
     )
 
-    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
-      BigNumber.isBigNumber(safeGasEstimate),
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex(
+      (safeGasEstimate) => typeof safeGasEstimate === 'bigint',
     )
 
     // all estimations failed...

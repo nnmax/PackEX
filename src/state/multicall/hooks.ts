@@ -1,7 +1,5 @@
-import { Interface, FunctionFragment } from '@ethersproject/abi'
-import { BigNumber } from '@ethersproject/bignumber'
-import { Contract } from '@ethersproject/contracts'
-import { useEffect, useMemo } from 'react'
+import { Interface, FunctionFragment, Contract } from 'ethers'
+import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useBlockNumber } from '../application/hooks'
 import { AppDispatch, AppState } from '../index'
@@ -19,7 +17,7 @@ export interface Result extends ReadonlyArray<any> {
   readonly [key: string]: any
 }
 
-type MethodArg = string | number | BigNumber
+type MethodArg = string | number | bigint
 type MethodArgs = Array<MethodArg | MethodArg[]>
 
 type OptionalMethodInputs = Array<MethodArg | MethodArg[] | undefined> | undefined
@@ -126,7 +124,7 @@ const LOADING_CALL_STATE: CallState = { valid: true, result: undefined, loading:
 function toCallState(
   callResult: CallResult | undefined,
   contractInterface: Interface | undefined,
-  fragment: FunctionFragment | undefined,
+  fragment: FunctionFragment | null | undefined,
   latestBlockNumber: number | undefined,
 ): CallState {
   if (!callResult) return INVALID_CALL_STATE
@@ -167,19 +165,25 @@ export function useSingleContractMultipleData(
   options?: ListenerOptions,
 ): CallState[] {
   const fragment = useMemo(() => contract?.interface?.getFunction(methodName), [contract, methodName])
+  const [address, setAddress] = useState<string>()
 
-  const calls = useMemo(
-    () =>
-      contract && fragment && callInputs && callInputs.length > 0
-        ? callInputs.map<Call>((inputs) => {
-            return {
-              address: contract.address,
-              callData: contract.interface.encodeFunctionData(fragment, inputs),
-            }
-          })
-        : [],
-    [callInputs, contract, fragment],
-  )
+  useEffect(() => {
+    if (contract) {
+      contract.getAddress().then(setAddress)
+    }
+  }, [contract])
+
+  const calls = useMemo(() => {
+    if (contract && address && fragment && callInputs && callInputs.length > 0) {
+      return callInputs.map<Call>((inputs) => {
+        return {
+          address: address,
+          callData: contract.interface.encodeFunctionData(fragment, inputs),
+        }
+      })
+    }
+    return []
+  }, [address, callInputs, contract, fragment])
 
   const results = useCallsData(calls, options)
 
@@ -236,18 +240,26 @@ export function useSingleCallResult(
   inputs?: OptionalMethodInputs,
   options?: ListenerOptions,
 ): CallState {
+  const [address, setAddress] = useState<string>()
+
+  useEffect(() => {
+    if (contract) {
+      contract.getAddress().then(setAddress)
+    }
+  }, [contract])
+
   const fragment = useMemo(() => contract?.interface?.getFunction(methodName), [contract, methodName])
 
   const calls = useMemo<Call[]>(() => {
-    return contract && fragment && isValidMethodArgs(inputs)
+    return contract && address && fragment && isValidMethodArgs(inputs)
       ? [
           {
-            address: contract.address,
+            address: address,
             callData: contract.interface.encodeFunctionData(fragment, inputs),
           },
         ]
       : []
-  }, [contract, fragment, inputs])
+  }, [contract, fragment, inputs, address])
 
   const result = useCallsData(calls, options)[0]
   const latestBlockNumber = useBlockNumber()

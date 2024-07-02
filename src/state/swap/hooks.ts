@@ -1,5 +1,5 @@
 import useENS from '../../hooks/useENS'
-import { parseUnits } from '@ethersproject/units'
+import { parseUnits } from 'ethers'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@nnmax/uniswap-sdk-v2'
 import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useMemo } from 'react'

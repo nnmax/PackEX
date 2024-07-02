@@ -32,7 +32,7 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-compiler": "0.0.0-experimental-0998c1e-20240625",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "ethers": "^5.7.2",
+    "ethers": "^6.13.1",
     "http-proxy-middleware": "^3.0.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
@@ -103,10 +103,8 @@
     "npm": "please-use-yarn"
   },
   "dependencies": {
-    "@ethersproject/bignumber": "^5.7.0",
-    "@ethersproject/units": "^5.7.0",
     "@floating-ui/react": "^0.26.19",
-    "@nnmax/uniswap-sdk-v2": "^1.0.8",
+    "@nnmax/uniswap-sdk-v2": "^1.0.9-alpha.0",
     "@tanstack/react-query": "^5.49.2",
     "click-to-react-component": "^1.1.0",
     "clsx": "^2.1.1",

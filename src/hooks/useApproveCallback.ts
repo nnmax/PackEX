@@ -1,6 +1,4 @@
-import { MaxUint256 } from '@ethersproject/constants'
-import { TransactionResponse } from '@ethersproject/providers'
-import { BigNumber } from '@ethersproject/bignumber'
+import { TransactionResponse, MaxUint256 } from 'ethers'
 import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ROUTER_ADDRESS } from '../constants'
@@ -23,12 +21,12 @@ export enum ApprovalState {
 export function useApproveCallback(
   amountToApprove?: CurrencyAmount,
   spender?: string,
-): [ApprovalState, () => Promise<void>, BigNumber | undefined] {
+): [ApprovalState, () => Promise<void>, bigint | undefined] {
   const { address } = useAccount()
   const token = amountToApprove instanceof TokenAmount ? amountToApprove.token : undefined
   const currentAllowance = useTokenAllowance(token, address ?? undefined, spender)
   const pendingApproval = useHasPendingApproval(token?.address, spender)
-  const [estimatedGas, setEstimateGas] = useState<BigNumber>()
+  const [estimatedGas, setEstimateGas] = useState<bigint>()
 
   // check the current approval status
   const approvalState: ApprovalState = useMemo(() => {
@@ -50,8 +48,8 @@ export function useApproveCallback(
 
   const getGas = useCallback(
     async function getGas() {
-      if (approvalState !== ApprovalState.NOT_APPROVED) {
-        // console.error('approve was called unnecessarily')
+      if (approvalState !== ApprovalState.NOT_APPROVED && approvalState !== ApprovalState.UNKNOWN) {
+        console.error(`approve was called unnecessarily (approvalState: ${approvalState})`)
         return
       }
       if (!token) {
@@ -74,14 +72,14 @@ export function useApproveCallback(
         return
       }
 
-      const [_estimatedGas, _useExact] = await tokenContract.estimateGas
-        .approve(spender, MaxUint256)
+      const [_estimatedGas, _useExact] = await tokenContract.approve
+        .estimateGas(spender, MaxUint256)
         .then((value) => {
           return [value, false] as const
         })
         .catch(async () => {
           // general fallback for tokens who restrict approval amounts
-          return [await tokenContract.estimateGas.approve(spender, amountToApprove.raw.toString()), true] as const
+          return [await tokenContract.approve.estimateGas(spender, amountToApprove.raw.toString()), true] as const
         })
       setEstimateGas(_estimatedGas)
       return [_estimatedGas, _useExact] as const

@@ -21,7 +21,7 @@ export default function Updater(): null {
       setState((state) => {
         if (chainId === state.chainId) {
           if (typeof state.blockNumber !== 'number') return { chainId, blockNumber: Number(blockNumber) }
-          return { chainId, blockNumber: Math.max(Number(blockNumber), state.blockNumber) }
+          return { chainId, blockNumber: Math.max(Number(blockNumber), state.blockNumber) ?? null }
         }
         return state
       })

@@ -1,7 +1,7 @@
 import { TokenAmount, Pair, Currency } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json'
-import { Interface } from '@ethersproject/abi'
+import { Interface } from 'ethers'
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 import { useChainId } from 'wagmi'
