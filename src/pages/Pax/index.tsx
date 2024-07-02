@@ -473,7 +473,7 @@ function BonusModal(props: { type: 'week' | 'total' | null; onClose: () => void;
       <ul className={'flex flex-col gap-2'}>
         {(!dataList || dataList?.length === 0) && <li className={'text-center text-[#9E9E9E]'}>NO DATA</li>}
         {dataList?.map((item) => (
-          <li key={item.id} className={'w-full gap-4 p-4 rounded-md bg-black flex items-center'}>
+          <li key={item.symbol} className={'w-full gap-4 p-4 rounded-md bg-black flex items-center'}>
             <CurrencyLogo src={item.logoUri} size="40px" />
             <div className="flex flex-col text-sm min-w-0">
               <span className={'text-[#B5B5B5]'}>{item.symbol}</span>

@@ -4,15 +4,8 @@ import { useQuery } from '@tanstack/react-query'
 import { uniqueId } from 'lodash-es'
 
 export type Bonus = {
-  id: number
-  userId: number | null
-  tokenId: number | null
   bonusAmount: number
-  claimedFlag: null
-  createTime: null
   symbol: string
-  decimals: number
-  showDecimals: number
   logoUri: string
 }
 
