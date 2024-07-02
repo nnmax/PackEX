@@ -8,19 +8,34 @@ type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
 
-// @ts-ignore
 const WETH_ONLY: ChainTokenList = {
   [ChainId.BLAST]: [WETH[ChainId.BLAST]],
   [ChainId.BLAST_TESTNET]: [WETH[ChainId.BLAST_TESTNET]],
 }
 
-export const USDB = new Token(ChainId.BLAST_TESTNET, process.env.REACT_APP_USDB_ADDRESS!, 18, 'USDB', 'USDB')
+const [BLAST_TESTNET_USDB_ADDRESS, BLAST_USDB_ADDRESS] = [
+  process.env.REACT_APP_BLAST_TESTNET_USDB_ADDRESS,
+  process.env.REACT_APP_BLAST_USDB_ADDRESS,
+]
+
+if (!BLAST_TESTNET_USDB_ADDRESS) {
+  throw new Error(`REACT_APP_BLAST_TESTNET_USDB_ADDRESS must be a defined environment variable`)
+}
+
+if (!BLAST_USDB_ADDRESS) {
+  throw new Error(`REACT_APP_BLAST_USDB_ADDRESS must be a defined environment variable`)
+}
+
+export const USDB = {
+  [ChainId.BLAST]: new Token(ChainId.BLAST, BLAST_USDB_ADDRESS, 18, 'USDB', 'USDB'),
+  [ChainId.BLAST_TESTNET]: new Token(ChainId.BLAST_TESTNET, BLAST_TESTNET_USDB_ADDRESS, 18, 'USDB', 'USDB'),
+}
 
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.BLAST_TESTNET]: [...WETH_ONLY[ChainId.BLAST_TESTNET], USDB],
-  [ChainId.BLAST]: [...WETH_ONLY[ChainId.BLAST], USDB],
+  [ChainId.BLAST_TESTNET]: [...WETH_ONLY[ChainId.BLAST_TESTNET], USDB[ChainId.BLAST_TESTNET]],
+  [ChainId.BLAST]: [...WETH_ONLY[ChainId.BLAST], USDB[ChainId.BLAST]],
 }
 
 /**
