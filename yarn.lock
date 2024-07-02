@@ -6236,15 +6236,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multicodec@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@types/multicodec@npm:1.0.0"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10c0/5bdf3e635e5b743bb34c65693a280f5113a55a046bce79a19c757dfc70248c83109fa3b32a1b2e139479268d2a58e88379037e255de7c950da6967887e97abf7
-  languageName: node
-  linkType: hard
-
 "@types/node-forge@npm:^1.3.0":
   version: 1.3.11
   resolution: "@types/node-forge@npm:1.3.11"
@@ -6766,7 +6757,6 @@ __metadata:
     "@reduxjs/toolkit": "npm:^2.2.6"
     "@tanstack/react-query": "npm:^5.49.2"
     "@types/lodash-es": "npm:^4.17.12"
-    "@types/multicodec": "npm:^1.0.0"
     "@types/node": "npm:^20.14.9"
     "@types/qs": "npm:^6.9.15"
     "@types/react": "npm:types-react@rc"
@@ -6778,7 +6768,6 @@ __metadata:
     "@uniswap/token-lists": "npm:1.0.0-beta.15"
     "@uniswap/v2-core": "npm:1.0.0"
     "@uniswap/v2-periphery": "npm:1.1.0-beta.0"
-    ajv: "npm:^6.12.6"
     babel-plugin-react-compiler: "npm:0.0.0-experimental-696af53-20240625"
     cids: "npm:^1.1.9"
     click-to-react-component: "npm:^1.1.0"
@@ -6796,8 +6785,8 @@ __metadata:
     husky: "npm:^9.0.11"
     lint-staged: "npm:^15.2.7"
     lodash-es: "npm:^4.17.21"
-    multicodec: "npm:^2.1.3"
-    multihashes: "npm:^3.1.2"
+    multicodec: "npm:^3.2.1"
+    multihashes: "npm:^4.0.3"
     prettier: "npm:^3.3.2"
     qs: "npm:^6.12.1"
     react: "npm:19.0.0-rc-58af67a8f8-20240628"
@@ -7395,13 +7384,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zxing/text-encoding@npm:0.9.0":
-  version: 0.9.0
-  resolution: "@zxing/text-encoding@npm:0.9.0"
-  checksum: 10c0/d15bff181d46c2ab709e7242801a8d40408aa8c19b44462e5f60e766bf59105b44957914ab6baab60d10d466a5e965f21fe890c67dfdb7d5c7f940df457b4d0d
-  languageName: node
-  linkType: hard
-
 "abab@npm:^2.0.3, abab@npm:^2.0.5":
   version: 2.0.6
   resolution: "abab@npm:2.0.6"
@@ -7623,7 +7605,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^6.12.2, ajv@npm:^6.12.4, ajv@npm:^6.12.5, ajv@npm:^6.12.6":
+"ajv@npm:^6.12.2, ajv@npm:^6.12.4, ajv@npm:^6.12.5":
   version: 6.12.6
   resolution: "ajv@npm:6.12.6"
   dependencies:
@@ -14859,16 +14841,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multibase@npm:^3.0.0, multibase@npm:^3.1.0":
-  version: 3.1.2
-  resolution: "multibase@npm:3.1.2"
-  dependencies:
-    "@multiformats/base-x": "npm:^4.0.1"
-    web-encoding: "npm:^1.0.6"
-  checksum: 10c0/e2bb878444fac7722ae7b720b8bc277ef5fe5cafaba3f0900fc4e17f31adca49b0a5a33a94bb8e622fffeb018c849a0605fb287b3751b1a42ba8d421cd004151
-  languageName: node
-  linkType: hard
-
 "multibase@npm:^4.0.1":
   version: 4.0.6
   resolution: "multibase@npm:4.0.6"
@@ -14890,17 +14862,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multicodec@npm:^2.1.3":
-  version: 2.1.3
-  resolution: "multicodec@npm:2.1.3"
-  dependencies:
-    uint8arrays: "npm:1.1.0"
-    varint: "npm:^6.0.0"
-  checksum: 10c0/6818fe55a429e73a7095bd81a91b64fc8a6e27fc8667bb5e463fed1374159a00faf2e28b856936241478ccd863ca38dfcbc0eb22b2690403ebfea1923387f959
-  languageName: node
-  linkType: hard
-
-"multicodec@npm:^3.0.1":
+"multicodec@npm:^3.0.1, multicodec@npm:^3.2.1":
   version: 3.2.1
   resolution: "multicodec@npm:3.2.1"
   dependencies:
@@ -14917,18 +14879,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"multihashes@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "multihashes@npm:3.1.2"
-  dependencies:
-    multibase: "npm:^3.1.0"
-    uint8arrays: "npm:^2.0.5"
-    varint: "npm:^6.0.0"
-  checksum: 10c0/493bb738e0561dd741d76059d01018b57c820a694af8c7dd532a6080fdfebc0813b218ab13ded0e2baa7b135de689194037c1c0f9eb343abccdf2f92066f935a
-  languageName: node
-  linkType: hard
-
-"multihashes@npm:^4.0.1":
+"multihashes@npm:^4.0.1, multihashes@npm:^4.0.3":
   version: 4.0.3
   resolution: "multihashes@npm:4.0.3"
   dependencies:
@@ -19807,31 +19758,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uint8arrays@npm:1.1.0":
-  version: 1.1.0
-  resolution: "uint8arrays@npm:1.1.0"
-  dependencies:
-    multibase: "npm:^3.0.0"
-    web-encoding: "npm:^1.0.2"
-  checksum: 10c0/6c6dd84e3fa9e3b90141de7030c62baecf3d593450065b1ad6c445b83def56f35d1d806dfcdcfb7a309c6f9ea22a407402d5ce6c286ad0009fc5b5bea3c2b10d
-  languageName: node
-  linkType: hard
-
 "uint8arrays@npm:3.1.0":
   version: 3.1.0
   resolution: "uint8arrays@npm:3.1.0"
   dependencies:
     multiformats: "npm:^9.4.2"
   checksum: 10c0/e54e64593a76541330f0fea97b1b5dea6becbbec3572b9bb88863d064f2630bede4d42eafd457f19c6ef9125f50bfc61053d519c4d71b59c3b7566a0691e3ba2
-  languageName: node
-  linkType: hard
-
-"uint8arrays@npm:^2.0.5":
-  version: 2.1.10
-  resolution: "uint8arrays@npm:2.1.10"
-  dependencies:
-    multiformats: "npm:^9.4.2"
-  checksum: 10c0/1e8384078c44b34c47e7cc544bed573ddff4a2bab272527b8372d36aa550e3108784d640bb2e5153190e5741bc50c1a5b3cf09b67911ac9125f770db96f28bd8
   languageName: node
   linkType: hard
 
@@ -20183,7 +20115,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"util@npm:^0.12.3, util@npm:^0.12.4":
+"util@npm:^0.12.4":
   version: 0.12.5
   resolution: "util@npm:0.12.5"
   dependencies:
@@ -20396,19 +20328,6 @@ __metadata:
   dependencies:
     minimalistic-assert: "npm:^1.0.0"
   checksum: 10c0/56edcc5ef2b3d30913ba8f1f5cccc364d180670b24d5f3f8849c1e6fb514e5c7e3a87548ae61227a82859eba6269c11393ae24ce12a2ea1ecb9b465718ddced7
-  languageName: node
-  linkType: hard
-
-"web-encoding@npm:^1.0.2, web-encoding@npm:^1.0.6":
-  version: 1.1.5
-  resolution: "web-encoding@npm:1.1.5"
-  dependencies:
-    "@zxing/text-encoding": "npm:0.9.0"
-    util: "npm:^0.12.3"
-  dependenciesMeta:
-    "@zxing/text-encoding":
-      optional: true
-  checksum: 10c0/59d5413338ec0894c690006f5d8508b0c88cae1d8c78606c3f326e351c672196461ed808b849fe08d0900fa56a61fcacb9ff576499068d2ead0a7bc04afa7d34
   languageName: node
   linkType: hard
 
