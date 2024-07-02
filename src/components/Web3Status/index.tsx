@@ -56,7 +56,7 @@ function Web3StatusInner() {
           </Button>
 
           <Popover crossOffset={-50} className={'rounded bg-[#1D1D1D] p-4 max-w-[366px] w-full'}>
-            <Dialog className={'flex flex-col w-full outline-none'}>
+            <Dialog className={'flex flex-col w-full outline-none'} aria-label="Blast points and gold">
               <div className={'text-xs flex justify-between items-center'}>
                 <div className={'text-[#FCFE03] flex items-center gap-3'}>
                   <TokenBlast color={'#FCFE03'} className={'text-[24px]'} />

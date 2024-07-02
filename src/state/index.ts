@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
+import { configureStore } from '@reduxjs/toolkit'
 import application from './application/reducer'
 import { updateVersion } from './global/actions'
 import user from './user/reducer'
@@ -20,7 +20,10 @@ const store = configureStore({
     multicall,
     lists,
   },
-  middleware: [...getDefaultMiddleware({ thunk: false })],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      thunk: false,
+    }),
 })
 
 store.dispatch(updateVersion())
