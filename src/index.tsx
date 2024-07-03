@@ -8,7 +8,7 @@ import ApplicationUpdater from './state/application/updater'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
 import './index.css'
-import { BrowserRouter, useHistory } from 'react-router-dom'
+import { BrowserRouter, NavigateOptions, useHref, useNavigate } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
 import { BTCWalletProvider } from '@/hooks/useBTCWallet'
@@ -19,6 +19,12 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 declare module '@uniswap/token-lists' {
   export interface TokenInfo {
     commonFlag: 0 | 1
+  }
+}
+
+declare module 'react-aria-components' {
+  interface RouterConfig {
+    routerOptions: NavigateOptions
   }
 }
 
@@ -45,12 +51,13 @@ const queryClient = new QueryClient({
 })
 
 function Providers({ children }: { children: React.ReactNode }) {
-  const history = useHistory()
+  const navigate = useNavigate()
   return (
     <WagmiProvider config={wagmiConfig}>
       <QueryClientProvider client={queryClient}>
         <I18nProvider locale={'en-US'}>
-          <RouterProvider navigate={history.push}>
+          {/* eslint-disable-next-line react-compiler/react-compiler */}
+          <RouterProvider navigate={navigate} useHref={useHref}>
             <BTCWalletProvider>
               <Provider store={store}>{children}</Provider>
             </BTCWalletProvider>

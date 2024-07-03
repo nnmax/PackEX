@@ -86,11 +86,9 @@ const PoolMy = () => {
                   <Cell>
                     <div className={'flex items-center justify-center gap-6'}>
                       <Link
-                        to={{
-                          pathname: getLinkPathname(item, 'add'),
-                          state: {
-                            location,
-                          },
+                        to={getLinkPathname(item, 'add')}
+                        state={{
+                          location,
                         }}
                         className={
                           'text-lemonYellow w-[60px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'
@@ -99,11 +97,9 @@ const PoolMy = () => {
                         {'+ADD'}
                       </Link>
                       <Link
-                        to={{
-                          pathname: getLinkPathname(item, 'remove'),
-                          state: {
-                            location,
-                          },
+                        to={getLinkPathname(item, 'remove')}
+                        state={{
+                          location,
                         }}
                         className={
                           'text-lemonYellow w-[88px] flex items-center justify-center h-6 border rounded-sm border-lemonYellow'

@@ -59,11 +59,9 @@ const PoolAll = () => {
               <Cell>{`${item.apr}%`}</Cell>
               <Cell className={'text-end'}>
                 <Link
-                  to={{
-                    pathname: getLinkPathname(item, 'add'),
-                    state: {
-                      location,
-                    },
+                  to={getLinkPathname(item, 'add')}
+                  state={{
+                    location,
                   }}
                   className={
                     'text-lemonYellow inline-block text-center w-[60px] h-6 leading-5 border rounded-sm border-lemonYellow'
