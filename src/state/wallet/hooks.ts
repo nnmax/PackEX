@@ -72,9 +72,9 @@ export function useTokenBalancesWithLoadingIndicator(
       () =>
         address && validatedTokens.length > 0
           ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
-              const value = balances?.[i]?.result?.[0]
-              const amount = value ? JSBI.BigInt(value.toString()) : undefined
-              if (amount) {
+              const value = balances?.[i]?.result?.[0] as bigint | undefined
+              const amount = value === null || value === undefined ? undefined : JSBI.BigInt(value.toString())
+              if (amount !== undefined) {
                 memo[token.address] = new TokenAmount(token, amount)
               }
               return memo

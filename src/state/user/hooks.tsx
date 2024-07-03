@@ -119,16 +119,6 @@ export function useRemoveUserAddedToken(): (chainId: number, address: string) =>
   )
 }
 
-export function useUserAddedTokens(): Token[] {
-  const chainId = useChainId()
-  const serializedTokensMap = useSelector<AppState, AppState['user']['tokens']>(({ user: { tokens } }) => tokens)
-
-  return useMemo(() => {
-    if (!chainId) return []
-    return Object.values(serializedTokensMap[chainId as ChainId] ?? {}).map(deserializeToken)
-  }, [serializedTokensMap, chainId])
-}
-
 function serializePair(pair: Pair): SerializedPair {
   return {
     token0: serializeToken(pair.token0),

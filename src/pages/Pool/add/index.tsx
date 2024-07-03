@@ -1,6 +1,5 @@
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
-import { BigNumber } from '@ethersproject/bignumber'
-import { TransactionResponse } from '@ethersproject/providers'
+import { TransactionResponse } from 'ethers'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import CurrencyInputPanel from '@/components/CurrencyInputPanel'
 import AddIcon from '@/assets/images/add.png'
@@ -104,7 +103,7 @@ export default function PoolAdd() {
 
   const onAdd = useCallback(async () => {
     if (!chainId || !provider || !account) return
-    const router = getRouterContract(chainId, provider, account)
+    const router = await getRouterContract(chainId, provider, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
     if (!parsedAmountA || !parsedAmountB || !currencyA || !currencyB) {
@@ -121,10 +120,10 @@ export default function PoolAdd() {
     let estimate,
       method: (...args: any) => Promise<TransactionResponse>,
       args: Array<string | string[] | number>,
-      value: BigNumber | null
+      value: bigint | null
     if (currencyA === ETHER || currencyB === ETHER) {
       const tokenBIsETH = currencyB === ETHER
-      estimate = router.estimateGas.addLiquidityETH
+      estimate = router.addLiquidityETH.estimateGas
       method = router.addLiquidityETH
       args = [
         wrappedCurrency(tokenBIsETH ? currencyA : currencyB, chainId)?.address ?? '', // token
@@ -134,9 +133,9 @@ export default function PoolAdd() {
         account,
         deadlineFromNow,
       ]
-      value = BigNumber.from((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
+      value = BigInt((tokenBIsETH ? parsedAmountB : parsedAmountA).raw.toString())
     } else {
-      estimate = router.estimateGas.addLiquidity
+      estimate = router.addLiquidity.estimateGas
       method = router.addLiquidity
       args = [
         wrappedCurrency(currencyA, chainId)?.address ?? '',
@@ -154,7 +153,7 @@ export default function PoolAdd() {
     await estimate(...args, value ? { value } : {})
       .catch((err) => {
         console.dir(err)
-        return BigNumber.from(500000)
+        return 500000n
       })
       .then((estimatedGasLimit) =>
         method(...args, {
@@ -210,7 +209,9 @@ export default function PoolAdd() {
       updateInProgressModalOpen(true)
     } catch (error) {
       console.dir(error)
-      toast.error('Error adding liquidity')
+      if ((error as any).code !== 'ACTION_REJECTED') {
+        toast.error('Error adding liquidity')
+      }
       updateInProgressModalOpen(false)
     } finally {
       setSubmitting(false)

@@ -1,9 +1,8 @@
-import { parseBytes32String } from '@ethersproject/strings'
-import { ChainId, Currency, ETHER, Token, currencyEquals } from '@nnmax/uniswap-sdk-v2'
+import { decodeBytes32String } from 'ethers'
+import { ChainId, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import { WrappedTokenInfo, useSelectedTokenList } from '../state/lists/hooks'
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
-import { useUserAddedTokens } from '../state/user/hooks'
 import { isAddress } from '../utils'
 import { useBytes32TokenContract, useTokenContract } from './useContract'
 import { useChainId } from 'wagmi'
@@ -18,19 +17,13 @@ export function useAllTokens(): { [address: string]: WrappedTokenInfo } {
   }, [chainId, allTokens])
 }
 
-// Check if currency is included in custom list from user storage
-export function useIsUserAddedToken(currency: Currency): boolean {
-  const userAddedTokens = useUserAddedTokens()
-  return !!userAddedTokens.find((token) => currencyEquals(currency, token))
-}
-
 // parse a name or symbol from a token response
 const BYTES32_REGEX = /^0x[a-fA-F0-9]{64}$/
 function parseStringOrBytes32(str: string | undefined, bytes32: string | undefined, defaultValue: string): string {
   return str && str.length > 0
     ? str
     : bytes32 && BYTES32_REGEX.test(bytes32)
-      ? parseBytes32String(bytes32)
+      ? decodeBytes32String(bytes32)
       : defaultValue
 }
 

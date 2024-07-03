@@ -1,5 +1,4 @@
-import { BigNumber } from '@ethersproject/bignumber'
-import { Contract } from '@ethersproject/contracts'
+import { Contract } from 'ethers'
 import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../constants'
@@ -23,7 +22,7 @@ interface SwapCall {
 
 interface SuccessfulCall {
   call: SwapCall
-  gasEstimate: BigNumber
+  gasEstimate: bigint
 }
 
 interface FailedCall {
@@ -40,12 +39,12 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall
  * @param deadline the deadline for the trade
  * @param recipientAddressOrName
  */
-function useSwapCallArguments(
+function useGetSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
   deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
-): SwapCall[] {
+): () => Promise<SwapCall[]> {
   const provider = useEthersProvider()
   const { address: account } = useAccount()
   const chainId = useChainId()
@@ -53,10 +52,10 @@ function useSwapCallArguments(
   const { address: recipientAddress } = useENS(recipientAddressOrName)
   const recipient = recipientAddressOrName === null ? account : recipientAddress
 
-  return useMemo(() => {
+  return useCallback(async () => {
     if (!trade || !recipient || !provider || !account || !chainId) return []
 
-    const contract = getRouterContract(chainId, provider, account)
+    const contract = await getRouterContract(chainId, provider, account)
     if (!contract) {
       return []
     }
@@ -98,29 +97,30 @@ export function useSwapCallback(
   state: SwapCallbackState
   callback: null | (() => Promise<string>)
   error: string | null
-  gasLimit: BigNumber | undefined
+  gasLimit: bigint | undefined
 } {
   const provider = useEthersProvider()
   const { address: account } = useAccount()
   const chainId = useChainId()
 
-  const swapCalls = useSwapCallArguments(trade, allowedSlippage, deadline, recipientAddressOrName)
-  const [gasLimit, setGasLimit] = useState<BigNumber>()
+  const getSwapCallArguments = useGetSwapCallArguments(trade, allowedSlippage, deadline, recipientAddressOrName)
+  const [gasLimit, setGasLimit] = useState<bigint>()
   const addTransaction = useTransactionAdder()
 
   const { address: recipientAddress } = useENS(recipientAddressOrName)
   const recipient = recipientAddressOrName === null ? account : recipientAddress
 
   const getSuccessfulEstimation = useCallback(async () => {
+    const swapCallArguments = await getSwapCallArguments()
     const estimatedCalls: EstimatedSwapCall[] = await Promise.all(
-      swapCalls.map((call) => {
+      swapCallArguments.map((call) => {
         const {
           parameters: { methodName, args, value },
           contract,
         } = call
         const options = !value || isZero(value) ? {} : { value }
-
-        return contract.estimateGas[methodName](...args, options)
+        return contract[methodName]
+          .estimateGas(...args, options)
           .then((gasEstimate) => {
             return {
               call,
@@ -129,8 +129,8 @@ export function useSwapCallback(
           })
           .catch((gasError) => {
             console.debug('Gas estimate failed, trying eth_call to extract error', call)
-
-            return contract.callStatic[methodName](...args, options)
+            return contract[methodName]
+              .staticCallResult(...args, options)
               .then((result) => {
                 console.debug('Unexpected successful call after failed estimate gas', call, gasError, result)
                 return { call, error: new Error('Unexpected issue with estimating the gas. Please try again.') }
@@ -167,7 +167,7 @@ export function useSwapCallback(
     }
     setGasLimit(_successfulEstimation.gasEstimate)
     return _successfulEstimation
-  }, [swapCalls])
+  }, [getSwapCallArguments])
 
   useEffect(() => {
     getSuccessfulEstimation().catch(() => {})

@@ -1,6 +1,6 @@
 import { Currency, CurrencyAmount, JSBI } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useMemo, useState } from 'react'
-import { formatUnits } from '@ethersproject/units'
+import { formatUnits } from 'ethers'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -22,7 +22,6 @@ import SlippageSetting from '@/components/SlippageSetting'
 import { Button } from 'react-aria-components'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
-import { BigNumber } from '@ethersproject/bignumber'
 import { useGasPrice } from 'wagmi'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import PriceImpactWarningModal from '@/components/swap/PriceImpactWarningModal'
@@ -137,11 +136,11 @@ export default function Swap() {
 
   const transactionFeeInUSD = useMemo(() => {
     if (!swapGasLimit || !gasPrice || !price) return '-'
-    let value: BigNumber
+    let value: bigint
     if (approveGas) {
-      value = calculateGasMargin(approveGas.add(swapGasLimit)).mul(gasPrice)
+      value = calculateGasMargin(approveGas + swapGasLimit) * gasPrice
     } else {
-      value = calculateGasMargin(swapGasLimit).mul(gasPrice)
+      value = calculateGasMargin(swapGasLimit) * gasPrice
     }
     const result = Math.round(Number(formatUnits(value, 18)) * Number(price) * Math.pow(10, 8)) / Math.pow(10, 8)
     return result === 0 ? '< 0.00000001' : result.toString()
