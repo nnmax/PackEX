@@ -10,10 +10,10 @@ export type BTCNetwork = 'livenet' | 'testnet'
 export type BTCWalletContextValue = {
   connect: (wallet: BTCWallet) => Promise<{
     address: string
-    network: BTCNetwork
+    network: BTCNetwork | undefined
     publicKey: string | undefined
   }>
-  switchNetwork: (wallet: BTCWallet, network: BTCNetwork) => Promise<void>
+  verifyNetwork: (wallet: BTCWallet, network: BTCNetwork | undefined) => Promise<void>
   currentWallet?: BTCWallet
   signMessage: (wallet: BTCWallet, message: string) => Promise<string>
   signPsbt: (wallet: BTCWallet, psbt: string) => Promise<string>
@@ -22,6 +22,11 @@ export type BTCWalletContextValue = {
   network: BTCNetwork | undefined
   publicKey: string | undefined
   disconnect: (wallet: BTCWallet) => void
+  getBasicInfo: (wallet: BTCWallet) => Promise<{
+    address: string | undefined
+    network: BTCNetwork | undefined
+    publicKey: string | undefined
+  }>
 }
 
 const BTCWalletContext = createContext<BTCWalletContextValue>({
@@ -40,11 +45,18 @@ const BTCWalletContext = createContext<BTCWalletContextValue>({
   pushPsbt: async () => {
     throw new Error('BTCWalletContext provider is not found')
   },
-  switchNetwork: async () => {
+  verifyNetwork: async () => {
     throw new Error('BTCWalletContext provider is not found')
   },
   currentWallet: undefined,
   disconnect: () => {},
+  getBasicInfo: () => {
+    return Promise.resolve({
+      address: undefined,
+      network: undefined,
+      publicKey: undefined,
+    })
+  },
 })
 
 export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
@@ -52,7 +64,7 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
   const okx = useOkxWallet()
   const [currentWallet, setCurrentWallet] = useState<BTCWallet>()
 
-  const connect = async (wallet: BTCWallet) => {
+  const connect = (wallet: BTCWallet) => {
     setCurrentWallet(wallet)
     if (wallet === 'unisat') {
       return unisat.connect()
@@ -70,15 +82,22 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const switchNetwork = async (wallet: BTCWallet, network: BTCNetwork) => {
+  const verifyNetwork = async (wallet: BTCWallet, network: BTCNetwork | undefined) => {
+    if (!network) {
+      throw new Error('Network is not defined')
+    }
+    const isProdAndNotLivenet = process.env.REACT_APP_APP_ENV === 'prod' && network !== 'livenet'
+    const isDevAndNotTestnet = process.env.REACT_APP_APP_ENV === 'dev' && network !== 'testnet'
     if (wallet === 'unisat') {
-      return unisat.switchNetwork(network)
-    } else {
-      return okx.switchNetwork(network)
+      if (isProdAndNotLivenet) {
+        await unisat.switchNetwork('livenet')
+      } else if (isDevAndNotTestnet) {
+        await unisat.switchNetwork('testnet')
+      }
     }
   }
 
-  const signMessage = async (wallet: BTCWallet, message: string) => {
+  const signMessage = (wallet: BTCWallet, message: string) => {
     if (wallet === 'unisat') {
       return unisat.signMessage(message)
     } else {
@@ -86,7 +105,7 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const signPsbt = async (wallet: BTCWallet, psbt: string) => {
+  const signPsbt = (wallet: BTCWallet, psbt: string) => {
     if (wallet === 'unisat') {
       return unisat.signPsbt(psbt)
     } else {
@@ -94,7 +113,7 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const pushPsbt = async (wallet: BTCWallet, psbt: string) => {
+  const pushPsbt = (wallet: BTCWallet, psbt: string) => {
     if (wallet === 'unisat') {
       return unisat.pushPsbt(psbt)
     } else {
@@ -102,13 +121,21 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const value = {
+  const getBasicInfo = (wallet: BTCWallet) => {
+    if (wallet === 'unisat') {
+      return unisat.getBasicInfo()
+    }
+    return okx.getBasicInfo()
+  }
+
+  const value: BTCWalletContextValue = {
     connect,
-    switchNetwork,
+    verifyNetwork,
     currentWallet,
     signMessage,
     signPsbt,
     pushPsbt,
+    getBasicInfo,
     address: currentWallet === 'unisat' ? unisat.address : okx.address,
     network: currentWallet === 'unisat' ? unisat.network : okx.network,
     publicKey: currentWallet === 'unisat' ? unisat.publicKey : okx.publicKey,

@@ -127,19 +127,15 @@ export default function WalletModal() {
 export function BTCWalletModal() {
   const walletModalOpen = useBTCWalletModalOpen()
   const toggleWalletModal = useBTCWalletModalToggle()
-  const { connect, switchNetwork, signMessage, disconnect } = useBTCWallet()
+  const { connect, verifyNetwork, signMessage, disconnect, getBasicInfo } = useBTCWallet()
   const [loadingWallet, setLoadingWallet] = useState<BTCWallet>()
 
   const handleClick = async (wallet: BTCWallet) => {
     setLoadingWallet(wallet)
     try {
-      const { address, network, publicKey } = await connect(wallet)
-
-      if (process.env.REACT_APP_APP_ENV === 'prod' && network !== 'livenet') {
-        await switchNetwork(wallet, 'livenet')
-      } else if (process.env.REACT_APP_APP_ENV === 'dev' && network !== 'testnet') {
-        await switchNetwork(wallet, 'testnet')
-      }
+      const { network } = await getBasicInfo(wallet)
+      await verifyNetwork(wallet, network)
+      const { address, publicKey } = await connect(wallet)
 
       const response = await connectBTCWallet({
         address,
