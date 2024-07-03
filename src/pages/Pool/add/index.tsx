@@ -1,4 +1,4 @@
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom'
 import { TransactionResponse } from 'ethers'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import CurrencyInputPanel from '@/components/CurrencyInputPanel'
@@ -30,7 +30,7 @@ import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
 import { TransactionSuccessModal } from '@/components/TransactionModal'
 
 export default function PoolAdd() {
-  const history = useHistory()
+  const navigate = useNavigate()
   const { currencyIdA, currencyIdB } = useParams<{
     currencyIdA: string
     currencyIdB: string
@@ -94,7 +94,8 @@ export default function PoolAdd() {
     {},
   )
 
-  const { state, pathname } = useLocation<{ location: ReturnType<typeof useLocation> }>()
+  const { state: _state, pathname } = useLocation()
+  const state = _state as { location: ReturnType<typeof useLocation> } | undefined
   const goBack = state?.location ?? '/pool/all'
 
   // check whether the user has approved the router on the tokens
@@ -223,15 +224,15 @@ export default function PoolAdd() {
     setSuccessModalOpen(false)
     resetInput()
     setTxHash('')
-    history.push(goBack)
+    navigate(goBack)
   }
 
   const handleCurrencyASelect = (currencyA: Currency) => {
-    history.push(`/pool/add/${currencyId(currencyA)}/${currencyIdB}`)
+    navigate(`/pool/add/${currencyId(currencyA)}/${currencyIdB}`)
   }
 
   const handleCurrencyBSelect = (currencyB: Currency) => {
-    history.push(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
+    navigate(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
   }
 
   const queryClient = useQueryClient()

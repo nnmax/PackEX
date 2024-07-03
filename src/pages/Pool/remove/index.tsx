@@ -1,6 +1,6 @@
 import { TransactionResponse } from 'ethers'
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom'
 import clsx from 'clsx'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import SlippageSetting from '@/components/SlippageSetting'
@@ -34,7 +34,7 @@ const commonButtonClasses =
 
 export default function PoolRemove() {
   useDocumentTitle('Remove Liquidity')
-  const history = useHistory()
+  const navigate = useNavigate()
   const { currencyIdA, currencyIdB } = useParams<{
     currencyIdA: string
     currencyIdB: string
@@ -82,7 +82,8 @@ export default function PoolRemove() {
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
 
-  const { state, pathname } = useLocation<{ location: ReturnType<typeof useLocation> }>()
+  const { state: _state, pathname } = useLocation()
+  const state = _state as { location: ReturnType<typeof useLocation> } | undefined
   const goBack = state?.location ?? '/pool/my'
 
   // wrapped onUserInput to clear signatures
@@ -284,7 +285,7 @@ export default function PoolRemove() {
       onUserInput(Field.LIQUIDITY_PERCENT, '0')
     }
     setTxHash('')
-    history.push(goBack)
+    navigate(goBack)
   }
 
   return (

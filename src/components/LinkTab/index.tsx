@@ -17,10 +17,6 @@ export default function LinkTab(props: LinkTabProps) {
       if (typeof val === 'string') {
         return location.pathname.startsWith(val)
       }
-      if (typeof val === 'function') {
-        const res = val(location)
-        return run(res)
-      }
       if (val.pathname) {
         return location.pathname.startsWith(val.pathname)
       }

@@ -1,12 +1,11 @@
 import { Suspense } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import PoolAdd from './Pool/add'
 import PoolRemove from './Pool/remove'
 import Asset from './Asset'
 import Withdraw from './Asset/withdraw'
 import Deposit from './Asset/deposit'
 import Swap from './Swap'
-import { RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
 import AppBar from '@/components/AppBar'
 import PoolAll from './Pool/all'
 import PoolMy from './Pool/my'
@@ -25,21 +24,21 @@ export default function App() {
       <AgreeModal />
       <main className={'flex min-h-[calc(100vh-80px)] justify-center px-[--main-x-padding] overflow-auto py-20'}>
         <div className={'flex w-full max-w-[--main-max-width] flex-col'}>
-          <Switch>
-            <Route exact strict path="/swap" component={Swap} />
-            <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
-            <Route exact strict path="/pool" component={() => <Redirect to={'/pool/all'} />} />
-            <Route exact strict path="/pool/all" component={PoolAll} />
-            <Route exact strict path="/pool/my" component={PoolMy} />
-            <Route exact strict path="/pool/add/:currencyIdA/:currencyIdB" component={PoolAdd} />
-            <Route exact strict path="/pool/remove/:currencyIdA/:currencyIdB" component={PoolRemove} />
-            <Route exact strict path="/asset" component={Asset} />
-            <Route exact strict path="/asset/withdraw" component={Withdraw} />
-            <Route exact strict path="/asset/deposit" component={Deposit} />
-            <Route exact strict path="/pax" component={Pax} />
-            <Route exact strict path="/__admin" component={Admin} />
-            <Route component={RedirectPathToSwapOnly} />
-          </Switch>
+          <Routes>
+            <Route path="/" element={<Navigate to={'/swap'} />} />
+            <Route path="/swap" element={<Swap />} />
+            <Route path="/pool" element={<Navigate to={'/pool/all'} />} />
+            <Route path="/pool/all" element={<PoolAll />} />
+            <Route path="/pool/my" element={<PoolMy />} />
+            <Route path="/pool/add/:currencyIdA/:currencyIdB" element={<PoolAdd />} />
+            <Route path="/pool/remove/:currencyIdA/:currencyIdB" element={<PoolRemove />} />
+            <Route path="/asset" element={<Asset />} />
+            <Route path="/asset/withdraw" element={<Withdraw />} />
+            <Route path="/asset/deposit" element={<Deposit />} />
+            <Route path="/pax" element={<Pax />} />
+            <Route path="/__admin" element={<Admin />} />
+            <Route element={<Navigate to={'/swap'} />} />
+          </Routes>
         </div>
       </main>
       <Footer />
