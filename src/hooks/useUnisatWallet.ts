@@ -1,36 +1,40 @@
-import { CURRENT_BTC_WALLET } from '@/constants'
-import { BTCNetwork, BTCWallet } from '@/hooks/useBTCWallet'
-import { useCallback, useEffect, useState } from 'react'
+import { BTCNetwork } from '@/hooks/useBTCWallet'
+import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
 
 export default function useUnisatWallet() {
   const [address, setAddress] = useState<string>()
   const [network, setNetwork] = useState<BTCNetwork>('livenet')
   const [publicKey, setPublicKey] = useState<string>()
-  // const [balance, setBalance] = useState({
-  //   confirmed: 0,
-  //   unconfirmed: 0,
-  //   total: 0,
-  // })
 
-  const getBasicInfo = useCallback(async () => {
+  const getBasicInfo = useCallback(async (): Promise<{
+    publicKey: string | undefined
+    network: BTCNetwork | undefined
+    address: string | undefined
+  }> => {
     const unisat = (window as any).unisat
 
-    const _publicKey = (await unisat.getPublicKey().catch((e: unknown) => {
-      console.error(e)
-      return undefined
-    })) as string | undefined
+    if (!unisat) {
+      return {
+        publicKey: undefined,
+        network: undefined,
+        address: undefined,
+      }
+    }
+
+    const _publicKey = (await unisat.getPublicKey()) as string
     setPublicKey(_publicKey)
 
-    const _network = (await unisat.getNetwork().catch((e: unknown) => {
-      console.error(e)
-      return 'livenet'
-    })) as BTCNetwork
+    const _network = (await unisat.getNetwork()) as BTCNetwork
     setNetwork(_network)
+
+    const [_address] = (await unisat.getAccounts()) as [string]
+    setAddress(_address)
 
     return {
       publicKey: _publicKey,
       network: _network,
+      address: _address,
     }
   }, [])
 
@@ -48,12 +52,17 @@ export default function useUnisatWallet() {
     [address, getBasicInfo],
   )
 
-  const connect = async () => {
+  const getWallet = () => {
     const unisat = (window as any).unisat
     if (!unisat) {
       toast.error('UniSat wallet is not installed')
       throw new Error('UniSat wallet is not installed')
     }
+    return unisat
+  }
+
+  const connect = async () => {
+    const unisat = getWallet()
 
     try {
       const [_address] = (await unisat.requestAccounts()) as string[]
@@ -72,11 +81,7 @@ export default function useUnisatWallet() {
   }
 
   const switchNetwork = async (network: BTCNetwork) => {
-    const unisat = (window as any).unisat
-    if (!unisat) {
-      toast.error('UniSat wallet is not installed')
-      throw new Error('UniSat wallet is not installed')
-    }
+    const unisat = getWallet()
 
     try {
       await unisat.switchNetwork(network)
@@ -88,11 +93,7 @@ export default function useUnisatWallet() {
   }
 
   const signMessage = async (message: string) => {
-    const unisat = (window as any).unisat
-    if (!unisat) {
-      toast.error('UniSat wallet is not installed')
-      throw new Error('UniSat wallet is not installed')
-    }
+    const unisat = getWallet()
 
     try {
       const signature = (await unisat.signMessage(message)) as string
@@ -105,11 +106,7 @@ export default function useUnisatWallet() {
   }
 
   const signPsbt = async (psbtHex: string) => {
-    const unisat = (window as any).unisat
-    if (!unisat) {
-      toast.error('UniSat wallet is not installed')
-      throw new Error('UniSat wallet is not installed')
-    }
+    const unisat = getWallet()
 
     try {
       const signature = (await unisat.signPsbt(psbtHex)) as string
@@ -122,11 +119,7 @@ export default function useUnisatWallet() {
   }
 
   const pushPsbt = async (psbtHex: string) => {
-    const unisat = (window as any).unisat
-    if (!unisat) {
-      toast.error('UniSat wallet is not installed')
-      throw new Error('UniSat wallet is not installed')
-    }
+    const unisat = getWallet()
 
     try {
       const txHash = (await unisat.pushPsbt(psbtHex)) as string
@@ -147,40 +140,6 @@ export default function useUnisatWallet() {
     }
   }, [getBasicInfo, handleAccountsChanged])
 
-  const listenAccountsChanged = useCallback(() => {
-    const unisat = (window as any).unisat
-    if (!unisat) return () => {}
-    unisat.getAccounts().then(handleAccountsChanged)
-    unisat.on('accountsChanged', handleAccountsChanged)
-
-    return () => {
-      unisat.removeListener('accountsChanged', handleAccountsChanged)
-    }
-  }, [handleAccountsChanged])
-
-  const listenNetworkChanged = useCallback(() => {
-    const unisat = (window as any).unisat
-    if (!unisat) return () => {}
-    unisat.on('networkChanged', getBasicInfo)
-    return () => {
-      unisat.removeListener('networkChanged', getBasicInfo)
-    }
-  }, [getBasicInfo])
-
-  useEffect(() => {
-    const wallet = window.localStorage.getItem(CURRENT_BTC_WALLET) as BTCWallet | null
-    if (wallet === 'unisat') {
-      // const offAccounts = listenAccountsChanged()
-      // const offNetwork = listenNetworkChanged()
-
-      return () => {
-        // offAccounts()
-        // offNetwork()
-      }
-    }
-    return
-  }, [listenAccountsChanged, listenNetworkChanged])
-
   return {
     address,
     network,
@@ -191,5 +150,6 @@ export default function useUnisatWallet() {
     signPsbt,
     pushPsbt,
     disconnect,
+    getBasicInfo,
   }
 }
