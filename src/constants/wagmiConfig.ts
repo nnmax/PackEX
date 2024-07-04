@@ -66,8 +66,12 @@ const wagmiConfig = createConfig({
   chains: [IS_PROD ? blast : blastSepolia],
   connectors: [injectedWithFallback(), coinbaseWalletWithIcon(), walletConnectWithIcon()],
   transports: {
-    [blast.id]: http(),
-    [blastSepolia.id]: http(),
+    [blast.id]: http(`https://blast-mainnet.infura.io/v3/${process.env.REACT_APP_INFFURA_API_KEY}`, {
+      batch: true,
+    }),
+    [blastSepolia.id]: http(`https://blast-sepolia.infura.io/v3/${process.env.REACT_APP_INFFURA_API_KEY}`, {
+      batch: true,
+    }),
   },
 })
 
