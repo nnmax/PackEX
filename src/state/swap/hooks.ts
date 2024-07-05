@@ -5,7 +5,7 @@ import { ParsedQs } from 'qs'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useCurrency } from '../../hooks/Tokens'
-import { useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
+import { usePrefetchAllCommonPairs, useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
 import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { isAddress } from '../../utils'
 import { AppDispatch, AppState } from '../index'
@@ -136,6 +136,8 @@ export function useDerivedSwapInfo(): {
   inputErrorType?: InputErrorType
 } {
   const { address: account } = useAccount()
+
+  usePrefetchAllCommonPairs()
 
   const {
     independentField,

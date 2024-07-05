@@ -1,10 +1,11 @@
 import { ChainId, Currency, CurrencyAmount, Pair, Token, Trade } from '@nnmax/uniswap-sdk-v2'
-import { flatMap } from 'lodash-es'
+import { flatMap, get } from 'lodash-es'
 import { useMemo } from 'react'
 import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
 import { PairState, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 import { useChainId } from 'wagmi'
+import { useAllTokens } from '@/hooks/Tokens'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const chainId: ChainId = useChainId()
@@ -74,6 +75,29 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
       ),
     [allPairs],
   )
+}
+
+function useAllTokenAmountPairs() {
+  const tokensMap = useAllTokens()
+
+  const allTokenPairs = useMemo(() => {
+    const tokens = Object.values(tokensMap).sort((a, b) => a.address.localeCompare(b.address))
+    return flatMap(tokens, (tokenA): [Token, Token][] => {
+      return tokens.map((tokenB) => {
+        return [tokenA, tokenB]
+      })
+    }).filter(([a, b]) => a.address !== b.address)
+  }, [tokensMap])
+
+  return allTokenPairs
+}
+
+/**
+ * 预取交易对
+ */
+export function usePrefetchAllCommonPairs() {
+  const tokenPairs = useAllTokenAmountPairs()
+  useAllCommonPairs(get(tokenPairs, [0, 0]), get(tokenPairs, [0, 1]))
 }
 
 /**
