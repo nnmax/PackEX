@@ -24,27 +24,28 @@ const height2 = 156
 
 const height3 = 96
 
-export default forwardRef<
-  {
-    reset: () => void
-  },
-  {
-    onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
-    loading?: boolean
-    type: 'deposit' | 'withdraw'
-    data: Record<keyof Asset, string>
-    placeholder?: string
-    minValue?: number
-    withdrawFee?: number
-    isLoadingWithdrawFee?: boolean
-    runesBalance?:
-      | {
-          amount: string
-          symbol: string
-        }
-      | undefined
-  }
->(function FormCard(props, ref) {
+interface FormCardProps {
+  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
+  loading?: boolean
+  type: 'deposit' | 'withdraw'
+  data: Record<keyof Asset, string>
+  placeholder?: string
+  minValue?: number
+  withdrawFee?: number
+  isLoadingWithdrawFee?: boolean
+  runesBalance?:
+    | {
+        amount: string
+        symbol: string
+      }
+    | undefined
+}
+
+interface FormCardRef {
+  reset: () => void
+}
+
+export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, ref) {
   const {
     onSubmit,
     loading,
@@ -121,6 +122,10 @@ export default forwardRef<
               name={FormField.Amount}
               maxValue={Number(runesBalance?.amount ?? 99999999)}
               minValue={minValue}
+              formatOptions={{
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 18,
+              }}
               onChange={setAmount}
               isRequired
             >
