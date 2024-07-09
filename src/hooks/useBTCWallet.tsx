@@ -83,6 +83,7 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
   }
 
   const verifyNetwork = async (wallet: BTCWallet, network: BTCNetwork | undefined) => {
+    if (wallet === 'okx') return
     if (!network) {
       throw new Error('Network is not defined')
     }
