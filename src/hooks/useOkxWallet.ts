@@ -1,10 +1,11 @@
+import { IS_PROD } from '@/constants'
 import { BTCNetwork } from '@/hooks/useBTCWallet'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
 
 export default function useOkxWallet() {
   const [address, setAddress] = useState<string>()
-  const [network, setNetwork] = useState<BTCNetwork>('livenet')
+  const [network] = useState<BTCNetwork>('livenet')
   const [publicKey, setPublicKey] = useState<string>()
 
   const getWallet = () => {
@@ -13,7 +14,7 @@ export default function useOkxWallet() {
       toast.error('Okx wallet is not installed')
       throw new Error('Okx wallet is not installed')
     }
-    return okxwallet
+    return okxwallet[IS_PROD ? 'bitcoin' : 'bitcoinTestnet']
   }
 
   const getBasicInfo = useCallback(async (): Promise<{
@@ -31,32 +32,53 @@ export default function useOkxWallet() {
       }
     }
 
-    const _publicKey = (await okxwallet.bitcoin.getPublicKey()) as string
-    setPublicKey(_publicKey)
+    if (IS_PROD) {
+      const [_address] = (await okxwallet.bitcoin.getAccounts()) as [string]
+      const _publicKey = (await okxwallet.bitcoin.getPublicKey()) as string
+      setAddress(_address)
+      setPublicKey(_publicKey)
+      return {
+        publicKey: _publicKey,
+        network,
+        address: _address,
+      }
+    }
 
-    const _network = (await okxwallet.bitcoin.getNetwork()) as 'livenet'
-    setNetwork(_network)
+    const { address: _address, publicKey: _publicKey } = (await okxwallet.bitcoinTestnet
+      .getSelectedAccount()
+      .catch(() => {
+        return {
+          address: undefined,
+          publicKey: undefined,
+        }
+      })) as {
+      publicKey: string | undefined
+      address: string | undefined
+    }
 
-    const [_address] = (await okxwallet.bitcoin.getAccounts()) as [string]
     setAddress(_address)
+    setPublicKey(_publicKey)
 
     return {
       publicKey: _publicKey,
-      network: _network,
+      network,
       address: _address,
     }
-  }, [])
+  }, [network])
 
   const connect = async () => {
     const okxwallet = getWallet()
 
     try {
-      const [_address] = (await okxwallet.bitcoin.requestAccounts()) as string[]
+      const { address: _address, publicKey: _publicKey } = (await okxwallet.connect()) as {
+        address: string
+        publicKey: string
+      }
       setAddress(_address)
-      const { network: _network, publicKey: _publicKey } = await getBasicInfo()
+      setPublicKey(_publicKey)
       return {
         address: _address,
-        network: _network,
+        network,
         publicKey: _publicKey,
       }
     } catch (error) {
@@ -70,7 +92,7 @@ export default function useOkxWallet() {
     const okxwallet = getWallet()
 
     try {
-      const signature = (await okxwallet.bitcoin.signMessage(message)) as string
+      const signature = (await okxwallet.signMessage(message)) as string
       return signature
     } catch (error) {
       console.error(error)
@@ -83,7 +105,7 @@ export default function useOkxWallet() {
     const okxwallet = getWallet()
 
     try {
-      const signature = (await okxwallet.bitcoin.signPsbt(psbtHex)) as string
+      const signature = (await okxwallet.signPsbt(psbtHex)) as string
       return signature
     } catch (error) {
       console.error(error)
@@ -96,7 +118,7 @@ export default function useOkxWallet() {
     const okxwallet = getWallet()
 
     try {
-      const txHash = (await okxwallet.bitcoin.pushPsbt(psbtHex)) as string
+      const txHash = (await okxwallet.pushPsbt(psbtHex)) as string
       return txHash
     } catch (error) {
       console.error(error)
@@ -111,6 +133,7 @@ export default function useOkxWallet() {
       await okxwallet.bitcoin.disconnect()
     }
     setAddress(undefined)
+    setPublicKey(undefined)
   }, [])
 
   return {
