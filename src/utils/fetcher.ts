@@ -25,10 +25,10 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
         disabledErrorToast === true ||
         (typeof disabledErrorToast === 'function' && disabledErrorToast(response as any))
       ) {
-        throw new Error(errorMessage)
+        throw response
       }
       toast.error(errorMessage)
-      throw new Error(errorMessage)
+      throw response
     })
     .then((data) => {
       if (data.code === 200) {
@@ -43,10 +43,10 @@ export default function fetcher<ResponseData = unknown>(input: string, options?:
         disabledErrorToast === true ||
         (typeof disabledErrorToast === 'function' && disabledErrorToast(data))
       ) {
-        throw new Error(errMsg)
+        throw data
       }
       toast.error(errMsg)
-      throw new Error(errMsg)
+      throw data
     })
     .catch((error) => {
       console.error(error)

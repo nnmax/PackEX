@@ -21,6 +21,19 @@ function getRunesBalance(params: GetRunesBalanceParams) {
     method: 'POST',
     disabledErrorToast: true,
     body: JSON.stringify(params),
+  }).catch((error) => {
+    if (error && error.code === 808900001) {
+      const data: GetRunesBalanceResult = {
+        amount: '0',
+        divisibility: 18,
+        rune: 'rune',
+        runeid: 'rune',
+        spacedRune: 'rune',
+        symbol: '-',
+      }
+      return data
+    }
+    throw error
   })
 }
 
