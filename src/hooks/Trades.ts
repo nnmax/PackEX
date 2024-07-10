@@ -4,8 +4,9 @@ import { useMemo } from 'react'
 import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
 import { PairState, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-import { useChainId } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import { useAllTokens } from '@/hooks/Tokens'
+import { useETHBalances } from '@/state/wallet/hooks'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const chainId: ChainId = useChainId()
@@ -93,10 +94,12 @@ function useAllTokenAmountPairs() {
 }
 
 /**
- * 预取交易对
+ * 预取交易对和 ETH 余额
  */
 export function usePrefetchAllCommonPairs() {
+  const { address: account } = useAccount()
   const tokenPairs = useAllTokenAmountPairs()
+  useETHBalances([account])
   useAllCommonPairs(get(tokenPairs, [0, 0]), get(tokenPairs, [0, 1]))
 }
 
