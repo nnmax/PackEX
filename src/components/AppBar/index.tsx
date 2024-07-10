@@ -31,7 +31,7 @@ export default function AppBar() {
         </Link>
 
         <NavTabs>
-          <LinkTab to={'/swap'}>{'Dex'}</LinkTab>
+          <LinkTab to={'/'}>{'Dex'}</LinkTab>
           <LinkTab to={'/pool'} onClick={handleClick}>
             {'Pools'}
           </LinkTab>

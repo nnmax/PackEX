@@ -12,7 +12,7 @@ export default function disconnectWallet() {
   })
     .catch(() => {})
     .finally(() => {
-      if (['/', '/swap', '/pax'].indexOf(window.location.pathname) === -1) {
+      if (['/', '/pax'].indexOf(window.location.pathname) === -1) {
         window.location.replace('/')
       }
     })

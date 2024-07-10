@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 interface LinkTabProps extends React.ComponentProps<typeof Link> {
@@ -10,21 +10,20 @@ export default function LinkTab(props: LinkTabProps) {
   const { className, children, to, isSelected: isSelectedProp, ...restProps } = props
   const location = useLocation()
 
+  const matchPathname = useCallback(
+    (pathname: string): boolean => {
+      return pathname === '/' ? location.pathname === pathname : location.pathname.startsWith(pathname)
+    },
+    [location.pathname],
+  )
+
   const isSelected = useMemo(() => {
     if (isSelectedProp !== undefined) return isSelectedProp
 
-    const run = (val: typeof to): boolean => {
-      if (typeof val === 'string') {
-        return location.pathname.startsWith(val)
-      }
-      if (val.pathname) {
-        return location.pathname.startsWith(val.pathname)
-      }
-      return false
-    }
-
-    return run(to)
-  }, [isSelectedProp, location, to])
+    if (typeof to === 'string') return matchPathname(to)
+    if (to.pathname) return matchPathname(to.pathname)
+    return false
+  }, [isSelectedProp, matchPathname, to])
 
   return (
     <Link
