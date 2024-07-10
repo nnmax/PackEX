@@ -1,10 +1,9 @@
-// @ts-check
-const animate = require('tailwindcss-animate')
-const plugin = require('tailwindcss/plugin')
-const { addDynamicIconSelectors } = require('@iconify/tailwind')
+import animate from 'tailwindcss-animate'
+import plugin from 'tailwindcss/plugin'
+import { addDynamicIconSelectors } from '@iconify/tailwind'
+import type { Config } from 'tailwindcss'
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
@@ -108,4 +107,4 @@ module.exports = {
       })
     }),
   ],
-}
+} satisfies Config

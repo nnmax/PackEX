@@ -2,7 +2,8 @@
   "name": "react-compiler-runtime",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "index.js",
+  "type": "module",
+  "module": "index.mjs",
   "peerDependencies": {
     "react": "^18.3.1"
   }

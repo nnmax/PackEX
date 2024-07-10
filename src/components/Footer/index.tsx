@@ -1,4 +1,4 @@
-import { ReactComponent as FooterBgR } from '@/assets/images/footer.svg'
+import FooterBgR from '@/assets/images/footer.svg?react'
 
 export default function Footer() {
   return (

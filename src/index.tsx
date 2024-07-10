@@ -7,7 +7,6 @@ import store from './state'
 import ApplicationUpdater from './state/application/updater'
 import ListsUpdater from './state/lists/updater'
 import MulticallUpdater from './state/multicall/updater'
-import './index.css'
 import { BrowserRouter, NavigateOptions, useHref, useNavigate } from 'react-router-dom'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { Bounce, ToastContainer } from 'react-toastify'
@@ -15,6 +14,9 @@ import { BTCWalletProvider } from '@/hooks/useBTCWallet'
 import { WagmiProvider } from 'wagmi'
 import wagmiConfig from '@/constants/wagmiConfig'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+import 'react-toastify/dist/ReactToastify.min.css'
+import './index.css'
 
 declare module '@uniswap/token-lists' {
   export interface TokenInfo {

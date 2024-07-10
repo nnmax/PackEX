@@ -15,7 +15,7 @@ env:
   CONTAINER_NAME: app
   PROXY_PASS: https://api.packex.io
   SERVER_NAME: packex.io
-  REACT_APP_APP_ENV: prod
+  MODE_ENV: prod
 
 jobs:
   deploy:
@@ -42,7 +42,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           PROXY_PASS: ${{env.PROXY_PASS}}
           SERVER_NAME: ${{env.SERVER_NAME}}
-          REACT_APP_APP_ENV: ${{env.REACT_APP_APP_ENV}}
+          MODE_ENV: ${{env.MODE_ENV}}
           MAXMIND_ACCOUNT_ID: ${{secrets.MAXMIND_ACCOUNT_ID}}
           MAXMIND_LICENSE_KEY: ${{secrets.MAXMIND_LICENSE_KEY}}
         run: |
@@ -50,7 +50,7 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS.
           docker build --cache-from $ECR_REGISTRY/$ECR_REPOSITORY:latest \
-            --build-arg REACT_APP_APP_ENV \
+            --build-arg MODE_ENV \
             --build-arg PROXY_PASS \
             --build-arg SERVER_NAME \
             --build-arg MAXMIND_ACCOUNT_ID \
