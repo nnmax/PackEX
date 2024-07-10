@@ -1,7 +1,7 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@nnmax/uniswap-sdk-v2'
 import type { HexColor } from '../utils/color'
 
-export const ROUTER_ADDRESS = process.env.REACT_APP_ROUTER_ADDRESS!
+export const ROUTER_ADDRESS = import.meta.env.VITE_ROUTER_ADDRESS!
 
 // a list of tokens by chain
 type ChainTokenList = {
@@ -14,16 +14,16 @@ const WETH_ONLY: ChainTokenList = {
 }
 
 const [BLAST_TESTNET_USDB_ADDRESS, BLAST_USDB_ADDRESS] = [
-  process.env.REACT_APP_BLAST_TESTNET_USDB_ADDRESS,
-  process.env.REACT_APP_BLAST_USDB_ADDRESS,
+  import.meta.env.VITE_BLAST_TESTNET_USDB_ADDRESS,
+  import.meta.env.VITE_BLAST_USDB_ADDRESS,
 ]
 
 if (!BLAST_TESTNET_USDB_ADDRESS) {
-  throw new Error(`REACT_APP_BLAST_TESTNET_USDB_ADDRESS must be a defined environment variable`)
+  throw new Error(`VITE_BLAST_TESTNET_USDB_ADDRESS must be a defined environment variable`)
 }
 
 if (!BLAST_USDB_ADDRESS) {
-  throw new Error(`REACT_APP_BLAST_USDB_ADDRESS must be a defined environment variable`)
+  throw new Error(`VITE_BLAST_USDB_ADDRESS must be a defined environment variable`)
 }
 
 export const USDB = {
@@ -74,7 +74,7 @@ export const CURRENT_BTC_WALLET = 'packex.btc.wallet'
 
 export const API_BASE = '/packex'
 
-export const IS_PROD = process.env.REACT_APP_APP_ENV === 'prod'
+export const IS_PROD = import.meta.env.MODE === 'prod'
 
 export const ADMIN_WHITELIST_ADDRESS = [
   '0xd4C17F2F17C37E4c3987aeD7d6812d63c9e23B5D',

@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import 'react-toastify/dist/ReactToastify.min.css';
-
 body {
   background: var(--body-bg);
   font-family: 'pixelmix';

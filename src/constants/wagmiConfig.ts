@@ -24,7 +24,7 @@ const coinbaseWalletWithIcon = () => {
 const walletConnectWithIcon = () => {
   return createConnector<any>((config) => {
     const walletConnectReturn = walletConnect({
-      projectId: process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID!,
+      projectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID!,
       metadata: {
         name: 'PackEX',
         description: 'PackEX',
@@ -66,10 +66,10 @@ const wagmiConfig = createConfig({
   chains: [IS_PROD ? blast : blastSepolia],
   connectors: [injectedWithFallback(), coinbaseWalletWithIcon(), walletConnectWithIcon()],
   transports: {
-    [blast.id]: http(`https://blast-mainnet.infura.io/v3/${process.env.REACT_APP_INFFURA_API_KEY}`, {
+    [blast.id]: http(`https://blast-mainnet.infura.io/v3/${import.meta.env.VITE_INFFURA_API_KEY}`, {
       batch: true,
     }),
-    [blastSepolia.id]: http(`https://blast-sepolia.infura.io/v3/${process.env.REACT_APP_INFFURA_API_KEY}`, {
+    [blastSepolia.id]: http(`https://blast-sepolia.infura.io/v3/${import.meta.env.VITE_INFFURA_API_KEY}`, {
       batch: true,
     }),
   },

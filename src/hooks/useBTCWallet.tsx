@@ -1,4 +1,4 @@
-import { CURRENT_BTC_WALLET } from '@/constants'
+import { CURRENT_BTC_WALLET, IS_PROD } from '@/constants'
 import useOkxWallet from '@/hooks/useOkxWallet'
 import useUnisatWallet from '@/hooks/useUnisatWallet'
 import { createContext, useContext, useState } from 'react'
@@ -87,8 +87,8 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     if (!network) {
       throw new Error('Network is not defined')
     }
-    const isProdAndNotLivenet = process.env.REACT_APP_APP_ENV === 'prod' && network !== 'livenet'
-    const isDevAndNotTestnet = process.env.REACT_APP_APP_ENV === 'dev' && network !== 'testnet'
+    const isProdAndNotLivenet = IS_PROD && network !== 'livenet'
+    const isDevAndNotTestnet = !IS_PROD && network !== 'testnet'
     if (wallet === 'unisat') {
       if (isProdAndNotLivenet) {
         await unisat.switchNetwork('livenet')

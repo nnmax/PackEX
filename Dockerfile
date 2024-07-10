@@ -53,17 +53,17 @@ FROM base AS builder
 
 WORKDIR /app
 
-ARG REACT_APP_APP_ENV=dev
-ENV REACT_APP_APP_ENV=$REACT_APP_APP_ENV
+ARG MODE_ENV=dev
+ENV MODE_ENV=$MODE_ENV
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY .yarn ./.yarn
 COPY public ./public
 COPY src ./src
 COPY lib ./lib
-COPY yarn.lock .env .env.production craco.config.ts package.json .yarnrc.yml tsconfig.json tailwind.config.js ./
+COPY index.html yarn.lock .env .env.prod vite.config.ts package.json .yarnrc.yml tsconfig.json tailwind.config.ts postcss.config.mjs ./
 
-RUN yarn build:$REACT_APP_APP_ENV
+RUN yarn build:$MODE_ENV
 
 FROM nginx:alpine
 
@@ -105,7 +105,7 @@ USER nginx
 COPY nginx.conf /etc/nginx/
 COPY nginx.conf.template /etc/nginx/templates/
 
-COPY --from=builder /app/build /usr/share/nginx/html
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
 
