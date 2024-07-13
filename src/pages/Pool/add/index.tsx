@@ -14,7 +14,7 @@ import { maxAmountSpend } from '@/utils/maxAmountSpend'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
-import { ROUTER_ADDRESS } from '@/constants'
+import { DEFAULT_GAS, ROUTER_ADDRESS } from '@/constants'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import { toast } from 'react-toastify'
 import ReviewModal from '@/components/Pool/ReviewModal'
@@ -154,7 +154,7 @@ export default function PoolAdd() {
     await estimate(...args, value ? { value } : {})
       .catch((err) => {
         console.dir(err)
-        return 500000n
+        return DEFAULT_GAS
       })
       .then((estimatedGasLimit) =>
         method(...args, {

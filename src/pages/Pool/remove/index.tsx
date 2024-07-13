@@ -11,7 +11,7 @@ import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { useCurrency } from '@/hooks/Tokens'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from '@/state/burn/hooks'
-import { ROUTER_ADDRESS } from '@/constants'
+import { DEFAULT_GAS, ROUTER_ADDRESS } from '@/constants'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import useDebouncedChangeHandler from '@/utils/useDebouncedChangeHandler'
 import CurrencyLogo from '@/components/CurrencyLogo'
@@ -193,7 +193,7 @@ export default function PoolRemove() {
           .then(calculateGasMargin)
           .catch((error) => {
             console.error(`estimateGas failed`, methodName, args, error)
-            return 500000n
+            return DEFAULT_GAS
           }),
       ),
     )

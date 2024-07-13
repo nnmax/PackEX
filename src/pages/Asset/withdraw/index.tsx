@@ -11,6 +11,8 @@ import { useSendTransaction } from 'wagmi'
 import { WithdrawRunesParams, useWithdrawRunes } from '@/api/withdraw-runes'
 import { useWithdrawRunesConfirm } from '@/api/withdraw-runes-confirm'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import { EstimateGasExecutionError } from 'viem'
+import { DEFAULT_GAS } from '@/constants'
 
 const DOG_MIN_AMOUNT = 1000
 
@@ -53,12 +55,20 @@ export default function Withdraw() {
       amountReceived: amountReceived,
     }
     const { contractMethod } = await withdrawRunesAsync(params)
-
-    const txHash = await sendTransactionAsync({
+    const txParams = {
       chainId: contractMethod.chainId,
       to: contractMethod.destination,
       value: BigInt(contractMethod.value),
       data: contractMethod.callData,
+    }
+    const txHash = await sendTransactionAsync(txParams).catch((e) => {
+      if (e instanceof EstimateGasExecutionError) {
+        return sendTransactionAsync({
+          ...txParams,
+          gas: DEFAULT_GAS,
+        })
+      }
+      throw e
     })
 
     await withdrawRunesConfirmAsync({
