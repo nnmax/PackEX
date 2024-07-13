@@ -44,25 +44,36 @@ export default function useOkxWallet() {
       }
     }
 
-    const { address: _address, publicKey: _publicKey } = (await okxwallet.bitcoinTestnet
-      .getSelectedAccount()
-      .catch(() => {
-        return {
-          address: undefined,
-          publicKey: undefined,
-        }
-      })) as {
-      publicKey: string | undefined
-      address: string | undefined
-    }
+    try {
+      const { address: _address, publicKey: _publicKey } = (await okxwallet.bitcoinTestnet
+        .getSelectedAccount()
+        .catch(() => {
+          return {
+            address: undefined,
+            publicKey: undefined,
+          }
+        })) as {
+        publicKey: string | undefined
+        address: string | undefined
+      }
 
-    setAddress(_address)
-    setPublicKey(_publicKey)
+      setAddress(_address)
+      setPublicKey(_publicKey)
 
-    return {
-      publicKey: _publicKey,
-      network,
-      address: _address,
+      return {
+        publicKey: _publicKey,
+        network,
+        address: _address,
+      }
+    } catch (error) {
+      setAddress(undefined)
+      setPublicKey(undefined)
+
+      return {
+        publicKey: undefined,
+        network,
+        address: undefined,
+      }
     }
   }, [network])
 

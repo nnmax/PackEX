@@ -155,6 +155,7 @@ export function BTCWalletModal() {
       toggleWalletModal()
       window.localStorage.setItem(CURRENT_BTC_WALLET, wallet)
     } catch (error) {
+      console.error(error)
       disconnect(wallet)
       setLoadingWallet(undefined)
     }
