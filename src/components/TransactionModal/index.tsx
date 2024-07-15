@@ -1,4 +1,4 @@
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import { ButtonPrimary } from '@/components/Button'
 import Failed from '@/components/Icons/Failed'
 import { useTransactionFailedModalOpen, useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
@@ -8,19 +8,14 @@ export function TransactionInProgressModal() {
   const [inProgressModalOpen] = useTransactionInProgressModalOpen()
 
   return (
-    <AriaModal
-      isOpen={inProgressModalOpen}
-      isDismissable={false}
-      isKeyboardDismissDisabled={false}
-      showCloseButton={false}
-    >
+    <Modal isOpen={inProgressModalOpen} isDismissable={false} isKeyboardDismissDisabled={false} showCloseButton={false}>
       <div className={'flex flex-col items-center py-10'}>
         <span className={'loading text-[64px] text-lemonYellow'} />
         <Heading slot={'title'} className={'mt-8'}>
           Transaction in progress
         </Heading>
       </div>
-    </AriaModal>
+    </Modal>
   )
 }
 
@@ -28,7 +23,7 @@ export function TransactionSuccessModal(props: { isOpen: boolean; onClose: () =>
   const { isOpen, onClose, content = 'TRANSACTION SUBMITTED' } = props
 
   return (
-    <AriaModal isOpen={isOpen} onClose={onClose} showCloseButton={false} showRhombus={false}>
+    <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false} showRhombus={false}>
       <div className={'flex flex-col items-center'}>
         <div className={'w-9 h-9 rounded-full bg-lemonYellow flex items-center justify-center'}>
           <span className="icon-[pixelarticons--check] text-2xl text-black"></span>
@@ -41,7 +36,7 @@ export function TransactionSuccessModal(props: { isOpen: boolean; onClose: () =>
           OK
         </ButtonPrimary>
       </div>
-    </AriaModal>
+    </Modal>
   )
 }
 
@@ -49,7 +44,7 @@ export function TransactionFailedModal() {
   const [failedModalOpen, updateFailedModalOpen] = useTransactionFailedModalOpen()
 
   return (
-    <AriaModal isOpen={failedModalOpen} onClose={() => updateFailedModalOpen(false)}>
+    <Modal isOpen={failedModalOpen} onClose={() => updateFailedModalOpen(false)}>
       <div className={'flex flex-col items-center py-10'}>
         <Failed />
         <Heading slot={'title'} className={'mt-6'}>
@@ -65,6 +60,6 @@ export function TransactionFailedModal() {
           OK
         </ButtonPrimary>
       </div>
-    </AriaModal>
+    </Modal>
   )
 }

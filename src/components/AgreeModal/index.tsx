@@ -1,6 +1,6 @@
 import useAgree from '@/api/agree'
 import { useUserInfo } from '@/api/get-user'
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import { ButtonPrimary } from '@/components/Button'
 import LogoBox from '@/components/Icons/LogoBox'
 import { useEffect, useState } from 'react'
@@ -32,7 +32,7 @@ export default function AgreeModal() {
   const [agreed, agreeing, setAgreed] = useAgreedLogic()
 
   return (
-    <AriaModal
+    <Modal
       maxWidth={'960px'}
       isOpen={!agreed}
       isKeyboardDismissDisabled
@@ -59,6 +59,6 @@ export default function AgreeModal() {
           Agree and Continue
         </ButtonPrimary>
       </div>
-    </AriaModal>
+    </Modal>
   )
 }

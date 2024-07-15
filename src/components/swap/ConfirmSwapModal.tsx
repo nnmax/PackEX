@@ -1,5 +1,5 @@
 import { Trade } from '@nnmax/uniswap-sdk-v2'
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import { Heading } from 'react-aria-components'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import Steps from '@/components/Steps'
@@ -16,7 +16,7 @@ export default function ConfirmSwapModal({
   activeStep: number
 }) {
   return (
-    <AriaModal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <div className={'flex justify-center mb-4'}>
         <span className={'loading'} />
       </div>
@@ -49,6 +49,6 @@ export default function ConfirmSwapModal({
         steps={[`APPROVE ${trade.inputAmount.currency.symbol} SPENDING`, 'CONFIRM SWAP IN WALLET']}
         activeStep={activeStep}
       />
-    </AriaModal>
+    </Modal>
   )
 }

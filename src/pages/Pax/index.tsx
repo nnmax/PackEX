@@ -20,7 +20,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import ShortenAddressCopy from '@/components/ShortenAddressCopy'
 import Diamond1Svg from '@/assets/images/diamond-1.svg'
 import Diamond3Svg from '@/assets/images/diamond-3.svg'
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import Tooltip from '@/components/Tooltip'
@@ -466,7 +466,7 @@ function BonusModal(props: { type: 'week' | 'total' | null; onClose: () => void;
     )
 
   return (
-    <AriaModal padding="44px 40px" maxWidth={'360px'} isOpen={open} onClose={onClose} showRhombus={false}>
+    <Modal padding="44px 40px" maxWidth={'360px'} isOpen={open} onClose={onClose} showRhombus={false}>
       <Heading slot="title" className={'flex gap-4 items-center mb-6'}>
         {title}
       </Heading>
@@ -484,6 +484,6 @@ function BonusModal(props: { type: 'week' | 'total' | null; onClose: () => void;
           </li>
         ))}
       </ul>
-    </AriaModal>
+    </Modal>
   )
 }

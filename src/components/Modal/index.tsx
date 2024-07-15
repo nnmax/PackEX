@@ -1,9 +1,16 @@
 import { BODY_BG_COLOR } from '@/constants'
 import { alphaCompositing, alphaToHex } from '@/utils/color'
 import clsx from 'clsx'
-import { Button, Dialog, DialogTrigger, Modal, ModalOverlay, ModalOverlayProps } from 'react-aria-components'
+import {
+  Button,
+  Dialog,
+  DialogTrigger,
+  Modal as AriaModal,
+  ModalOverlay,
+  ModalOverlayProps,
+} from 'react-aria-components'
 
-interface AriaModalProps extends ModalOverlayProps {
+interface ModalProps extends ModalOverlayProps {
   trigger?: React.ReactNode
   children?: React.ReactNode
   maxWidth?: string
@@ -18,7 +25,7 @@ interface AriaModalProps extends ModalOverlayProps {
 const DIALOG_MASK_BG_COLOR = '#000000'
 const DIALOG_MASK_BG_OPACITY = 0.6
 
-export default function AriaModal(props: AriaModalProps) {
+export default function Modal(props: ModalProps) {
   const {
     maxWidth,
     trigger,
@@ -52,7 +59,7 @@ export default function AriaModal(props: AriaModalProps) {
       }}
       {...restProps}
     >
-      <Modal
+      <AriaModal
         style={{
           maxWidth,
           padding,
@@ -79,7 +86,7 @@ export default function AriaModal(props: AriaModalProps) {
           )}
           {children}
         </Dialog>
-      </Modal>
+      </AriaModal>
     </ModalOverlay>
   )
 

@@ -1,4 +1,4 @@
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import { ButtonPrimary, ButtonSecondary } from '@/components/Button'
 import { Heading } from 'react-aria-components'
 
@@ -10,7 +10,7 @@ export default function PriceImpactWarningModal(props: {
   const { isOpen, onClose, onContinue } = props
 
   return (
-    <AriaModal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className={'flex flex-col items-center px-11 pt-4 pb-8'}>
         <span className="icon-[pajamas--warning-solid] text-[#FF8F1F] text-[30px]" />
         <Heading slot={'title'} className={'mt-4 mb-6'}>
@@ -28,6 +28,6 @@ export default function PriceImpactWarningModal(props: {
           </ButtonPrimary>
         </div>
       </div>
-    </AriaModal>
+    </Modal>
   )
 }

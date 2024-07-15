@@ -1,4 +1,4 @@
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import DoubleCurrencyLogo from '@/components/DoubleLogo'
 import Steps from '@/components/Steps'
@@ -43,7 +43,7 @@ export default function ReviewModal(props: {
   }, [approvalA, approvalB, txHash])
 
   return (
-    <AriaModal
+    <Modal
       isOpen={modalOpen}
       onOpenChange={(open) => {
         if (!open && onDismiss) onDismiss()
@@ -112,6 +112,6 @@ export default function ReviewModal(props: {
           'CONFIRM TRANSACTION IN WALLET',
         ]}
       />
-    </AriaModal>
+    </Modal>
   )
 }

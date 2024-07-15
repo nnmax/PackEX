@@ -14,7 +14,7 @@ import { useTokenComparator } from './sorting'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import { isFunction, isSet } from 'lodash-es'
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import { useAccount } from 'wagmi'
 import NumberInput from '@/components/NumberInput'
 
@@ -231,7 +231,7 @@ function ChooseModal(props: {
   }
 
   return (
-    <AriaModal isOpen={open} onClose={onClose} padding="56px" aria-label="Choose Tokens">
+    <Modal isOpen={open} onClose={onClose} padding="56px" aria-label="Choose Tokens">
       <div className={'relative h-9 rounded-md bg-[#B8B8B8]'}>
         <span className={'text-xl'}>
           <IconamoonSearchLight className={'absolute left-2 top-2 text-[#696969]'} />
@@ -262,7 +262,7 @@ function ChooseModal(props: {
         selectedCurrency={selectedCurrency}
         showETH={showETH}
       />
-    </AriaModal>
+    </Modal>
   )
 }
 

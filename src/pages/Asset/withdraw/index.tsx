@@ -13,7 +13,7 @@ import { useWithdrawRunesConfirm } from '@/api/withdraw-runes-confirm'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import { EstimateGasExecutionError } from 'viem'
 import { DEFAULT_GAS } from '@/constants'
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 
 const DOG_MIN_AMOUNT = 1000
 
@@ -104,7 +104,7 @@ export default function Withdraw() {
         }}
       />
 
-      <AriaModal
+      <Modal
         contentClassName={'w-full px-10'}
         isOpen={isOpen}
         onClose={() => setOpen(false)}
@@ -135,7 +135,7 @@ export default function Withdraw() {
             {'OK'}
           </Button>
         </div>
-      </AriaModal>
+      </Modal>
     </div>
   )
 }

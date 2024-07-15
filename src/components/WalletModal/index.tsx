@@ -12,7 +12,7 @@ import okxLogo from '../../assets/images/okx.svg'
 import unisatLogo from '../../assets/images/unisat.svg'
 import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
 import { isString } from 'lodash-es'
-import AriaModal from '@/components/AriaModal'
+import Modal from '@/components/Modal'
 import { Heading } from 'react-aria-components'
 import { Connector, ConnectorAlreadyConnectedError, useAccount, useChainId, useConnect, useSignMessage } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
@@ -183,7 +183,7 @@ export function WalletModalWrapper(props: { open: boolean; onClose: () => void; 
   const { open, onClose, children } = props
 
   return (
-    <AriaModal isOpen={open} onClose={onClose} padding="56px">
+    <Modal isOpen={open} onClose={onClose} padding="56px">
       <Heading slot="title" className={'text-md mb-[18px] pl-4'}>
         {'Connect Wallet'}
       </Heading>
@@ -194,7 +194,7 @@ export function WalletModalWrapper(props: { open: boolean; onClose: () => void; 
       <ul className={'mt-[22px]'} role={'menu'}>
         {children}
       </ul>
-    </AriaModal>
+    </Modal>
   )
 }
 
