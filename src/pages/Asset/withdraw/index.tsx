@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import ConfirmImg from '@/assets/images/confirm.png'
-import { Modal, Dialog, ModalOverlay, Button } from 'react-aria-components'
+import { Button, Heading } from 'react-aria-components'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import QueryString from 'qs'
 import { Asset, useWithdrawFee } from '@/api'
@@ -13,12 +13,13 @@ import { useWithdrawRunesConfirm } from '@/api/withdraw-runes-confirm'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import { EstimateGasExecutionError } from 'viem'
 import { DEFAULT_GAS } from '@/constants'
+import AriaModal from '@/components/AriaModal'
 
 const DOG_MIN_AMOUNT = 1000
 
 export default function Withdraw() {
   useDocumentTitle('Withdraw')
-  const [isOpen, setOpen] = useState<boolean>(false)
+  const [isOpen, setOpen] = useState(false)
   const { search } = useLocation()
   const { sendTransactionAsync, isPending: sendingTransaction } = useSendTransaction()
   const { mutateAsync: withdrawRunesAsync, isPending: withdrawingRunes } = useWithdrawRunes()
@@ -103,44 +104,38 @@ export default function Withdraw() {
         }}
       />
 
-      <ModalOverlay
-        className={
-          'fixed left-0 top-0 z-20 flex h-[--visual-viewport-height] w-screen items-start justify-center bg-black/80 data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:fade-in data-[exiting]:fade-out'
-        }
+      <AriaModal
+        contentClassName={'w-full px-10'}
         isOpen={isOpen}
+        onClose={() => setOpen(false)}
+        showCloseButton={false}
+        showRhombus={false}
+        isDismissable={false}
       >
-        <Modal
-          className={
-            'relative top-[192px] w-full max-w-[480px] h-[376px] rounded-md bg-[#1D252E] p-14 outline-none data-[entering]:animate-in data-[exiting]:animate-out data-[entering]:zoom-in-75 data-[exiting]:zoom-out-75'
-          }
-        >
-          <Dialog className={'focus-visible:outline-none'}>
-            <div className="w-full">
-              <div className={'flex justify-center mb-6'}>
-                <img className={'w-[36px] h-[36px]'} src={ConfirmImg} alt="confirm" />
-              </div>
-              <div className={'text-[18px] text-center'}>{'Request Submitted'}</div>
-              <p className={'pt-6 text-[12px] leading-5'}>
-                Your withdrawal request has been received, you will receive the equivalent amount of the original tokens
-                in 24 hours, please be patient.
-              </p>
-              <div className={'flex justify-center mt-10'}>
-                <Button
-                  type={'button'}
-                  onPress={() => {
-                    setOpen(false)
-                  }}
-                  className={
-                    'flex h-9 w-[160px] items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
-                  }
-                >
-                  {'OK'}
-                </Button>
-              </div>
-            </div>
-          </Dialog>
-        </Modal>
-      </ModalOverlay>
+        <div className={'flex justify-center mb-6'}>
+          <img className={'w-[36px] h-[36px]'} src={ConfirmImg} alt="confirm" />
+        </div>
+        <Heading slot="title" className={'text-[18px] text-center'}>
+          {'Request Submitted'}
+        </Heading>
+        <p className={'pt-6 text-[12px] leading-5'}>
+          Your withdrawal request has been received, you will receive the equivalent amount of the original tokens in 24
+          hours, please be patient.
+        </p>
+        <div className={'flex justify-center mt-10'}>
+          <Button
+            type={'button'}
+            onPress={() => {
+              setOpen(false)
+            }}
+            className={
+              'flex h-9 w-[160px] items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
+            }
+          >
+            {'OK'}
+          </Button>
+        </div>
+      </AriaModal>
     </div>
   )
 }
