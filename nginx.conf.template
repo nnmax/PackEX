@@ -7,7 +7,9 @@ server {
   error_page 451 /451.html;
 
   location ^~ /packex/ {
-    proxy_pass $PROXY_PASS;
+    resolver 169.254.169.253;
+    set $backend $PROXY_PASS;
+    proxy_pass $backend;
     proxy_redirect off;
     proxy_set_header X-Real-IP  $remote_addr;
     proxy_set_header X-Forwarded-For  $proxy_add_x_forwarded_for;
