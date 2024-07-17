@@ -6,15 +6,14 @@ import { useAllTokens } from '../../hooks/Tokens'
 import { useMulticallContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
-import type { Currency} from '@nnmax/uniswap-sdk-v2';
+import type { Currency } from '@nnmax/uniswap-sdk-v2'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
  */
-export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): [
-  Record<string, CurrencyAmount | undefined>,
-  boolean,
-] {
+export function useETHBalances(
+  uncheckedAddresses?: (string | undefined)[],
+): [Record<string, CurrencyAmount | undefined>, boolean] {
   const multicallContract = useMulticallContract()
 
   const addresses: string[] = useMemo(

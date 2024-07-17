@@ -81,7 +81,10 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
         </p>
         <p className={'flex items-center justify-between'}>
           <span>{'MAX SLIPPAGE'}</span>
-          <span>{allowedSlippage / 100}{"%"}</span>
+          <span>
+            {allowedSlippage / 100}
+            {'%'}
+          </span>
         </p>
         <p className={'flex items-center justify-between'}>
           <span>{'LP FEE'}</span>

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import fetcher from '@/utils/fetcher'
-import type { UndefinedInitialDataOptions} from '@tanstack/react-query';
+import type { UndefinedInitialDataOptions } from '@tanstack/react-query'
 
 export interface WithdrawRunesAdminData {
   list: {

@@ -1,5 +1,5 @@
 import { namehash, Contract } from 'ethers'
-import type { Provider} from 'ethers';
+import type { Provider } from 'ethers'
 
 const REGISTRAR_ABI = [
   {

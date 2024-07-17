@@ -30,5 +30,5 @@ export default function Logo({ srcs, alt, ...rest }: LogoProps) {
     )
   }
 
-  return <img {...rest} src={HelpIcon} alt={""} />
+  return <img {...rest} src={HelpIcon} alt={''} />
 }

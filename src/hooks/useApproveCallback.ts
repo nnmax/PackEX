@@ -9,8 +9,8 @@ import { useTransactionAdder, useHasPendingApproval } from '../state/transaction
 import { computeSlippageAdjustedAmounts } from '../utils/prices'
 import { calculateGasMargin } from '../utils'
 import { useTokenContract } from './useContract'
-import type { Trade, CurrencyAmount} from '@nnmax/uniswap-sdk-v2';
-import type { TransactionResponse} from 'ethers';
+import type { Trade, CurrencyAmount } from '@nnmax/uniswap-sdk-v2'
+import type { TransactionResponse } from 'ethers'
 
 export enum ApprovalState {
   UNKNOWN,

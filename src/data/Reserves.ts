@@ -5,7 +5,7 @@ import { Interface } from 'ethers'
 import { useChainId } from 'wagmi'
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-import type { Currency } from '@nnmax/uniswap-sdk-v2';
+import type { Currency } from '@nnmax/uniswap-sdk-v2'
 
 const PAIR_INTERFACE = new Interface(IUniswapV2Pair.abi)
 

@@ -6,8 +6,8 @@ import { useSelectedTokenList } from '../state/lists/hooks'
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import { isAddress } from '../utils'
 import { useBytes32TokenContract, useTokenContract } from './useContract'
-import type { WrappedTokenInfo} from '../state/lists/hooks';
-import type { ChainId} from '@nnmax/uniswap-sdk-v2';
+import type { WrappedTokenInfo } from '../state/lists/hooks'
+import type { ChainId } from '@nnmax/uniswap-sdk-v2'
 
 export function useAllTokens(): Record<string, WrappedTokenInfo> {
   const chainId: ChainId = useChainId()

@@ -51,16 +51,16 @@ export default function ReviewModal(props: {
       isKeyboardDismissDisabled={activeStep !== 3}
       isDismissable={activeStep === 3}
     >
-      <Heading slot={"title"} className={'text-sm'}>
-        {"REVIEW PAIR"}
+      <Heading slot={'title'} className={'text-sm'}>
+        {'REVIEW PAIR'}
       </Heading>
       <hr className={'mb-6 mt-1.5 h-px w-full border-none bg-[#6A6A6A]'} />
-      <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>{"YOU WILL RECEIVE"}</p>
+      <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>{'YOU WILL RECEIVE'}</p>
       <p className={'flex justify-between'}>
         <span>{liquidityMinted?.toSignificant(6) ?? '-'}</span>
-        <span>{"POOL TOKENS"}</span>
+        <span>{'POOL TOKENS'}</span>
       </p>
-      <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>{"PAIR"}</p>
+      <p className={'text-xs text-[#9E9E9E] mt-6 mb-4'}>{'PAIR'}</p>
       <div className={'flex items-center gap-2'}>
         <DoubleCurrencyLogo
           size={20}
@@ -69,13 +69,15 @@ export default function ReviewModal(props: {
           currency1={currencies[Field.CURRENCY_B]}
         />
         <span>
-          {currencies[Field.CURRENCY_A]?.symbol}{" / "}{currencies[Field.CURRENCY_B]?.symbol}
+          {currencies[Field.CURRENCY_A]?.symbol}
+          {' / '}
+          {currencies[Field.CURRENCY_B]?.symbol}
         </span>
       </div>
       <hr className={'mb-6 mt-6 h-px w-full border-none bg-[#6A6A6A]'} />
       <div className={'flex justify-between text-xs mb-6'}>
         <p className={'text-[#9E9E9E] flex'}>
-          <span>{"DEPOSITED"}</span>{' '}
+          <span>{'DEPOSITED'}</span>{' '}
           <CurrencyLogo style={{ marginLeft: '8px' }} size={'16px'} currency={currencies[Field.CURRENCY_A]} />
         </p>
         <span>
@@ -84,7 +86,7 @@ export default function ReviewModal(props: {
       </div>
       <div className={'flex justify-between text-xs mb-6'}>
         <p className={'text-[#9E9E9E] flex'}>
-          <span>{"DEPOSITED"}</span>{' '}
+          <span>{'DEPOSITED'}</span>{' '}
           <CurrencyLogo style={{ marginLeft: '8px' }} size={'16px'} currency={currencies[Field.CURRENCY_B]} />
         </p>
         <span>
@@ -92,7 +94,7 @@ export default function ReviewModal(props: {
         </span>
       </div>
       <div className={'flex justify-between text-xs mb-6'}>
-        <span className={'text-[#9E9E9E]'}>{"RATE"}</span>
+        <span className={'text-[#9E9E9E]'}>{'RATE'}</span>
         <span>
           {`1 ${currencies[Field.CURRENCY_A]?.symbol} = ${price?.toSignificant(4)} ${
             currencies[Field.CURRENCY_B]?.symbol
@@ -100,8 +102,11 @@ export default function ReviewModal(props: {
         </span>
       </div>
       <div className={'flex justify-between text-xs'}>
-        <span className={'text-[#9E9E9E]'}>{"SHARE OF POOL"}</span>
-        <span>{noLiquidity ? '100' : poolTokenPercentage?.toSignificant(4)}{"%"}</span>
+        <span className={'text-[#9E9E9E]'}>{'SHARE OF POOL'}</span>
+        <span>
+          {noLiquidity ? '100' : poolTokenPercentage?.toSignificant(4)}
+          {'%'}
+        </span>
       </div>
       <hr className={'mb-6 mt-6 h-px w-full border-none bg-[#6A6A6A]'} />
       <Steps

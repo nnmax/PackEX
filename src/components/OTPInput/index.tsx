@@ -3,8 +3,8 @@ import { useCallback, useEffect, useRef, useState, forwardRef } from 'react'
 import { Input } from 'react-aria-components'
 import clsx from 'clsx'
 import useForkRef from '@/hooks/useForkRef'
-import type { ChangeEventHandler, KeyboardEventHandler} from 'react';
-import type { GroupProps , InputProps } from 'react-aria-components';
+import type { ChangeEventHandler, KeyboardEventHandler } from 'react'
+import type { GroupProps, InputProps } from 'react-aria-components'
 
 export interface OTPRef {
   focus: VoidFunction

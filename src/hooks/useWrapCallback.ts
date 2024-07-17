@@ -6,7 +6,7 @@ import { isObject } from 'lodash-es'
 import { tryParseAmount } from '../state/swap/hooks'
 import { useCurrencyBalance } from '../state/wallet/hooks'
 import { useWETHContract } from './useContract'
-import type { ChainId, Currency} from '@nnmax/uniswap-sdk-v2';
+import type { ChainId, Currency } from '@nnmax/uniswap-sdk-v2'
 
 export enum WrapType {
   NOT_APPLICABLE,

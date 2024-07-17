@@ -9,8 +9,8 @@ import { tryParseAmount } from '../swap/hooks'
 import { useTokenBalances } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
 import type { AppDispatch, AppState } from '../index'
-import type { PairState} from '../../data/Reserves';
-import type { ChainId, Currency, CurrencyAmount, Pair} from '@nnmax/uniswap-sdk-v2';
+import type { PairState } from '../../data/Reserves'
+import type { ChainId, Currency, CurrencyAmount, Pair } from '@nnmax/uniswap-sdk-v2'
 
 export function useBurnState(): AppState['burn'] {
   return useSelector<AppState, AppState['burn']>((state) => state.burn)
@@ -96,12 +96,12 @@ export function useDerivedBurnInfo(
   }
   // user specified a specific amount of token a or b
   else if (tokens[independentField]) {
-      const independentAmount = tryParseAmount(typedValue, tokens[independentField])
-      const liquidityValue = liquidityValues[independentField]
-      if (independentAmount && liquidityValue && !independentAmount.greaterThan(liquidityValue)) {
-        percentToRemove = new Percent(independentAmount.raw, liquidityValue.raw)
-      }
+    const independentAmount = tryParseAmount(typedValue, tokens[independentField])
+    const liquidityValue = liquidityValues[independentField]
+    if (independentAmount && liquidityValue && !independentAmount.greaterThan(liquidityValue)) {
+      percentToRemove = new Percent(independentAmount.raw, liquidityValue.raw)
     }
+  }
 
   const parsedAmounts: {
     [Field.LIQUIDITY_PERCENT]: Percent

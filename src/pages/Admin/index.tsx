@@ -26,7 +26,7 @@ export default function Admin() {
   }
 
   return (
-    <div className={"mt-8"}>
+    <div className={'mt-8'}>
       <Table aria-label={'Withdraw Runes Data'} className={'w-full text-center text-xs'}>
         <TableHeader className={clsx('h-12 text-[#9E9E9E]', { 'loading text-2xl': isLoadingTableData })}>
           <Column isRowHeader>{'ETH Address'}</Column>

@@ -18,7 +18,7 @@ const PoolMy = () => {
 
   return (
     <PoolLayout activeTab={'my'}>
-      <ResizableTableContainer className={"w-full"}>
+      <ResizableTableContainer className={'w-full'}>
         <Table aria-label={'Assets'} className={'w-full text-center text-xs'}>
           <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal')}>
             <Column width={100} className={'text-start'} isRowHeader>
@@ -48,18 +48,18 @@ const PoolMy = () => {
                 <Row id={item.id} className={'[&>td]:pt-4'}>
                   <Cell>
                     <div className={'flex items-center'}>
-                      <span className={'text-xs mr-2'}>{item.token0Name}</span> {"/"}
+                      <span className={'text-xs mr-2'}>{item.token0Name}</span> {'/'}
                       <span className={'text-xs ml-2'}>{item.token1Name}</span>
                     </div>
                   </Cell>
                   <Cell>
                     <div className={'flex items-center justify-center'}>
-                      <CurrencyLogo size={"24px"} src={item.token0LogoUri} />{' '}
+                      <CurrencyLogo size={'24px'} src={item.token0LogoUri} />{' '}
                       <Tooltip title={item.token0Amount}>
                         <span className={'text-xs ml-2 mr-2 truncate'}>{item.token0Amount}</span>
                       </Tooltip>{' '}
-                      {"/"}
-                      <CurrencyLogo size={"24px"} className={'ml-2'} src={item.token1LogoUri} />{' '}
+                      {'/'}
+                      <CurrencyLogo size={'24px'} className={'ml-2'} src={item.token1LogoUri} />{' '}
                       <Tooltip title={item.token1Amount}>
                         <span className={'text-xs ml-2 truncate'}>{item.token1Amount}</span>
                       </Tooltip>

@@ -56,11 +56,11 @@ function Web3StatusInner() {
           </Button>
 
           <Popover crossOffset={-50} className={'rounded bg-[#1D1D1D] p-4 max-w-[366px] w-full'}>
-            <Dialog className={'flex flex-col w-full outline-none'} aria-label={"Blast points and gold"}>
+            <Dialog className={'flex flex-col w-full outline-none'} aria-label={'Blast points and gold'}>
               <div className={'text-xs flex justify-between items-center'}>
                 <div className={'text-[#FCFE03] flex items-center gap-3'}>
                   <TokenBlast color={'#FCFE03'} className={'text-[24px]'} />
-                  <span>{"BLAST POINTS"}</span>
+                  <span>{'BLAST POINTS'}</span>
                 </div>
                 <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.pointAmount}</span>
               </div>
@@ -70,12 +70,12 @@ function Web3StatusInner() {
               <div className={'text-xs flex justify-between items-center'}>
                 <div className={'text-[#FCFE03] flex items-center gap-3'}>
                   <GoldIcon className={'text-[24px]'} />
-                  <span>{"BLAST GOLD"}</span>
+                  <span>{'BLAST GOLD'}</span>
                 </div>
                 <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.goldAmount}</span>
               </div>
               <p className={'text-[#9E9E9E] text-xs leading-5 mt-[14px] ml-9'}>
-                {"BLAST GOLD will be distributed in proportion to the amount of $PAX"}
+                {'BLAST GOLD will be distributed in proportion to the amount of $PAX'}
               </p>
             </Dialog>
           </Popover>

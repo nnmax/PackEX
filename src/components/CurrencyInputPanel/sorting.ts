@@ -14,7 +14,9 @@ function balanceComparator(balanceA?: TokenAmount, balanceB?: TokenAmount) {
   return 0
 }
 
-function getTokenComparator(balances: Record<string, TokenAmount | undefined>): (tokenA: Token, tokenB: Token) => number {
+function getTokenComparator(
+  balances: Record<string, TokenAmount | undefined>,
+): (tokenA: Token, tokenB: Token) => number {
   return function sortTokens(tokenA: Token, tokenB: Token): number {
     // -1 = a is first
     // 1 = b is first

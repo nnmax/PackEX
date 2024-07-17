@@ -1,15 +1,8 @@
 import clsx from 'clsx'
-import {
-  Button,
-  Dialog,
-  DialogTrigger,
-  Modal as AriaModal,
-  ModalOverlay
-} from 'react-aria-components'
+import { Button, Dialog, DialogTrigger, Modal as AriaModal, ModalOverlay } from 'react-aria-components'
 import { BODY_BG_COLOR } from '@/constants'
 import { alphaCompositing, alphaToHex } from '@/utils/color'
-import type {
-  ModalOverlayProps} from 'react-aria-components';
+import type { ModalOverlayProps } from 'react-aria-components'
 
 interface ModalProps extends ModalOverlayProps {
   trigger?: React.ReactNode
@@ -82,7 +75,7 @@ export default function Modal(props: ModalProps) {
                 if (onOpenChange) onOpenChange(false)
               }}
             >
-              <span className={"icon-[pixelarticons--close] text-2xl"} />
+              <span className={'icon-[pixelarticons--close] text-2xl'} />
             </Button>
           )}
           {children}

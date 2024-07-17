@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit'
-import type { ActionCreatorWithPayload} from '@reduxjs/toolkit';
+import type { ActionCreatorWithPayload } from '@reduxjs/toolkit'
 import type { TokenList, Version } from '@uniswap/token-lists'
 
 export const fetchTokenList: Readonly<{

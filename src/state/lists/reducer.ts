@@ -6,12 +6,17 @@ import { acceptListUpdate, addList, fetchTokenList, removeList, selectList } fro
 import type { TokenList } from '@uniswap/token-lists/dist/types'
 
 export interface ListsState {
-  readonly byUrl: Readonly<Record<string, {
-      readonly current: TokenList | null
-      readonly pendingUpdate: TokenList | null
-      readonly loadingRequestId: string | null
-      readonly error: string | null
-    }>>
+  readonly byUrl: Readonly<
+    Record<
+      string,
+      {
+        readonly current: TokenList | null
+        readonly pendingUpdate: TokenList | null
+        readonly loadingRequestId: string | null
+        readonly error: string | null
+      }
+    >
+  >
   // this contains the default list of lists from the last time the updateVersion was called, i.e. the app was reloaded
   readonly lastInitializedDefaultListOfLists?: string[]
   readonly selectedListUrl: string | undefined

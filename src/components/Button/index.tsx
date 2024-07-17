@@ -4,7 +4,7 @@ import { forwardRef } from 'react'
 import { useAccount, useChains, useSwitchChain } from 'wagmi'
 import Wallet from '@/components/Icons/Wallet'
 import { useWalletModalToggle } from '@/state/application/hooks'
-import type { ButtonProps as AriaButtonProps, PressEvent } from 'react-aria-components';
+import type { ButtonProps as AriaButtonProps, PressEvent } from 'react-aria-components'
 
 interface ButtonPrimaryProps extends Omit<AriaButtonProps, 'children'> {
   isError?: boolean
@@ -35,7 +35,7 @@ export const ButtonBase = forwardRef<HTMLButtonElement, ButtonBaseProps>(functio
             loadingClassName,
             'loading text-white text-xl loading-dots absolute left-1/2 -translate-x-1/2 flex',
           )}
-          aria-label={"Loading"}
+          aria-label={'Loading'}
         />
       )}
       {children}
@@ -114,7 +114,8 @@ export const SwitchChainButton = forwardRef<HTMLButtonElement, Omit<ButtonPrimar
         onPress={handleSwitchChain}
         {...restProps}
       >
-        {"Switch to "}{chain.name}
+        {'Switch to '}
+        {chain.name}
       </ButtonPrimary>
     )
   },
@@ -144,7 +145,7 @@ export const ConnectWalletButton = forwardRef<HTMLButtonElement, Omit<ButtonPrim
         ref={ref}
       >
         <Wallet className={'text-xl mr-6'} />
-        <span>{"Connect Wallet"}</span>
+        <span>{'Connect Wallet'}</span>
       </ButtonPrimary>
     )
   },

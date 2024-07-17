@@ -9,7 +9,7 @@ import { tryParseAmount } from '../swap/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
 import type { AppDispatch, AppState } from '../index'
-import type { Pair, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2';
+import type { Pair, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 
 const ZERO = JSBI.BigInt(0)
 

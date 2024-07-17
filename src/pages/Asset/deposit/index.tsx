@@ -69,7 +69,7 @@ export default function Deposit() {
         loading={loading}
         ref={formCardRef}
         data={data}
-        type={"deposit"}
+        type={'deposit'}
         onSubmit={handleSubmit}
       />
     </div>

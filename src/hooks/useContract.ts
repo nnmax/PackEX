@@ -9,7 +9,7 @@ import ERC20_ABI from '../constants/abis/erc20.json'
 import WETH_ABI from '../constants/abis/weth.json'
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall'
 import { getContract } from '../utils'
-import type { ChainId} from '@nnmax/uniswap-sdk-v2';
+import type { ChainId } from '@nnmax/uniswap-sdk-v2'
 import type { Contract } from 'ethers'
 
 // returns null on errors
