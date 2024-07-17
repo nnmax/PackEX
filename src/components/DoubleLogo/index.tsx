@@ -1,5 +1,5 @@
-import { Currency } from '@nnmax/uniswap-sdk-v2'
 import CurrencyLogo from '../CurrencyLogo'
+import type { Currency } from '@nnmax/uniswap-sdk-v2'
 
 interface DoubleCurrencyLogoProps {
   margin?: boolean

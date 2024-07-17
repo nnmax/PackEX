@@ -1,6 +1,6 @@
-import { Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import { useAllTokenBalances } from '../../state/wallet/hooks'
+import type { Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 
 // compare two token amounts with highest one coming first
 function balanceComparator(balanceA?: TokenAmount, balanceB?: TokenAmount) {
@@ -14,9 +14,7 @@ function balanceComparator(balanceA?: TokenAmount, balanceB?: TokenAmount) {
   return 0
 }
 
-function getTokenComparator(balances: {
-  [tokenAddress: string]: TokenAmount | undefined
-}): (tokenA: Token, tokenB: Token) => number {
+function getTokenComparator(balances: Record<string, TokenAmount | undefined>): (tokenA: Token, tokenB: Token) => number {
   return function sortTokens(tokenA: Token, tokenB: Token): number {
     // -1 = a is first
     // 1 = b is first

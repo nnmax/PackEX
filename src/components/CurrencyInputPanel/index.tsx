@@ -1,22 +1,23 @@
-import { Currency, ETHER, Pair, Token } from '@nnmax/uniswap-sdk-v2'
+import { Currency, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 import { useState, useMemo, useRef } from 'react'
-import { useCurrencyBalance } from '../../state/wallet/hooks'
-import CurrencyLogo from '../CurrencyLogo'
-import DoubleCurrencyLogo from '../DoubleLogo'
-import ArrowDown from '@/components/Icons/ArrowDown'
 import clsx from 'clsx'
 import { Button, ListBox, ListBoxItem, Text } from 'react-aria-components'
+import { isFunction, isSet } from 'lodash-es'
+import { useAccount } from 'wagmi'
+import ArrowDown from '@/components/Icons/ArrowDown'
 import IconamoonSearchLight from '@/components/Icons/IconamoonSearchLight'
 import { useAllTokens, useToken } from '@/hooks/Tokens'
 import { isAddress } from '@/utils'
-import { filterTokens } from './filtering'
-import { useTokenComparator } from './sorting'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
-import { isFunction, isSet } from 'lodash-es'
 import Modal from '@/components/Modal'
-import { useAccount } from 'wagmi'
 import NumberInput from '@/components/NumberInput'
+import DoubleCurrencyLogo from '../DoubleLogo'
+import CurrencyLogo from '../CurrencyLogo'
+import { useCurrencyBalance } from '../../state/wallet/hooks'
+import { useTokenComparator } from './sorting'
+import { filterTokens } from './filtering'
+import type { Pair } from '@nnmax/uniswap-sdk-v2'
 
 const selectButtonClasses =
   'flex items-center min-w-32 self-end justify-between rounded-sm bg-[#0f0f0f] px-2 py-1 text-sm text-white relative before:absolute before:right-0 before:top-1/2 before:-translate-y-1/2 before:w-0.5 before:h-[18px] before:bg-[#242424] before:[clip-path:polygon(0_2px,100%_0,100%_100%,0_calc(100%-2px))]'
@@ -32,7 +33,6 @@ interface CurrencyInputPanelProps {
   disableCurrencySelect?: boolean
   hideBalance?: boolean
   pair?: Pair | null
-  hideInput?: boolean
   otherCurrency?: Token | null
   className?: string
   rhombus?: 'top' | 'bottom'
@@ -122,7 +122,7 @@ export default function CurrencyInputPanel({
           <span className={'text-[#FF2323]'}>{error ?? ''}</span>
           <div>
             <span>
-              BALANCE:{' '}
+              {'BALANCE:'}{' '}
               {loadingSelectedCurrencyBalance ? (
                 <span className={'loading'} />
               ) : !!currency && selectedCurrencyBalance ? (
@@ -231,7 +231,7 @@ function ChooseModal(props: {
   }
 
   return (
-    <Modal isOpen={open} onClose={onClose} padding="56px" aria-label="Choose Tokens">
+    <Modal isOpen={open} onClose={onClose} padding={'56px'} aria-label={'Choose Tokens'}>
       <div className={'relative h-9 rounded-md bg-[#B8B8B8]'}>
         <span className={'text-xl'}>
           <IconamoonSearchLight className={'absolute left-2 top-2 text-[#696969]'} />
@@ -350,7 +350,7 @@ function CurrencyList(props: {
           if (selectedKeys.size > 0) {
             const address = selectedKeys.values().next().value as string
             const found = items.find((item) => currencyKey(item) === address)
-            onCurrencySelect(found as Token)
+            onCurrencySelect(found!)
           } else if (selectedCurrency) {
             onCurrencySelect(selectedCurrency)
           }

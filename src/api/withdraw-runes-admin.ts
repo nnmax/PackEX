@@ -1,7 +1,8 @@
+import { useQuery } from '@tanstack/react-query'
 import fetcher from '@/utils/fetcher'
-import { UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
+import type { UndefinedInitialDataOptions} from '@tanstack/react-query';
 
-export type WithdrawRunesAdminData = {
+export interface WithdrawRunesAdminData {
   list: {
     id: number
     txHash: string

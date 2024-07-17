@@ -1,5 +1,5 @@
 import { isAddress } from '../../utils'
-import { Token } from '@nnmax/uniswap-sdk-v2'
+import type { Token } from '@nnmax/uniswap-sdk-v2'
 
 export function filterTokens(tokens: Token[], search: string): Token[] {
   if (search.length === 0) return tokens
@@ -23,7 +23,7 @@ export function filterTokens(tokens: Token[], search: string): Token[] {
     const sParts = s
       .toLowerCase()
       .split(/\s+/)
-      .filter((s) => s.length > 0)
+      .filter((_s) => _s.length > 0)
 
     return lowerSearchParts.every((p) => p.length === 0 || sParts.some((sp) => sp.startsWith(p) || sp.endsWith(p)))
   }

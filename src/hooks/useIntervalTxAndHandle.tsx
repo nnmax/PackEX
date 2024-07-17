@@ -1,7 +1,7 @@
-import { useTransactionFailedModalOpen, useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
 import { useChainId, useTransactionReceipt } from 'wagmi'
+import { useTransactionFailedModalOpen, useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
 
 export default function useIntervalTxAndHandle(
   txHash: undefined | string | null,
@@ -36,7 +36,7 @@ export default function useIntervalTxAndHandle(
       updateFailedModalOpen(true)
       return
     }
-    let timer = setTimeout(() => {
+    const timer = setTimeout(() => {
       if (handleRef.current && handleRef.current.onSuccess) {
         handleRef.current.onSuccess().finally(() => {
           updateInProgressModalOpen(false)

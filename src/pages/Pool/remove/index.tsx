@@ -1,12 +1,14 @@
-import { TransactionResponse } from 'ethers'
 import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom'
 import clsx from 'clsx'
+import { ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
+import { toast } from 'react-toastify'
+import { useAccount, useChainId } from 'wagmi'
+import { useQueryClient } from '@tanstack/react-query'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/burn/actions'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
-import { ChainId, ETHER, Percent } from '@nnmax/uniswap-sdk-v2'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { useCurrency } from '@/hooks/Tokens'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
@@ -16,18 +18,17 @@ import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '
 import useDebouncedChangeHandler from '@/utils/useDebouncedChangeHandler'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
-import { toast } from 'react-toastify'
-import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import { PairState } from '@/data/Reserves'
-import { useQueryClient } from '@tanstack/react-query'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import useIntervalTxAndHandle from '@/hooks/useIntervalTxAndHandle'
 import { TransactionSuccessModal } from '@/components/TransactionModal'
 import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
+import type { ChainId } from '@nnmax/uniswap-sdk-v2'
+import type { TransactionResponse } from 'ethers'
 
 const commonButtonClasses =
   'text-[#9E9E9E] text-center leading-6 w-12 h-6 border border-[#9E9E9E] aria-pressed:border-lemonYellow transition-colors aria-pressed:text-lemonYellow'
@@ -88,9 +89,9 @@ export default function PoolRemove() {
 
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback(
-    (field: Field, typedValue: string) => {
+    (field: Field, _typedValue: string) => {
       setSignatureData(null)
-      return _onUserInput(field, typedValue)
+      return _onUserInput(field, _typedValue)
     },
     [_onUserInput],
   )
@@ -118,7 +119,7 @@ export default function PoolRemove() {
 
     if (!tokenA || !tokenB) throw new Error('could not wrap')
 
-    let methodNames: string[], args: Array<string | string[] | number | boolean>
+    let methodNames: string[], args: (string | string[] | number | boolean)[]
     // we have approval, use normal remove liquidity
     if (_approval === ApprovalState.APPROVED) {
       // removeLiquidityETH
@@ -148,42 +149,37 @@ export default function PoolRemove() {
       }
     }
     // we have a signataure, use permit versions of remove liquidity
-    else if (signatureData !== null) {
-      // removeLiquidityETHWithPermit
-      if (oneCurrencyIsETH) {
-        methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
-        args = [
-          currencyBIsETH ? tokenA.address : tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
-          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ]
-      }
-      // removeLiquidityETHWithPermit
-      else {
-        methodNames = ['removeLiquidityWithPermit']
-        args = [
-          tokenA.address,
-          tokenB.address,
-          liquidityAmount.raw.toString(),
-          amountsMin[Field.CURRENCY_A].toString(),
-          amountsMin[Field.CURRENCY_B].toString(),
-          account,
-          signatureData.deadline,
-          false,
-          signatureData.v,
-          signatureData.r,
-          signatureData.s,
-        ]
-      }
-    } else {
+    else if (signatureData === null) {
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
+    } /** removeLiquidityETHWithPermit */ else if (oneCurrencyIsETH) {
+      methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
+      args = [
+        currencyBIsETH ? tokenA.address : tokenB.address,
+        liquidityAmount.raw.toString(),
+        amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+        amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+        account,
+        signatureData.deadline,
+        false,
+        signatureData.v,
+        signatureData.r,
+        signatureData.s,
+      ]
+    } /** removeLiquidityETHWithPermit */ else {
+      methodNames = ['removeLiquidityWithPermit']
+      args = [
+        tokenA.address,
+        tokenB.address,
+        liquidityAmount.raw.toString(),
+        amountsMin[Field.CURRENCY_A].toString(),
+        amountsMin[Field.CURRENCY_B].toString(),
+        account,
+        signatureData.deadline,
+        false,
+        signatureData.v,
+        signatureData.r,
+        signatureData.s,
+      ]
     }
 
     const safeGasEstimates: bigint[] = await Promise.all(
@@ -191,8 +187,8 @@ export default function PoolRemove() {
         router[methodName]
           .estimateGas(...args)
           .then(calculateGasMargin)
-          .catch((error) => {
-            console.error(`estimateGas failed`, methodName, args, error)
+          .catch((_error) => {
+            console.error(`estimateGas failed`, methodName, args, _error)
             return DEFAULT_GAS
           }),
       ),
@@ -215,9 +211,9 @@ export default function PoolRemove() {
         .then((response: TransactionResponse) => {
           setTxHash(response.hash)
         })
-        .catch((error: Error) => {
+        .catch((_error: Error) => {
           // we only care if the error is something _other_ than the user rejected the tx
-          console.error(error)
+          console.error(_error)
         })
     }
   }
@@ -230,7 +226,7 @@ export default function PoolRemove() {
   )
 
   const [innerLiquidityPercentage, setInnerLiquidityPercentage] = useDebouncedChangeHandler(
-    Number.parseInt(parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0)),
+    Number.parseInt(parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0), 10),
     liquidityPercentChangeCallback,
   )
 
@@ -243,9 +239,9 @@ export default function PoolRemove() {
         })
       }
       await onRemove(ApprovalState.APPROVED)
-    } catch (error) {
+    } catch (_error) {
       updateInProgressModalOpen(false)
-      console.error(error)
+      console.error(_error)
       toast.error('Error removing liquidity')
     }
   }
@@ -311,7 +307,10 @@ export default function PoolRemove() {
                 {'YOU REMOVE'}
               </label>
               <div className={'flex flex-col gap-4'}>
-                <div className={'relative h-7 w-16 rounded-sm'}>{formattedAmounts[Field.LIQUIDITY_PERCENT]}%</div>
+                <div className={'relative h-7 w-16 rounded-sm'}>
+                  {formattedAmounts[Field.LIQUIDITY_PERCENT]}
+                  {'%'}
+                </div>
                 <div>
                   <input
                     id={inputId}
@@ -337,16 +336,16 @@ export default function PoolRemove() {
                   }
                 }}
               >
-                <ToggleButton className={commonButtonClasses} value="25">
+                <ToggleButton className={commonButtonClasses} value={'25'}>
                   {'25%'}
                 </ToggleButton>
-                <ToggleButton className={commonButtonClasses} value="50">
+                <ToggleButton className={commonButtonClasses} value={'50'}>
                   {'50%'}
                 </ToggleButton>
-                <ToggleButton className={commonButtonClasses} value="75">
+                <ToggleButton className={commonButtonClasses} value={'75'}>
                   {'75%'}
                 </ToggleButton>
-                <ToggleButton className={commonButtonClasses} value="100">
+                <ToggleButton className={commonButtonClasses} value={'100'}>
                   {'MAX'}
                 </ToggleButton>
               </ToggleButtonGroup>
@@ -386,7 +385,9 @@ export default function PoolRemove() {
               <div className={'flex items-center text-xs'}>
                 <span className={'ml-1 inline-block rounded px-2 py-1'}>{'RATE'}</span>
                 <span className={'ml-auto text-[#9E9E9E]'}>
-                  1 {currencyA?.symbol} ={' '}
+                  {'1 '}
+                  {currencyA?.symbol}
+                  {' ='}{' '}
                   {pairState === PairState.LOADING ? (
                     <span className={'loading'} />
                   ) : tokenA && pair ? (

@@ -1,12 +1,12 @@
 import fetcher from '@/utils/fetcher'
 
-export type ConnectWalletParams = {
+export interface ConnectWalletParams {
   address: string
   message?: string | null
   signature?: string | null
 }
 
-export type ConnectWalletData = {
+export interface ConnectWalletData {
   /** 邀请人 ID */
   inviterId: number | null
   /** 用户邀请码 */

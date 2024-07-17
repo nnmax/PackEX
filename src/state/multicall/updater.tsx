@@ -1,20 +1,20 @@
-import { Contract } from 'ethers'
 import { useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useChainId } from 'wagmi'
 import { useMulticallContract } from '../../hooks/useContract'
 import useDebounce from '../../hooks/useDebounce'
 import chunkArray from '../../utils/chunkArray'
 import { CancelledError, retry, RetryableError } from '../../utils/retry'
 import { useBlockNumber } from '../application/hooks'
-import { AppDispatch, AppState } from '../index'
 import {
-  Call,
   errorFetchingMulticallResults,
   fetchingMulticallResults,
   parseCallKey,
   updateMulticallResults,
 } from './actions'
-import { useChainId } from 'wagmi'
+import type { AppDispatch, AppState } from '../index'
+import type { Call } from './actions'
+import type { Contract } from 'ethers'
 
 // chunk calls so we do not exceed the gas limit
 const CALL_CHUNK_SIZE = 500
@@ -57,22 +57,22 @@ async function fetchChunk(
 export function activeListeningKeys(
   allListeners: AppState['multicall']['callListeners'],
   chainId?: number,
-): { [callKey: string]: number } {
+): Record<string, number> {
   if (!allListeners || !chainId) return {}
   const listeners = allListeners[chainId]
   if (!listeners) return {}
 
-  return Object.keys(listeners).reduce<{ [callKey: string]: number }>((memo, callKey) => {
+  return Object.keys(listeners).reduce<Record<string, number>>((memo, callKey) => {
     const keyListeners = listeners[callKey]
 
     memo[callKey] = Object.keys(keyListeners)
       .filter((key) => {
-        const blocksPerFetch = parseInt(key)
+        const blocksPerFetch = Number.parseInt(key, 10)
         if (blocksPerFetch <= 0) return false
         return keyListeners[blocksPerFetch] > 0
       })
       .reduce((previousMin, current) => {
-        return Math.min(previousMin, parseInt(current))
+        return Math.min(previousMin, Number.parseInt(current, 10))
       }, Infinity)
     return memo
   }, {})
@@ -87,7 +87,7 @@ export function activeListeningKeys(
  */
 export function outdatedListeningKeys(
   callResults: AppState['multicall']['callResults'],
-  listeningKeys: { [callKey: string]: number },
+  listeningKeys: Record<string, number>,
   chainId: number | undefined,
   latestBlockNumber: number | undefined,
 ): string[] {
@@ -123,7 +123,7 @@ export default function Updater(): null {
   const multicallContract = useMulticallContract()
   const cancellations = useRef<{ blockNumber: number; cancellations: (() => void)[] }>(undefined)
 
-  const listeningKeys: { [callKey: string]: number } = useMemo(() => {
+  const listeningKeys: Record<string, number> = useMemo(() => {
     return activeListeningKeys(debouncedListeners, chainId)
   }, [debouncedListeners, chainId])
 
@@ -178,7 +178,7 @@ export default function Updater(): null {
                 chainId,
                 results: outdatedCallKeys
                   .slice(firstCallKeyIndex, lastCallKeyIndex)
-                  .reduce<{ [callKey: string]: string | null }>((memo, callKey, i) => {
+                  .reduce<Record<string, string | null>>((memo, callKey, i) => {
                     memo[callKey] = returnData[i] ?? null
                     return memo
                   }, {}),

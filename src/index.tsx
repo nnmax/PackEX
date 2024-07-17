@@ -1,7 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { NavigateOptions, RouterProvider } from 'react-router-dom'
+import { RouterProvider } from 'react-router-dom'
 import router from '@/router'
+import type { NavigateOptions } from 'react-router-dom'
 import 'react-toastify/dist/ReactToastify.min.css'
 import './index.css'
 
@@ -17,8 +18,8 @@ declare module 'react-aria-components' {
   }
 }
 
-if ('ethereum' in window) {
-  ;(window.ethereum as any).autoRefreshOnNetworkChange = false
+if (window.ethereum) {
+  window.ethereum.autoRefreshOnNetworkChange = false
 }
 
 createRoot(document.getElementById('root')!).render(

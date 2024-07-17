@@ -1,15 +1,16 @@
-import useENS from '../../hooks/useENS'
 import { parseUnits } from 'ethers'
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount, Trade } from '@nnmax/uniswap-sdk-v2'
-import { ParsedQs } from 'qs'
+import { CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useAccount, useChainId } from 'wagmi'
 import { useCurrency } from '../../hooks/Tokens'
 import { usePrefetchAllCommonPairs, useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
 import useParsedQueryString from '../../hooks/useParsedQueryString'
 import { isAddress } from '../../utils'
-import { AppDispatch, AppState } from '../index'
 import { useCurrencyBalances } from '../wallet/hooks'
+import { useUserSlippageTolerance } from '../user/hooks'
+import { computeSlippageAdjustedAmounts } from '../../utils/prices'
+import useENS from '../../hooks/useENS'
 import {
   Field,
   cleanSelectedCurrencies,
@@ -19,10 +20,10 @@ import {
   switchCurrencies,
   typeInput,
 } from './actions'
-import { SwapState } from './reducer'
-import { useUserSlippageTolerance } from '../user/hooks'
-import { computeSlippageAdjustedAmounts } from '../../utils/prices'
-import { useAccount, useChainId } from 'wagmi'
+import type { SwapState } from './reducer'
+import type { AppDispatch, AppState } from '../index'
+import type { Currency, Trade } from '@nnmax/uniswap-sdk-v2'
+import type { ParsedQs } from 'qs'
 
 export function useSwapState(): AppState['swap'] {
   return useSelector<AppState, AppState['swap']>((state) => state.swap)
@@ -164,7 +165,7 @@ export function useDerivedSwapInfo(): {
   )
 
   const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined)
+  const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, isExactIn ? undefined : parsedAmount)
 
   const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
 
@@ -199,15 +200,13 @@ export function useDerivedSwapInfo(): {
   if (!to || !formattedTo) {
     inputError = inputError ?? 'Enter a recipient'
     inputErrorType = inputErrorType ?? InputErrorType.NotRecipient
-  } else {
-    if (
-      BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
-      (bestTradeExactIn && involvesAddress(bestTradeExactIn, formattedTo)) ||
-      (bestTradeExactOut && involvesAddress(bestTradeExactOut, formattedTo))
-    ) {
-      inputError = inputError ?? 'Invalid recipient'
-      inputErrorType = inputErrorType ?? InputErrorType.InvalidRecipient
-    }
+  } else if (
+    BAD_RECIPIENT_ADDRESSES.indexOf(formattedTo) !== -1 ||
+    (bestTradeExactIn && involvesAddress(bestTradeExactIn, formattedTo)) ||
+    (bestTradeExactOut && involvesAddress(bestTradeExactOut, formattedTo))
+  ) {
+    inputError = inputError ?? 'Invalid recipient'
+    inputErrorType = inputErrorType ?? InputErrorType.InvalidRecipient
   }
 
   const [allowedSlippage] = useUserSlippageTolerance()

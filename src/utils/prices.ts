@@ -1,6 +1,7 @@
-import { CurrencyAmount, Fraction, JSBI, Percent, TokenAmount, Trade } from '@nnmax/uniswap-sdk-v2'
+import { CurrencyAmount, JSBI, Percent, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { Field } from '../state/swap/actions'
 import { basisPointsToPercent } from './index'
+import type { Fraction, Trade } from '@nnmax/uniswap-sdk-v2'
 
 const BASE_FEE = new Percent(JSBI.BigInt(30), JSBI.BigInt(10000))
 const ONE_HUNDRED_PERCENT = new Percent(JSBI.BigInt(10000), JSBI.BigInt(10000))
@@ -13,14 +14,14 @@ export function computeTradePriceBreakdown(trade?: Trade): {
 } {
   // for each hop in our trade, take away the x*y=k price impact from 0.3% fees
   // e.g. for 3 tokens/2 hops: 1 - ((1 - .03) * (1-.03))
-  const realizedLPFee = !trade
-    ? undefined
-    : ONE_HUNDRED_PERCENT.subtract(
+  const realizedLPFee = trade
+    ? ONE_HUNDRED_PERCENT.subtract(
         trade.route.pairs.reduce<Fraction>(
           (currentFee: Fraction): Fraction => currentFee.multiply(INPUT_FRACTION_AFTER_FEE),
           ONE_HUNDRED_PERCENT,
         ),
       )
+    : undefined
 
   // remove lp fees from price impact
   const priceImpactWithoutFeeFraction = trade && realizedLPFee ? trade.priceImpact.subtract(realizedLPFee) : undefined

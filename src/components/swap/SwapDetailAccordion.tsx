@@ -1,11 +1,11 @@
 import clsx from 'clsx'
 import { useState } from 'react'
+import { Button } from 'react-aria-components'
 import ArrowDown from '@/components/Icons/ArrowDown'
-import { Price, Trade } from '@nnmax/uniswap-sdk-v2'
 import { computeTradePriceBreakdown } from '@/utils/prices'
 import { ALLOWED_PRICE_IMPACT, ONE_BIPS } from '@/constants'
 import { useUserSlippageTolerance } from '@/state/user/hooks'
-import { Button } from 'react-aria-components'
+import type { Price, Trade } from '@nnmax/uniswap-sdk-v2'
 
 export default function SwapDetailAccordion(props: { price?: Price; trade?: Trade; transactionFee: string }) {
   const { price, trade, transactionFee } = props
@@ -81,7 +81,7 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
         </p>
         <p className={'flex items-center justify-between'}>
           <span>{'MAX SLIPPAGE'}</span>
-          <span>{allowedSlippage / 100}%</span>
+          <span>{allowedSlippage / 100}{"%"}</span>
         </p>
         <p className={'flex items-center justify-between'}>
           <span>{'LP FEE'}</span>

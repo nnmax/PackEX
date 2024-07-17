@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import ConfirmImg from '@/assets/images/confirm.png'
 import { Button, Heading } from 'react-aria-components'
-import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import QueryString from 'qs'
-import { Asset, useWithdrawFee } from '@/api'
 import { toast } from 'react-toastify'
-import FormCard, { type FormField } from '../components/FormCard'
 import { useSendTransaction } from 'wagmi'
-import { WithdrawRunesParams, useWithdrawRunes } from '@/api/withdraw-runes'
+import { EstimateGasExecutionError } from 'viem'
+import { useWithdrawRunes } from '@/api/withdraw-runes'
 import { useWithdrawRunesConfirm } from '@/api/withdraw-runes-confirm'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
-import { EstimateGasExecutionError } from 'viem'
+import { useWithdrawFee } from '@/api'
+import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
+import ConfirmImg from '@/assets/images/confirm.png'
 import { DEFAULT_GAS } from '@/constants'
 import Modal from '@/components/Modal'
+import FormCard, { type FormField } from '../components/FormCard'
+import type { WithdrawRunesParams} from '@/api/withdraw-runes';
+import type { Asset} from '@/api';
 
 const DOG_MIN_AMOUNT = 1000
 
@@ -93,7 +95,7 @@ export default function Withdraw() {
         data={data}
         onSubmit={handleSubmit}
         loading={withdrawingRunes || sendingTransaction || withdrawingRunesConfirm}
-        type="withdraw"
+        type={"withdraw"}
         minValue={minValue}
         placeholder={`Min ${minValue}`}
         withdrawFee={withdrawFee?.networkFeeInDog}
@@ -113,14 +115,14 @@ export default function Withdraw() {
         isDismissable={false}
       >
         <div className={'flex justify-center mb-6'}>
-          <img className={'w-[36px] h-[36px]'} src={ConfirmImg} alt="confirm" />
+          <img className={'w-[36px] h-[36px]'} src={ConfirmImg} alt={"confirm"} />
         </div>
-        <Heading slot="title" className={'text-[18px] text-center'}>
+        <Heading slot={"title"} className={'text-[18px] text-center'}>
           {'Request Submitted'}
         </Heading>
         <p className={'pt-6 text-[12px] leading-5'}>
-          Your withdrawal request has been received, you will receive the equivalent amount of the original tokens in 24
-          hours, please be patient.
+          {"Your withdrawal request has been received, you will receive the equivalent amount of the original tokens in 24"}
+          {"hours, please be patient."}
         </p>
         <div className={'flex justify-center mt-10'}>
           <Button

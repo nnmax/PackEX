@@ -1,9 +1,9 @@
-import SettingSvg from '@/assets/images/settings-logo.svg'
-import Tooltip from '@/components/Tooltip'
-import { useUserSlippageTolerance } from '@/state/user/hooks'
 import { useState } from 'react'
 import clsx from 'clsx'
 import { TabList, Tabs, Tab, TabPanel } from 'react-aria-components'
+import SettingSvg from '@/assets/images/settings-logo.svg'
+import Tooltip from '@/components/Tooltip'
+import { useUserSlippageTolerance } from '@/state/user/hooks'
 
 const tabClasses =
   'flex w-24 items-center justify-center transition-colors aria-selected:bg-lemonYellow aria-selected:text-black'
@@ -36,11 +36,13 @@ function SettingPanel() {
     setSlippageInput(value)
 
     try {
-      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString())
+      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString(), 10)
       if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < MAX * 100) {
         setSlippage(valueAsIntFromRoundedFloat)
       }
-    } catch {}
+    } catch {
+      /* empty */
+    }
   }
 
   return (
@@ -50,18 +52,18 @@ function SettingPanel() {
         <TabList
           className={'flex h-7 w-[130px] rounded border border-lemonYellow text-center text-xs text-lemonYellow'}
         >
-          <Tab id="auto" className={tabClasses}>
+          <Tab id={'auto'} className={tabClasses}>
             {'Auto'}
           </Tab>
-          <Tab id="custom" className={tabClasses}>
+          <Tab id={'custom'} className={tabClasses}>
             {'Custom'}
           </Tab>
         </TabList>
       </div>
-      <TabPanel id="auto" className={tabPanelClasses}>
+      <TabPanel id={'auto'} className={tabPanelClasses}>
         <p className={'text-sm'}>{`${slippage / 100}%`}</p>
       </TabPanel>
-      <TabPanel id="custom" className={tabPanelClasses}>
+      <TabPanel id={'custom'} className={tabPanelClasses}>
         <div className={'flex gap-4'}>
           <div className={'relative h-7 w-[70px] rounded-sm bg-[#0f0f0f]'}>
             <input

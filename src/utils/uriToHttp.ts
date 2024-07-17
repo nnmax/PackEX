@@ -7,21 +7,26 @@ export default function uriToHttp(uri: string): string[] {
   switch (protocol) {
     case 'https':
       return [uri]
-    case 'http':
+    case 'http': {
       const localhost = ['localhost', '127.0.0.1', '[::1]']
       try {
         const u = new URL(uri)
         if (localhost.includes(u.hostname)) {
           return [uri]
         }
-      } catch (error) {}
+      } catch (error) {
+        /* empty */
+      }
       return ['https' + uri.substr(4), uri]
-    case 'ipfs':
+    }
+    case 'ipfs': {
       const hash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2]
       return [`https://cloudflare-ipfs.com/ipfs/${hash}/`, `https://ipfs.io/ipfs/${hash}/`]
-    case 'ipns':
+    }
+    case 'ipns': {
       const name = uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2]
       return [`https://cloudflare-ipfs.com/ipns/${name}/`, `https://ipfs.io/ipns/${name}/`]
+    }
     default:
       return []
   }

@@ -1,7 +1,7 @@
-import { TokenList } from '@uniswap/token-lists'
+import { pick } from 'lodash-es'
+import type { TokenList } from '@uniswap/token-lists'
 // import schema from '@uniswap/token-lists/src/tokenlist.schema.json'
 // import Ajv from 'ajv'
-import { pick } from 'lodash-es'
 
 // const tokenListValidator = new Ajv({ allErrors: true }).compile(schema)
 

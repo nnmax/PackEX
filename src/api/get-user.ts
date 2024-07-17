@@ -1,7 +1,7 @@
-import { ConnectWalletData } from '@/api/connect-wallet'
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
+import fetcher from '@/utils/fetcher'
+import type { ConnectWalletData } from '@/api/connect-wallet'
 
 export type GetUserData = ConnectWalletData
 

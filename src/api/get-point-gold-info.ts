@@ -1,5 +1,5 @@
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
+import fetcher from '@/utils/fetcher'
 
 interface PointGoldInfo {
   pointAmount: number

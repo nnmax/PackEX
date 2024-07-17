@@ -9,9 +9,6 @@ interface InputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'on
   value: string
   onUserInput: (input: string) => void
   label: string
-  error?: boolean
-  fontSize?: string
-  align?: 'right' | 'left'
   maxDecimals?: number
   loading?: boolean
 }
@@ -38,20 +35,20 @@ const NumberInput = forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         value={value}
         isDisabled={disabled}
-        onChange={(value) => {
-          enforcer(value.replace(/,/g, '.'))
+        onChange={(_value) => {
+          enforcer(_value.replace(/,/g, '.'))
         }}
-        inputMode="decimal"
-        autoComplete="off"
-        type="text"
-        pattern="^[0-9]*[.,]?[0-9]*$"
+        inputMode={'decimal'}
+        autoComplete={'off'}
+        type={'text'}
+        pattern={'^[0-9]*[.,]?[0-9]*$'}
         minLength={1}
         maxLength={79}
       >
         <AriaLabel className={'mb-2 text-xs text-[#9E9E9E] block'}>{label}</AriaLabel>
         <AriaInput
-          spellCheck="false"
-          autoCorrect="off"
+          spellCheck={'false'}
+          autoCorrect={'off'}
           placeholder={placeholder || '0'}
           className={clsx(
             'w-full bg-transparent text-white outline-none reset-input-number placeholder:text-[#9e9e9e]',

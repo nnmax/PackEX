@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useChainId, useWatchBlockNumber } from 'wagmi'
 import useDebounce from '../../hooks/useDebounce'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
 import { updateBlockNumber } from './actions'
-import { useDispatch } from 'react-redux'
-import { useChainId, useWatchBlockNumber } from 'wagmi'
 
 export default function Updater(): null {
   const chainId = useChainId()
@@ -18,12 +18,12 @@ export default function Updater(): null {
 
   const blockNumberCallback = useCallback(
     (blockNumber: bigint) => {
-      setState((state) => {
-        if (chainId === state.chainId) {
-          if (typeof state.blockNumber !== 'number') return { chainId, blockNumber: Number(blockNumber) }
-          return { chainId, blockNumber: Math.max(Number(blockNumber), state.blockNumber) ?? null }
+      setState((_state) => {
+        if (chainId === _state.chainId) {
+          if (typeof _state.blockNumber !== 'number') return { chainId, blockNumber: Number(blockNumber) }
+          return { chainId, blockNumber: Math.max(Number(blockNumber), _state.blockNumber) ?? null }
         }
-        return state
+        return _state
       })
     },
     [chainId, setState],

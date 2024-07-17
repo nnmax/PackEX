@@ -1,13 +1,13 @@
+import { createContext, useContext, useState } from 'react'
 import { CURRENT_BTC_WALLET, IS_PROD } from '@/constants'
 import useOkxWallet from '@/hooks/useOkxWallet'
 import useUnisatWallet from '@/hooks/useUnisatWallet'
-import { createContext, useContext, useState } from 'react'
 
 export type BTCWallet = 'unisat' | 'okx'
 
 export type BTCNetwork = 'livenet' | 'testnet'
 
-export type BTCWalletContextValue = {
+export interface BTCWalletContextValue {
   connect: (wallet: BTCWallet) => Promise<{
     address: string
     network: BTCNetwork | undefined
@@ -31,21 +31,21 @@ export type BTCWalletContextValue = {
 
 const BTCWalletContext = createContext<BTCWalletContextValue>({
   address: undefined,
-  connect: async () => {
+  connect: () => {
     throw new Error('BTCWalletContext provider is not found')
   },
   network: undefined,
   publicKey: undefined,
-  signMessage: async () => {
+  signMessage: () => {
     throw new Error('BTCWalletContext provider is not found')
   },
-  signPsbt: async () => {
+  signPsbt: () => {
     throw new Error('BTCWalletContext provider is not found')
   },
-  pushPsbt: async () => {
+  pushPsbt: () => {
     throw new Error('BTCWalletContext provider is not found')
   },
-  verifyNetwork: async () => {
+  verifyNetwork: () => {
     throw new Error('BTCWalletContext provider is not found')
   },
   currentWallet: undefined,
@@ -58,6 +58,10 @@ const BTCWalletContext = createContext<BTCWalletContextValue>({
     })
   },
 })
+
+if (import.meta.env.DEV) {
+  BTCWalletContext.displayName = 'BTCWalletContext'
+}
 
 export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
   const unisat = useUnisatWallet()
@@ -129,6 +133,7 @@ export function BTCWalletProvider({ children }: { children: React.ReactNode }) {
     return okx.getBasicInfo()
   }
 
+  // eslint-disable-next-line react/jsx-no-constructed-context-values
   const value: BTCWalletContextValue = {
     connect,
     verifyNetwork,

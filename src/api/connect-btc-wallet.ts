@@ -1,13 +1,13 @@
 import fetcher from '@/utils/fetcher'
 
-export type ConnectBTCWalletParams = {
+export interface ConnectBTCWalletParams {
   address: string
   message?: string | null
   signature?: string | null
   publicKey?: string | null
 }
 
-export type ConnectBTCWalletData = {
+export interface ConnectBTCWalletData {
   result?: 'success'
   message?: string
 }

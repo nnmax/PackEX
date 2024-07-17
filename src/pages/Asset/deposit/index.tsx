@@ -1,14 +1,14 @@
 import { Link, useLocation } from 'react-router-dom'
-import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
-import FormCard from '../components/FormCard'
 import QueryString from 'qs'
-import { Asset } from '@/api'
-import depositRunes from '@/api/deposit-runes'
-import useBTCWallet from '@/hooks/useBTCWallet'
 import { toast } from 'react-toastify'
 import { useRef, useState } from 'react'
+import depositRunes from '@/api/deposit-runes'
+import useBTCWallet from '@/hooks/useBTCWallet'
+import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import { useRunesBalance } from '@/api/get-runes-balance'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import FormCard from '../components/FormCard'
+import type { Asset } from '@/api'
 
 export default function Deposit() {
   useDocumentTitle('Deposit')
@@ -69,7 +69,7 @@ export default function Deposit() {
         loading={loading}
         ref={formCardRef}
         data={data}
-        type="deposit"
+        type={"deposit"}
         onSubmit={handleSubmit}
       />
     </div>

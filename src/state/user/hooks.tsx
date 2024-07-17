@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, AppState } from '../index'
 import { updateUserDeadline, updateUserSlippageTolerance } from './actions'
+import type { AppDispatch, AppState } from '../index'
 
 export function useUserSlippageTolerance(): [number, (slippage: number) => void] {
   const dispatch = useDispatch<AppDispatch>()
@@ -10,8 +10,8 @@ export function useUserSlippageTolerance(): [number, (slippage: number) => void]
   })
 
   const setUserSlippageTolerance = useCallback(
-    (userSlippageTolerance: number) => {
-      dispatch(updateUserSlippageTolerance({ userSlippageTolerance }))
+    (_userSlippageTolerance: number) => {
+      dispatch(updateUserSlippageTolerance({ userSlippageTolerance: _userSlippageTolerance }))
     },
     [dispatch],
   )
@@ -26,8 +26,8 @@ export function useUserDeadline(): [number, (slippage: number) => void] {
   })
 
   const setUserDeadline = useCallback(
-    (userDeadline: number) => {
-      dispatch(updateUserDeadline({ userDeadline }))
+    (_userDeadline: number) => {
+      dispatch(updateUserDeadline({ userDeadline: _userDeadline }))
     },
     [dispatch],
   )

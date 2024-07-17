@@ -1,6 +1,7 @@
-import { UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
+import type { UndefinedInitialDataOptions} from '@tanstack/react-query';
 
 interface UsePriceOptions
   extends Omit<UndefinedInitialDataOptions<string | null, Error, string | null, string[]>, 'queryKey' | 'queryFn'> {}

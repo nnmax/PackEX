@@ -1,8 +1,10 @@
-import { BrowserProvider, JsonRpcSigner, Contract, getAddress, ZeroAddress } from 'ethers'
+import { Contract, getAddress, ZeroAddress } from 'ethers'
 import IUniswapV2Router02 from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
+import { ChainId, JSBI, Percent, Token, ETHER } from '@nnmax/uniswap-sdk-v2'
 import { ROUTER_ADDRESS } from '../constants'
-import { ChainId, JSBI, Percent, Token, CurrencyAmount, Currency, ETHER } from '@nnmax/uniswap-sdk-v2'
-import { TokenAddressMap } from '../state/lists/hooks'
+import type { CurrencyAmount, Currency} from '@nnmax/uniswap-sdk-v2';
+import type { BrowserProvider, JsonRpcSigner} from 'ethers';
+import type { TokenAddressMap } from '../state/lists/hooks'
 
 // returns the checksummed address if the address is valid, otherwise returns false
 export function isAddress(value: any): string | false {

@@ -1,6 +1,6 @@
-import { WithdrawRunesParams } from '@/api/withdraw-runes'
-import fetcher from '@/utils/fetcher'
 import { useMutation } from '@tanstack/react-query'
+import fetcher from '@/utils/fetcher'
+import type { WithdrawRunesParams } from '@/api/withdraw-runes'
 
 export type WithdrawRunesConfirmParams = WithdrawRunesParams & {
   txHash: string

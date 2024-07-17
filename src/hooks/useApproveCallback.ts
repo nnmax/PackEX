@@ -1,6 +1,7 @@
-import { TransactionResponse, MaxUint256 } from 'ethers'
-import { Trade, TokenAmount, CurrencyAmount, ETHER } from '@nnmax/uniswap-sdk-v2'
+import { MaxUint256 } from 'ethers'
+import { TokenAmount, ETHER } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useAccount } from 'wagmi'
 import { ROUTER_ADDRESS } from '../constants'
 import { useTokenAllowance } from '../data/Allowances'
 import { Field } from '../state/swap/actions'
@@ -8,7 +9,8 @@ import { useTransactionAdder, useHasPendingApproval } from '../state/transaction
 import { computeSlippageAdjustedAmounts } from '../utils/prices'
 import { calculateGasMargin } from '../utils'
 import { useTokenContract } from './useContract'
-import { useAccount } from 'wagmi'
+import type { Trade, CurrencyAmount} from '@nnmax/uniswap-sdk-v2';
+import type { TransactionResponse} from 'ethers';
 
 export enum ApprovalState {
   UNKNOWN,

@@ -1,22 +1,25 @@
 import { useState, useMemo } from 'react'
 import { isMobile } from 'react-device-detect'
+import { isString } from 'lodash-es'
+import { Heading } from 'react-aria-components'
+import { ConnectorAlreadyConnectedError, useAccount, useChainId, useConnect, useSignMessage } from 'wagmi'
+import { useQueryClient } from '@tanstack/react-query'
+import useBTCWallet from '@/hooks/useBTCWallet'
+import Modal from '@/components/Modal'
+import { connectBTCWallet, connectWallet } from '@/api'
+import { useUserInfo } from '@/api/get-user'
+import unisatLogo from '../../assets/images/unisat.svg'
+import okxLogo from '../../assets/images/okx.svg'
+import { CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
 import {
   useBTCWalletModalOpen,
   useBTCWalletModalToggle,
   useWalletModalOpen,
   useWalletModalToggle,
 } from '../../state/application/hooks'
-import { CURRENT_BTC_WALLET, MESSAGE_KEY, SIGNATURE_KEY } from '../../constants'
-import { ConnectWalletData, GetUserData, connectBTCWallet, connectWallet } from '@/api'
-import okxLogo from '../../assets/images/okx.svg'
-import unisatLogo from '../../assets/images/unisat.svg'
-import useBTCWallet, { BTCWallet } from '@/hooks/useBTCWallet'
-import { isString } from 'lodash-es'
-import Modal from '@/components/Modal'
-import { Heading } from 'react-aria-components'
-import { Connector, ConnectorAlreadyConnectedError, useAccount, useChainId, useConnect, useSignMessage } from 'wagmi'
-import { useQueryClient } from '@tanstack/react-query'
-import { useUserInfo } from '@/api/get-user'
+import type { Connector } from 'wagmi'
+import type { BTCWallet } from '@/hooks/useBTCWallet'
+import type { ConnectWalletData, GetUserData } from '@/api'
 
 export default function WalletModal() {
   const [pendingWallet, setPendingWallet] = useState<Connector>()
@@ -165,13 +168,13 @@ export function BTCWalletModal() {
     <WalletModalWrapper open={walletModalOpen} onClose={() => toggleWalletModal()}>
       <WalletModalListItem
         icon={unisatLogo}
-        name="Unisat Wallet"
+        name={'Unisat Wallet'}
         loading={loadingWallet === 'unisat'}
         onClick={() => handleClick('unisat')}
       />
       <WalletModalListItem
         icon={okxLogo}
-        name="OKX Wallet"
+        name={'OKX Wallet'}
         loading={loadingWallet === 'okx'}
         onClick={() => handleClick('okx')}
       />
@@ -183,8 +186,8 @@ export function WalletModalWrapper(props: { open: boolean; onClose: () => void; 
   const { open, onClose, children } = props
 
   return (
-    <Modal isOpen={open} onClose={onClose} padding="56px">
-      <Heading slot="title" className={'text-md mb-[18px] pl-4'}>
+    <Modal isOpen={open} onClose={onClose} padding={'56px'}>
+      <Heading slot={'title'} className={'text-md mb-[18px] pl-4'}>
         {'Connect Wallet'}
       </Heading>
       <p className={'pl-4 text-xs leading-5'}>
@@ -237,7 +240,7 @@ function WalletModalListItem(props: {
   )
 }
 
-function getInjectedConnectors(connectors: readonly Connector[], excludeUniswapConnections?: boolean) {
+function getInjectedConnectors(connectors: readonly Connector[]) {
   let isCoinbaseWalletBrowser = false
   const injectedConnectors = connectors.filter((c) => {
     // Special-case: Ignore coinbase eip6963-injected connector; coinbase connection is handled via the SDK connector.

@@ -1,6 +1,6 @@
-import { BTCNetwork } from '@/hooks/useBTCWallet'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
+import type { BTCNetwork } from '@/hooks/useBTCWallet'
 
 export default function useUnisatWallet() {
   const [address, setAddress] = useState<string>()
@@ -80,11 +80,11 @@ export default function useUnisatWallet() {
     }
   }
 
-  const switchNetwork = async (network: BTCNetwork) => {
+  const switchNetwork = async (_network: BTCNetwork) => {
     const unisat = getWallet()
 
     try {
-      await unisat.switchNetwork(network)
+      await unisat.switchNetwork(_network)
     } catch (error) {
       console.error(error)
       toast.error('Failed to switch network')

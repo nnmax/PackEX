@@ -1,10 +1,10 @@
-import { TransactionResponse } from 'ethers'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AppDispatch, AppState } from '../index'
-import { addTransaction, updateFailedModalOpen, updateInProgressModalOpen } from './actions'
-import { TransactionDetails } from './reducer'
 import { useAccount, useChainId } from 'wagmi'
+import { addTransaction, updateFailedModalOpen, updateInProgressModalOpen } from './actions'
+import type { AppDispatch, AppState } from '../index'
+import type { TransactionDetails } from './reducer'
+import type { TransactionResponse } from 'ethers'
 
 // helper that can take a ethers library transaction response and add it to the list of transactions
 export function useTransactionAdder(): (
@@ -34,7 +34,7 @@ export function useTransactionAdder(): (
 }
 
 // returns all the transactions for the current chain
-export function useAllTransactions(): { [txHash: string]: TransactionDetails } {
+export function useAllTransactions(): Record<string, TransactionDetails> {
   const chainId = useChainId()
 
   const state = useSelector<AppState, AppState['transactions']>((state) => state.transactions)

@@ -1,26 +1,16 @@
-import { Interface, FunctionFragment, Contract } from 'ethers'
 import { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useBlockNumber } from '../application/hooks'
-import { AppDispatch, AppState } from '../index'
-import {
-  addMulticallListeners,
-  Call,
-  removeMulticallListeners,
-  parseCallKey,
-  toCallKey,
-  ListenerOptions,
-} from './actions'
 import { useChainId } from 'wagmi'
-
-export interface Result extends ReadonlyArray<any> {
-  readonly [key: string]: any
-}
+import { useBlockNumber } from '../application/hooks'
+import { addMulticallListeners, removeMulticallListeners, parseCallKey, toCallKey } from './actions'
+import type { AppDispatch, AppState } from '../index'
+import type { Call, ListenerOptions } from './actions'
+import type { Interface, FunctionFragment, Contract, Result } from 'ethers'
 
 type MethodArg = string | number | bigint
-type MethodArgs = Array<MethodArg | MethodArg[]>
+type MethodArgs = (MethodArg | MethodArg[])[]
 
-type OptionalMethodInputs = Array<MethodArg | MethodArg[] | undefined> | undefined
+type OptionalMethodInputs = (MethodArg | MethodArg[] | undefined)[] | undefined
 
 function isMethodArg(x: unknown): x is MethodArg {
   return ['string', 'number'].indexOf(typeof x) !== -1
@@ -69,11 +59,11 @@ function useCallsData(calls: (Call | undefined)[], options?: ListenerOptions): C
   useEffect(() => {
     const callKeys: string[] = JSON.parse(serializedCallKeys)
     if (!chainId || callKeys.length === 0) return undefined
-    const calls = callKeys.map((key) => parseCallKey(key))
+    const _calls = callKeys.map((key) => parseCallKey(key))
     dispatch(
       addMulticallListeners({
         chainId,
-        calls,
+        calls: _calls,
         options,
       }),
     )
@@ -82,7 +72,7 @@ function useCallsData(calls: (Call | undefined)[], options?: ListenerOptions): C
       dispatch(
         removeMulticallListeners({
           chainId,
-          calls,
+          calls: _calls,
           options,
         }),
       )

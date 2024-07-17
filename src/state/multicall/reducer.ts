@@ -9,26 +9,19 @@ import {
 } from './actions'
 
 export interface MulticallState {
-  callListeners?: {
-    // on a per-chain basis
-    [chainId: number]: {
-      // stores for each call key the listeners' preferences
-      [callKey: string]: {
-        // stores how many listeners there are per each blocks per fetch preference
-        [blocksPerFetch: number]: number
-      }
-    }
-  }
+  callListeners?: Record<number, Record<string, Record<number, number>>>
 
-  callResults: {
-    [chainId: number]: {
-      [callKey: string]: {
+  callResults: Record<
+    number,
+    Record<
+      string,
+      {
         data?: string | null
         blockNumber?: number
         fetchingBlockNumber?: number
       }
-    }
-  }
+    >
+  >
 }
 
 const initialState: MulticallState = {
@@ -74,13 +67,13 @@ export default createReducer(initialState, (builder) =>
       calls.forEach((call) => {
         const callKey = toCallKey(call)
         const current = state.callResults[chainId][callKey]
-        if (!current) {
+        if (current) {
+          if ((current.fetchingBlockNumber ?? 0) >= fetchingBlockNumber) return
+          state.callResults[chainId][callKey].fetchingBlockNumber = fetchingBlockNumber
+        } else {
           state.callResults[chainId][callKey] = {
             fetchingBlockNumber,
           }
-        } else {
-          if ((current.fetchingBlockNumber ?? 0) >= fetchingBlockNumber) return
-          state.callResults[chainId][callKey].fetchingBlockNumber = fetchingBlockNumber
         }
       })
     })

@@ -1,3 +1,4 @@
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import NotFound from '@/pages/404'
 import Admin from '@/pages/Admin'
 import Asset from '@/pages/Asset'
@@ -10,7 +11,6 @@ import PoolMy from '@/pages/Pool/my'
 import PoolRemove from '@/pages/Pool/remove'
 import Swap from '@/pages/Swap'
 import Root from '@/root'
-import { createBrowserRouter, Navigate } from 'react-router-dom'
 
 export default createBrowserRouter([
   {

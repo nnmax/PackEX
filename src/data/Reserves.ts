@@ -1,10 +1,11 @@
-import { TokenAmount, Pair, Currency } from '@nnmax/uniswap-sdk-v2'
+import { TokenAmount, Pair } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 import IUniswapV2Pair from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { Interface } from 'ethers'
+import { useChainId } from 'wagmi'
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-import { useChainId } from 'wagmi'
+import type { Currency } from '@nnmax/uniswap-sdk-v2';
 
 const PAIR_INTERFACE = new Interface(IUniswapV2Pair.abi)
 

@@ -1,20 +1,20 @@
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
 import { uniqueId } from 'lodash-es'
+import fetcher from '@/utils/fetcher'
 
-export type PaxTableData = {
+export interface PaxTableData {
   id: string
   totalAmount: number
   address: string
   rank: number
 }
 
-export type PaxRewardRatio = {
+export interface PaxRewardRatio {
   name: string
   ratio: string
 }
 
-export type GetPaxInfoData = {
+export interface GetPaxInfoData {
   dailyRewards: number
   paxContract: string
   leaderBoard: PaxTableData[]

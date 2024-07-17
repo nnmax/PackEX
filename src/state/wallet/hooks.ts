@@ -1,19 +1,18 @@
-import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import { CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
+import { useAccount } from 'wagmi'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useMulticallContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
-import { useAccount } from 'wagmi'
+import type { Currency} from '@nnmax/uniswap-sdk-v2';
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
  */
 export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): [
-  {
-    [address: string]: CurrencyAmount | undefined
-  },
+  Record<string, CurrencyAmount | undefined>,
   boolean,
 ] {
   const multicallContract = useMulticallContract()
@@ -38,7 +37,7 @@ export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): [
 
   return useMemo(
     () => [
-      addresses.reduce<{ [address: string]: CurrencyAmount }>((memo, address, i) => {
+      addresses.reduce<Record<string, CurrencyAmount>>((memo, address, i) => {
         const value = results?.[i]?.result?.[0]
         if (value) memo[address] = CurrencyAmount.ether(JSBI.BigInt(value.toString()))
         return memo
@@ -55,7 +54,7 @@ export function useETHBalances(uncheckedAddresses?: (string | undefined)[]): [
 export function useTokenBalancesWithLoadingIndicator(
   address?: string,
   tokens?: (Token | undefined)[],
-): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+): [Record<string, TokenAmount | undefined>, boolean] {
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens],
@@ -71,7 +70,7 @@ export function useTokenBalancesWithLoadingIndicator(
     useMemo(
       () =>
         address && validatedTokens.length > 0
-          ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
+          ? validatedTokens.reduce<Record<string, TokenAmount | undefined>>((memo, token, i) => {
               const value = balances?.[i]?.result?.[0] as bigint | undefined
               const amount = value === null || value === undefined ? undefined : JSBI.BigInt(value.toString())
               if (amount !== undefined) {
@@ -89,7 +88,7 @@ export function useTokenBalancesWithLoadingIndicator(
 export function useTokenBalances(
   address?: string,
   tokens?: (Token | undefined)[],
-): { [tokenAddress: string]: TokenAmount | undefined } {
+): Record<string, TokenAmount | undefined> {
   return useTokenBalancesWithLoadingIndicator(address, tokens)[0]
 }
 
@@ -134,7 +133,7 @@ export function useCurrencyBalance(account?: string, currency?: Currency): [Curr
 }
 
 // mimics useAllBalances
-export function useAllTokenBalances(): { [tokenAddress: string]: TokenAmount | undefined } {
+export function useAllTokenBalances(): Record<string, TokenAmount | undefined> {
   const { address: account } = useAccount()
   const allTokens = useAllTokens()
   const allTokensArray = useMemo(() => Object.values(allTokens ?? {}), [allTokens])

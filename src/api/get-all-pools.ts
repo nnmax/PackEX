@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import fetcher from '@/utils/fetcher'
-import { UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
+import type { UndefinedInitialDataOptions} from '@tanstack/react-query';
 
 export interface PoolAllItem {
   id: number
@@ -23,7 +24,7 @@ export interface PoolAllItem {
   lpTokenAmount: number | null
 }
 
-export type AllPoolListData = {
+export interface AllPoolListData {
   allPools: PoolAllItem[]
 }
 

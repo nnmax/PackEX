@@ -1,7 +1,7 @@
 import { BrowserProvider } from 'ethers'
 import { useMemo } from 'react'
-import type { Client, Transport } from 'viem'
 import { useClient, useConnectorClient } from 'wagmi'
+import type { Client, Transport } from 'viem'
 
 const providers = new WeakMap<Client, BrowserProvider>()
 

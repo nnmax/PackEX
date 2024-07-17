@@ -1,14 +1,15 @@
-import { CurrencyAmount, ETHER, JSBI, Pair, Percent, Price, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import { CurrencyAmount, ETHER, JSBI, Percent, Price } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useAccount, useChainId } from 'wagmi'
 import { PairState, usePair } from '../../data/Reserves'
 import { useTotalSupply } from '../../data/TotalSupply'
 import { wrappedCurrency, wrappedCurrencyAmount } from '../../utils/wrappedCurrency'
-import { AppDispatch, AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { Field, typeInput } from './actions'
-import { useAccount, useChainId } from 'wagmi'
+import type { AppDispatch, AppState } from '../index'
+import type { Pair, Token, TokenAmount } from '@nnmax/uniswap-sdk-v2';
 
 const ZERO = JSBI.BigInt(0)
 

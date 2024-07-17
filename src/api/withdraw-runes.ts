@@ -1,7 +1,7 @@
-import fetcher from '@/utils/fetcher'
 import { useMutation } from '@tanstack/react-query'
+import fetcher from '@/utils/fetcher'
 
-export type WithdrawRunesParams = {
+export interface WithdrawRunesParams {
   originNetworkName: string
   chainId: number
   tokenContract: string
@@ -11,7 +11,7 @@ export type WithdrawRunesParams = {
   amountReceived: number
 }
 
-export type WithdrawRunesData = {
+export interface WithdrawRunesData {
   contractMethod: {
     /**
      * 合约所在区块链的 id

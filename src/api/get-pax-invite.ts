@@ -1,15 +1,15 @@
-import { PaxTableData } from '@/api/get-pax-info'
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
 import { uniqueId } from 'lodash-es'
+import fetcher from '@/utils/fetcher'
+import type { PaxTableData } from '@/api/get-pax-info'
 
-export type Bonus = {
+export interface Bonus {
   bonusAmount: number
   symbol: string
   logoUri: string
 }
 
-export type GetPaxInviteData = {
+export interface GetPaxInviteData {
   inviteCode: string
   inviteList: PaxTableData[]
   userPax?: PaxTableData

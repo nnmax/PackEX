@@ -1,5 +1,6 @@
+import { useQuery } from '@tanstack/react-query'
 import fetcher from '@/utils/fetcher'
-import { UndefinedInitialDataOptions, useQuery } from '@tanstack/react-query'
+import type { UndefinedInitialDataOptions} from '@tanstack/react-query';
 
 export interface WithdrawFeeData {
   networkFeeInDog: number

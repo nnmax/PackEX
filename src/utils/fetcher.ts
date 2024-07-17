@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify'
-import type { CommonResponse } from '@/api/types'
-import { disconnectWallet } from '@/api'
+import disconnectWallet from '@/api/disconnect-wallet'
 import { API_BASE } from '@/constants'
+import type { CommonResponse } from '@/api/types'
 
 interface FetcherOptions<ResponseData> extends RequestInit {
   disabledErrorToast?: boolean | ((response: CommonResponse<ResponseData>) => boolean)

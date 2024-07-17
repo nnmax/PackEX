@@ -1,8 +1,8 @@
+import clsx from 'clsx'
+import { Fragment } from 'react'
 import StepFinished from '@/components/Icons/StepFinished'
 import StepPending from '@/components/Icons/StepPending'
 import StepProgress from '@/components/Icons/StepProgress'
-import clsx from 'clsx'
-import { Fragment } from 'react'
 
 type StepStatus = 'finished' | 'progress' | 'pending'
 

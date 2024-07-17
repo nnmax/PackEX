@@ -1,5 +1,5 @@
-import fetcher from '@/utils/fetcher'
 import { useMutation } from '@tanstack/react-query'
+import fetcher from '@/utils/fetcher'
 
 export default function useAgree() {
   return useMutation({

@@ -15,7 +15,7 @@ const PoolAll = () => {
     <PoolLayout activeTab={'all'}>
       <Table aria-label={'Assets'} className={'w-full text-center text-xs mx-8'}>
         <TableHeader className={clsx('h-12 text-[#9E9E9E] [&_th]:font-normal')}>
-          <Column className="text-start pl-12" isRowHeader>
+          <Column className={"text-start pl-12"} isRowHeader>
             {'POOL NAME'}
           </Column>
           <Column>
@@ -40,10 +40,10 @@ const PoolAll = () => {
               <Cell>
                 <div className={'flex items-center'}>
                   <div className={'flex'}>
-                    <img className={'relative h-6 w-6 rounded-full'} src={item.token0LogoUri} alt="logo0" />
-                    <img className={'relative h-6 w-6 rounded-full mr-4'} src={item.token1LogoUri} alt="logo1" />
+                    <img className={'relative h-6 w-6 rounded-full'} src={item.token0LogoUri} alt={"logo0"} />
+                    <img className={'relative h-6 w-6 rounded-full mr-4'} src={item.token1LogoUri} alt={"logo1"} />
                   </div>
-                  <span className={'text-xs mr-2'}>{item.token0Name}</span> /
+                  <span className={'text-xs mr-2'}>{item.token0Name}</span> {"/"}
                   <span className={'text-xs ml-2'}>{item.token1Name}</span>
                 </div>
               </Cell>

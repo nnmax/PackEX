@@ -1,28 +1,24 @@
-import { Asset } from '@/api'
+import clsx from 'clsx'
+import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
+import { useAccount } from 'wagmi'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { useBTCWalletModalToggle } from '@/state/application/hooks'
-import clsx from 'clsx'
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import { Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
-import { useAccount } from 'wagmi'
+import type { Asset } from '@/api'
 
 export enum FormField {
   Amount = 'amount',
   Address = 'address',
 }
 
-const width = 404
-
-const width1 = 200
-
-const height1 = 60
-
-const height2 = 156
-
-const height3 = 96
+const WIDTH = 404
+const WIDTH1 = 200
+const HEIGHT1 = 60
+const HEIGHT2 = 156
+const HEIGHT3 = 96
 
 interface FormCardProps {
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void
@@ -85,14 +81,14 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
 
   return (
     <Form className={'mt-[60px] flex flex-col items-center'} onSubmit={onSubmit} ref={formRef}>
-      <div className={'flex flex-col gap-1'} style={{ width }}>
+      <div className={'flex flex-col gap-1'} style={{ width: WIDTH }}>
         <div className={'flex gap-1 text-sm'}>
           <div
             className={clsx('flex flex-1 items-center rounded-l-md bg-[#242424] px-6 py-5')}
             style={{
-              clipPath: getDeformityOne(width1, height1, 6),
-              width: width1,
-              height: height1,
+              clipPath: getDeformityOne(WIDTH1, HEIGHT1, 6),
+              width: WIDTH1,
+              height: HEIGHT1,
             }}
           >
             <span className={'mr-2 text-[#9E9E9E]'}>{'Chain'}</span>
@@ -102,9 +98,9 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
           <div
             className={clsx('flex flex-1 items-center rounded-r-md bg-[#242424] px-6 py-5')}
             style={{
-              clipPath: getDeformityTwo(width1, height1, 6),
-              width: width1,
-              height: height1,
+              clipPath: getDeformityTwo(WIDTH1, HEIGHT1, 6),
+              width: WIDTH1,
+              height: HEIGHT1,
             }}
           >
             <span className={'mr-2 text-[#9E9E9E]'}>{'Token'}</span>
@@ -114,7 +110,7 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
         </div>
         <div
           className={'relative rounded-md bg-[#242424] p-6'}
-          style={{ height: height2, clipPath: type === 'deposit' ? getDeformityThree(width, height2, 6) : undefined }}
+          style={{ height: HEIGHT2, clipPath: type === 'deposit' ? getDeformityThree(WIDTH, HEIGHT2, 6) : undefined }}
         >
           <div className={'flex flex-col justify-between h-full'}>
             <NumberField
@@ -130,14 +126,14 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
               isRequired
             >
               <Label className={'text-[#9E9E9E] text-xs'}>{'Amount'}</Label>
-              <div className="flex items-center mt-1">
+              <div className={'flex items-center mt-1'}>
                 <Input
                   className={'flex-1 bg-transparent placeholder:text-[#4F4F4F] focus:outline-none'}
                   autoFocus
                   placeholder={placeholder}
                 />
                 <button
-                  type="button"
+                  type={'button'}
                   onClick={handleMax}
                   className={'flex h-6 w-12 items-center justify-center rounded-sm border border-white text-sm'}
                 >
@@ -173,19 +169,22 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
             <div
               className={'relative rounded-md bg-[#242424] p-6 text-xs'}
               style={{
-                clipPath: getDeformityThree(width, height3, 6),
-                height: height3,
+                clipPath: getDeformityThree(WIDTH, HEIGHT3, 6),
+                height: HEIGHT3,
               }}
             >
               <p className={'flex justify-between items-center mb-4'}>
-                <span>Network fee</span>
+                <span>{'Network fee'}</span>
                 <span className={'text-[#9E9E9E]'}>
-                  {isLoadingWithdrawFee ? <span className={'loading'} /> : withdrawFee ?? '-'} DOG
+                  {isLoadingWithdrawFee ? <span className={'loading'} /> : withdrawFee ?? '-'} {'DOG'}
                 </span>
               </p>
               <p className={'flex justify-between items-center'}>
-                <span>Amount received</span>
-                <span>{amountReceived ?? '-'} DOG</span>
+                <span>{'Amount received'}</span>
+                <span>
+                  {amountReceived ?? '-'}
+                  {' DOG'}
+                </span>
               </p>
             </div>
           </>
@@ -219,9 +218,13 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
 
       {type === 'deposit' && (
         <p style={{ fontFamily: 'Prompt' }} className={'w-[390px] mt-20 text-[#6F6F6F] text-[12px] leading-5'}>
-          Please note that any assets may be granted any rights and interests by anyone. We cannot support the claims
-          for all of them. To avoid disputes, please be aware that after the assets have been migrated, all the rights
-          and interests of the native assets belongs to PACKEX.
+          {
+            'Please note that any assets may be granted any rights and interests by anyone. We cannot support the claims'
+          }
+          {
+            'for all of them. To avoid disputes, please be aware that after the assets have been migrated, all the rights'
+          }
+          {'and interests of the native assets belongs to PACKEX.'}
         </p>
       )}
     </Form>

@@ -1,14 +1,16 @@
-import wagmiConfig from '@/constants/wagmiConfig'
-import fetcher from '@/utils/fetcher'
 import { disconnect } from 'wagmi/actions'
+import wagmiConfig from '@/constants/wagmiConfig'
+import { API_BASE } from '@/constants'
 
 export default function disconnectWallet() {
   disconnect(wagmiConfig).catch((err) => {
     console.error('Failed to disconnect', err)
   })
-  return fetcher('/disconnect-wallet', {
+  return fetch(`${API_BASE}/disconnect-wallet`, {
     method: 'POST',
-    disabledErrorToast: true,
+    headers: {
+      'Content-Type': 'application/json',
+    },
   })
     .catch(() => {})
     .finally(() => {

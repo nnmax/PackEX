@@ -1,13 +1,12 @@
 import { createReducer } from '@reduxjs/toolkit'
 import {
-  addTransaction,
   checkedTransaction,
   clearAllTransactions,
   finalizeTransaction,
-  SerializableTransactionReceipt,
   updateFailedModalOpen,
   updateInProgressModalOpen,
 } from './actions'
+import type { SerializableTransactionReceipt } from './actions'
 
 const now = () => new Date().getTime()
 
@@ -25,9 +24,7 @@ export interface TransactionDetails {
 export interface TransactionState {
   inProgressModalOpen: boolean
   failedModalOpen: boolean
-  [chainId: number]: {
-    [txHash: string]: TransactionDetails
-  }
+  [chainId: number]: Record<string, TransactionDetails>
 }
 
 export const initialState: TransactionState = {
@@ -37,14 +34,6 @@ export const initialState: TransactionState = {
 
 export default createReducer(initialState, (builder) =>
   builder
-    .addCase(addTransaction, (transactions, { payload: { chainId, from, hash, approval, summary } }) => {
-      // if (transactions[chainId]?.[hash]) {
-      //   throw Error('Attempted to add existing transaction.')
-      // }
-      // const txs = transactions[chainId] ?? {}
-      // txs[hash] = { hash, approval, summary, from, addedTime: now() }
-      // transactions[chainId] = txs
-    })
     .addCase(clearAllTransactions, (transactions, { payload: { chainId } }) => {
       if (!transactions[chainId]) return
       transactions[chainId] = {}
@@ -54,10 +43,10 @@ export default createReducer(initialState, (builder) =>
       if (!tx) {
         return
       }
-      if (!tx.lastCheckedBlockNumber) {
-        tx.lastCheckedBlockNumber = blockNumber
-      } else {
+      if (tx.lastCheckedBlockNumber) {
         tx.lastCheckedBlockNumber = Math.max(blockNumber, tx.lastCheckedBlockNumber)
+      } else {
+        tx.lastCheckedBlockNumber = blockNumber
       }
     })
     .addCase(finalizeTransaction, (transactions, { payload: { hash, chainId, receipt } }) => {

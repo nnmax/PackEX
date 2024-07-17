@@ -1,4 +1,4 @@
-import { PoolAllItem, PoolMyItem } from '@/api'
+import type { PoolAllItem, PoolMyItem } from '@/api'
 
 export function getLinkPathname(item: PoolMyItem | PoolAllItem, type: 'add' | 'remove') {
   const getPathname = (token0: string, token1: string) => {

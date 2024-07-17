@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import HelpIcon from '@/assets/images/help-circle.svg'
 
-const BAD_SRCS: { [tokenAddress: string]: true } = {}
+const BAD_SRCS: Record<string, true> = {}
 
 export interface LogoProps extends Pick<React.ImgHTMLAttributes<HTMLImageElement>, 'style' | 'alt' | 'className'> {
   srcs: string[]
@@ -30,5 +30,5 @@ export default function Logo({ srcs, alt, ...rest }: LogoProps) {
     )
   }
 
-  return <img {...rest} src={HelpIcon} alt="" />
+  return <img {...rest} src={HelpIcon} alt={""} />
 }

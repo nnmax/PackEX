@@ -1,11 +1,12 @@
-import { ChainId, Currency, currencyEquals, ETHER, WETH } from '@nnmax/uniswap-sdk-v2'
+import { currencyEquals, ETHER, WETH } from '@nnmax/uniswap-sdk-v2'
 import { useMemo, useState } from 'react'
-import { tryParseAmount } from '../state/swap/hooks'
-import { useCurrencyBalance } from '../state/wallet/hooks'
-import { useWETHContract } from './useContract'
 import { useAccount, useChainId } from 'wagmi'
 import { toast } from 'react-toastify'
 import { isObject } from 'lodash-es'
+import { tryParseAmount } from '../state/swap/hooks'
+import { useCurrencyBalance } from '../state/wallet/hooks'
+import { useWETHContract } from './useContract'
+import type { ChainId, Currency} from '@nnmax/uniswap-sdk-v2';
 
 export enum WrapType {
   NOT_APPLICABLE,

@@ -1,5 +1,5 @@
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
+import fetcher from '@/utils/fetcher'
 
 export interface Asset {
   id: number
@@ -22,7 +22,7 @@ export interface Asset {
   runesId: string
 }
 
-export type AssetListData = {
+export interface AssetListData {
   totalValue: number
   assetList: Asset[]
 }

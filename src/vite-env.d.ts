@@ -2,11 +2,11 @@
 
 interface Window {
   ethereum?: {
+    autoRefreshOnNetworkChange?: boolean
     isMetaMask?: true
     on?: (...args: any[]) => void
     removeListener?: (...args: any[]) => void
   }
-  web3?: {}
 }
 
 declare module 'content-hash' {
@@ -20,7 +20,5 @@ declare module 'multihashes' {
 }
 
 declare module 'csstype' {
-  interface Properties {
-    [index: `--${string}`]: string | number
-  }
+  type Properties = Record<`--${string}`, string | number>
 }

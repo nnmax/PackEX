@@ -1,5 +1,9 @@
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom'
-import { TransactionResponse } from 'ethers'
+import { ETHER } from '@nnmax/uniswap-sdk-v2'
+import { useCallback, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import { useAccount, useChainId } from 'wagmi'
+import { useQueryClient } from '@tanstack/react-query'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import CurrencyInputPanel from '@/components/CurrencyInputPanel'
 import AddIcon from '@/assets/images/add.png'
@@ -7,27 +11,24 @@ import SlippageSetting from '@/components/SlippageSetting'
 import { Field } from '@/state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '@/state/mint/hooks'
 import { useCurrency } from '@/hooks/Tokens'
-import { ChainId, Currency, ETHER, TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useUserDeadline, useUserSlippageTolerance } from '@/state/user/hooks'
-import { useCallback, useEffect, useState } from 'react'
 import { maxAmountSpend } from '@/utils/maxAmountSpend'
 import { ApprovalState, useApproveCallback } from '@/hooks/useApproveCallback'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '@/utils'
 import { wrappedCurrency } from '@/utils/wrappedCurrency'
 import { DEFAULT_GAS, ROUTER_ADDRESS } from '@/constants'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
-import { toast } from 'react-toastify'
 import ReviewModal from '@/components/Pool/ReviewModal'
-import { useAccount, useChainId } from 'wagmi'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { currencyId } from '@/utils/currencyId'
 import { PairState } from '@/data/Reserves'
-import { useQueryClient } from '@tanstack/react-query'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
 import useIntervalTxAndHandle from '@/hooks/useIntervalTxAndHandle'
 import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
 import { TransactionSuccessModal } from '@/components/TransactionModal'
+import type { ChainId, Currency, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import type { TransactionResponse } from 'ethers'
 
 export default function PoolAdd() {
   const navigate = useNavigate()
@@ -120,7 +121,7 @@ export default function PoolAdd() {
 
     let estimate,
       method: (...args: any) => Promise<TransactionResponse>,
-      args: Array<string | string[] | number>,
+      args: (string | string[] | number)[],
       value: bigint | null
     if (currencyA === ETHER || currencyB === ETHER) {
       const tokenBIsETH = currencyB === ETHER
@@ -164,12 +165,12 @@ export default function PoolAdd() {
           setTxHash(response.hash)
         }),
       )
-      .catch((error) => {
+      .catch((_error) => {
         // we only care if the error is something _other_ than the user rejected the tx
-        if (error?.code !== 4001) {
-          console.error(error)
+        if (_error?.code !== 4001) {
+          console.error(_error)
         }
-        throw error
+        throw _error
       })
   }, [account, allowedSlippage, chainId, currencyA, currencyB, deadline, provider, noLiquidity, parsedAmounts])
 
@@ -208,9 +209,9 @@ export default function PoolAdd() {
 
       await onAdd()
       updateInProgressModalOpen(true)
-    } catch (error) {
-      console.dir(error)
-      if ((error as any).code !== 'ACTION_REJECTED') {
+    } catch (_error) {
+      console.dir(_error)
+      if ((_error as any).code !== 'ACTION_REJECTED') {
         toast.error('Error adding liquidity')
       }
       updateInProgressModalOpen(false)
@@ -227,12 +228,12 @@ export default function PoolAdd() {
     navigate(goBack)
   }
 
-  const handleCurrencyASelect = (currencyA: Currency) => {
-    navigate(`/pool/add/${currencyId(currencyA)}/${currencyIdB}`)
+  const handleCurrencyASelect = (_currencyA: Currency) => {
+    navigate(`/pool/add/${currencyId(_currencyA)}/${currencyIdB}`)
   }
 
-  const handleCurrencyBSelect = (currencyB: Currency) => {
-    navigate(`/pool/add/${currencyIdA}/${currencyId(currencyB)}`)
+  const handleCurrencyBSelect = (_currencyB: Currency) => {
+    navigate(`/pool/add/${currencyIdA}/${currencyId(_currencyB)}`)
   }
 
   const queryClient = useQueryClient()
@@ -323,7 +324,7 @@ export default function PoolAdd() {
                   'absolute top-[148px] left-1/2 z-10 flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-md border-4 border-[#0f0f0f] bg-[#242424]'
                 }
               >
-                <img src={AddIcon} alt="" aria-hidden />
+                <img src={AddIcon} alt={''} aria-hidden />
               </div>
               <CurrencyInputPanel
                 errorRhombus={false}
@@ -356,11 +357,13 @@ export default function PoolAdd() {
                     'after:bottom-rhombus text-[#9E9E9E] relative mt-1 rounded-md bg-[#242424] px-6 py-4 text-xs'
                   }
                 >
-                  <p className={'mb-5'}>PRICES AND POOL SHARE</p>
+                  <p className={'mb-5'}>{'PRICES AND POOL SHARE'}</p>
                   <div className={'flex flex-col gap-4'}>
                     <p className={'flex justify-between'}>
                       <span>
-                        {currencyA.symbol} PER {currencyB.symbol}
+                        {currencyA.symbol}
+                        {' PER '}
+                        {currencyB.symbol}
                       </span>
                       <span>
                         {pairState === PairState.LOADING ? (
@@ -372,7 +375,9 @@ export default function PoolAdd() {
                     </p>
                     <p className={'flex justify-between'}>
                       <span>
-                        {currencyB.symbol} PER {currencyA.symbol}
+                        {currencyB.symbol}
+                        {' PER '}
+                        {currencyA.symbol}
                       </span>
                       <span>
                         {pairState === PairState.LOADING ? (
@@ -383,7 +388,7 @@ export default function PoolAdd() {
                       </span>
                     </p>
                     <p className={'flex justify-between'}>
-                      <span>SHARE OF POOL</span>
+                      <span>{'SHARE OF POOL'}</span>
                       <span>
                         {noLiquidity ? (
                           '100'
@@ -419,15 +424,23 @@ export default function PoolAdd() {
           </div>
         </div>
         <div className={'w-[455px] pt-[70px]'}>
-          <div className={'mb-6 text-[16px]'}>HOW IT WORKS</div>
+          <div className={'mb-6 text-[16px]'}>{'HOW IT WORKS'}</div>
           <p className={'text-[12px] leading-6 mb-6 [&>span]:text-lemonYellow'}>
-            When you add liquidity, you will receive pool tokens representing your position. These tokens automatically
-            earn <span>{'$PAX'}</span> proportional to your share of the pool, and can be redeemed at any time.
+            {
+              'When you add liquidity, you will receive pool tokens representing your position. These tokens automatically'
+            }
+            {'earn '}
+            <span>{'$PAX'}</span> {'proportional to your share of the pool, and can be redeemed at any time.'}
           </p>
           <p className={'text-[12px] leading-6 [&>span]:text-lemonYellow'}>
-            By adding liquidity, you will earn <span>{'$PAX'}</span> from all trades on this pair, proportional to your
-            share of the pool. And the 0.3% reward from the trades will be used to gift the users who provide liquidity
-            for <span>{'$PAX'}</span>.
+            {'By adding liquidity, you will earn '}
+            <span>{'$PAX'}</span> {'from all trades on this pair, proportional to your'}
+            {
+              'share of the pool. And the 0.3% reward from the trades will be used to gift the users who provide liquidity'
+            }
+            {'for '}
+            <span>{'$PAX'}</span>
+            {'.'}
           </p>
         </div>
       </div>

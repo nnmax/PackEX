@@ -1,5 +1,7 @@
 function wait(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }
 
 function waitRandom(min: number, max: number): Promise<void> {
@@ -33,8 +35,10 @@ export function retry<T>(
 ): { promise: Promise<T>; cancel: () => void } {
   let completed = false
   let rejectCancelled: (error: Error) => void
+  // eslint-disable-next-line no-async-promise-executor
   const promise = new Promise<T>(async (resolve, reject) => {
     rejectCancelled = reject
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       let result: T
       try {

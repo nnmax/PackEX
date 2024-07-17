@@ -1,12 +1,13 @@
-import { ChainId, Currency, CurrencyAmount, Pair, Token, Trade } from '@nnmax/uniswap-sdk-v2'
+import { Trade } from '@nnmax/uniswap-sdk-v2'
 import { flatMap, get } from 'lodash-es'
 import { useMemo } from 'react'
-import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
-import { PairState, usePairs } from '../data/Reserves'
-import { wrappedCurrency } from '../utils/wrappedCurrency'
 import { useAccount, useChainId } from 'wagmi'
 import { useAllTokens } from '@/hooks/Tokens'
 import { useETHBalances } from '@/state/wallet/hooks'
+import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
+import { PairState, usePairs } from '../data/Reserves'
+import { wrappedCurrency } from '../utils/wrappedCurrency'
+import type { ChainId, Currency, CurrencyAmount, Pair, Token } from '@nnmax/uniswap-sdk-v2'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const chainId: ChainId = useChainId()
@@ -40,18 +41,18 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
           ]
             .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
             .filter(([t0, t1]) => t0.address !== t1.address)
-            .filter(([tokenA, tokenB]) => {
+            .filter(([_tokenA, _tokenB]) => {
               if (!chainId) return true
               const customBases = CUSTOM_BASES[chainId]
               if (!customBases) return true
 
-              const customBasesA: Token[] | undefined = customBases[tokenA.address]
-              const customBasesB: Token[] | undefined = customBases[tokenB.address]
+              const customBasesA: Token[] | undefined = customBases[_tokenA.address]
+              const customBasesB: Token[] | undefined = customBases[_tokenB.address]
 
               if (!customBasesA && !customBasesB) return true
 
-              if (customBasesA && !customBasesA.find((base) => tokenB.equals(base))) return false
-              if (customBasesB && !customBasesB.find((base) => tokenA.equals(base))) return false
+              if (customBasesA && !customBasesA.find((base) => _tokenB.equals(base))) return false
+              if (customBasesB && !customBasesB.find((base) => _tokenA.equals(base))) return false
 
               return true
             })
@@ -69,7 +70,7 @@ function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
           // filter out invalid pairs
           .filter((result): result is [PairState.EXISTS, Pair] => Boolean(result[0] === PairState.EXISTS && result[1]))
           // filter out duplicated pairs
-          .reduce<{ [pairAddress: string]: Pair }>((memo, [, curr]) => {
+          .reduce<Record<string, Pair>>((memo, [, curr]) => {
             memo[curr.liquidityToken.address] = memo[curr.liquidityToken.address] ?? curr
             return memo
           }, {}),

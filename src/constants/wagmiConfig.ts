@@ -1,7 +1,7 @@
-import { IS_PROD } from '@/constants'
 import { createConfig, createConnector, http } from 'wagmi'
 import { blast, blastSepolia } from 'wagmi/chains'
 import { coinbaseWallet, injected, walletConnect } from 'wagmi/connectors'
+import { IS_PROD } from '@/constants'
 import coinbaseWalletIcon from '@/assets/images/coinbaseWalletIcon.svg'
 import walletConnectIcon from '@/assets/images/walletConnectIcon.svg'
 import metamaskIcon from '@/assets/images/metamask-icon.svg'
@@ -56,6 +56,7 @@ function injectedWithFallback() {
         return !window.ethereum || window.ethereum?.isMetaMask ? metamaskIcon : browserWalletIcon
       },
       get name() {
+        // eslint-disable-next-line no-negated-condition
         return !window.ethereum ? 'Install MetaMask' : window.ethereum?.isMetaMask ? 'MetaMask' : 'Browser Wallet'
       },
     }

@@ -1,8 +1,9 @@
-import { Token, TokenAmount } from '@nnmax/uniswap-sdk-v2'
+import { TokenAmount } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
 
 import { useTokenContract } from '../hooks/useContract'
 import { useSingleCallResult } from '../state/multicall/hooks'
+import type { Token} from '@nnmax/uniswap-sdk-v2';
 
 export function useTokenAllowance(token?: Token, owner?: string, spender?: string): TokenAmount | undefined {
   const contract = useTokenContract(token?.address, false)

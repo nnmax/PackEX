@@ -1,13 +1,14 @@
-import { Contract } from 'ethers'
-import { JSBI, Percent, Router, SwapParameters, Trade, TradeType } from '@nnmax/uniswap-sdk-v2'
+import { JSBI, Percent, Router, TradeType } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { BIPS_BASE, DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../constants'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
+import { BIPS_BASE } from '../constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, getRouterContract, isAddress, shortenAddress } from '../utils'
 import isZero from '../utils/isZero'
 import useENS from './useENS'
-import { useAccount, useChainId } from 'wagmi'
-import { useEthersProvider } from '@/hooks/useEthersProvider'
+import type { SwapParameters, Trade } from '@nnmax/uniswap-sdk-v2'
+import type { Contract } from 'ethers'
 
 export enum SwapCallbackState {
   INVALID,
@@ -41,8 +42,8 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall
  */
 function useGetSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
-  deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
+  allowedSlippage: number, // in bips
+  deadline: number, // in seconds from now
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): () => Promise<SwapCall[]> {
   const provider = useEthersProvider()
@@ -90,8 +91,8 @@ function useGetSwapCallArguments(
 // and the user has approved the slippage adjusted input amount for the trade
 export function useSwapCallback(
   trade: Trade | undefined, // trade to execute, required
-  allowedSlippage: number = INITIAL_ALLOWED_SLIPPAGE, // in bips
-  deadline: number = DEFAULT_DEADLINE_FROM_NOW, // in seconds from now
+  allowedSlippage: number, // in bips
+  deadline: number, // in seconds from now
   recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): {
   state: SwapCallbackState
@@ -178,10 +179,10 @@ export function useSwapCallback(
       return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Missing dependencies' }
     }
     if (!recipient) {
-      if (recipientAddressOrName !== null) {
-        return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Invalid recipient' }
-      } else {
+      if (recipientAddressOrName === null) {
         return { state: SwapCallbackState.LOADING, gasLimit, callback: null, error: null }
+      } else {
+        return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Invalid recipient' }
       }
     }
 

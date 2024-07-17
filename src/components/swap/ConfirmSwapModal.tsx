@@ -1,8 +1,8 @@
-import { Trade } from '@nnmax/uniswap-sdk-v2'
-import Modal from '@/components/Modal'
 import { Heading } from 'react-aria-components'
+import Modal from '@/components/Modal'
 import CurrencyLogo from '@/components/CurrencyLogo'
 import Steps from '@/components/Steps'
+import type { Trade } from '@nnmax/uniswap-sdk-v2'
 
 export default function ConfirmSwapModal({
   trade,

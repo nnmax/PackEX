@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
-import { toggleWalletModal, toggleBTCWalletModal } from './actions'
 import { useSelector, useDispatch } from 'react-redux'
-import { AppState } from '../index'
 import { useChainId } from 'wagmi'
+import { toggleWalletModal, toggleBTCWalletModal } from './actions'
+import type { AppState } from '../index'
 
 export function useBlockNumber(): number | undefined {
   const chainId = useChainId()

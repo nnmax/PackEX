@@ -2,10 +2,10 @@ import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-com
 import { Link } from 'react-router-dom'
 import QueryString from 'qs'
 import clsx from 'clsx'
-import PnL from './PnL'
-import { Asset } from '@/api'
 import { formatAmountColumn, formatValueColumn } from '@/utils/prices'
 import CurrencyLogo from '@/components/CurrencyLogo'
+import PnL from './PnL'
+import type { Asset } from '@/api'
 
 interface DataTableProps {
   isLoading: boolean
@@ -38,7 +38,7 @@ const DataTable = (props: DataTableProps) => {
           <Row id={item.id} className={'[&>td]:px-3 [&>td]:pt-4 [&>td]:max-w-[120px]'}>
             <Cell>
               <div className={'flex items-center gap-4'}>
-                <CurrencyLogo size="24px" src={item.logoUri} />
+                <CurrencyLogo size={"24px"} src={item.logoUri} />
                 <div className={'flex flex-col items-start'}>
                   <span className={'text-sm'}>{item.name}</span>
                   <span className={'text-[#9E9E9E]'}>{item.symbol}</span>

@@ -1,10 +1,11 @@
-import { Currency, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
+import { ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
+import clsx from 'clsx'
 import EthereumLogo from '../../assets/images/ethereum-logo.png'
 import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
 import Logo from '../Logo'
-import clsx from 'clsx'
+import type { Currency} from '@nnmax/uniswap-sdk-v2';
 
 const getTokenLogoURL = (address: string) =>
   `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`

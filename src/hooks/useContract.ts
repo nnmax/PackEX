@@ -1,6 +1,7 @@
-import { Contract } from 'ethers'
-import { ChainId, WETH } from '@nnmax/uniswap-sdk-v2'
+import { WETH } from '@nnmax/uniswap-sdk-v2'
 import { useEffect, useState } from 'react'
+import { useAccount, useChainId } from 'wagmi'
+import { useEthersProvider } from '@/hooks/useEthersProvider'
 import ENS_ABI from '../constants/abis/ens-registrar.json'
 import ENS_PUBLIC_RESOLVER_ABI from '../constants/abis/ens-public-resolver.json'
 import { ERC20_BYTES32_ABI } from '../constants/abis/erc20'
@@ -8,8 +9,8 @@ import ERC20_ABI from '../constants/abis/erc20.json'
 import WETH_ABI from '../constants/abis/weth.json'
 import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall'
 import { getContract } from '../utils'
-import { useAccount, useChainId } from 'wagmi'
-import { useEthersProvider } from '@/hooks/useEthersProvider'
+import type { ChainId} from '@nnmax/uniswap-sdk-v2';
+import type { Contract } from 'ethers'
 
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true) {

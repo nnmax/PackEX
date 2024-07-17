@@ -1,6 +1,6 @@
 import fetcher from '@/utils/fetcher'
 
-export type EnterInvitationCodeData = {
+export interface EnterInvitationCodeData {
   invitationCode: string
 }
 

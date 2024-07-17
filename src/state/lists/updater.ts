@@ -1,12 +1,12 @@
 import { getVersionUpgrade, minVersionBump, VersionUpgrade } from '@uniswap/token-lists'
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useAccount } from 'wagmi'
 import { useFetchListCallback } from '../../hooks/useFetchListCallback'
 import useInterval from '../../hooks/useInterval'
 import useIsWindowVisible from '../../hooks/useIsWindowVisible'
-import { AppDispatch, AppState } from '../index'
 import { acceptListUpdate } from './actions'
-import { useAccount } from 'wagmi'
+import type { AppDispatch, AppState } from '../index'
 
 export default function Updater(): null {
   const { isConnected } = useAccount()
@@ -48,7 +48,7 @@ export default function Updater(): null {
           case VersionUpgrade.NONE:
             throw new Error('unexpected no version bump')
           case VersionUpgrade.PATCH:
-          case VersionUpgrade.MINOR:
+          case VersionUpgrade.MINOR: {
             const min = minVersionBump(list.current.tokens, list.pendingUpdate.tokens)
             // automatically update minor/patch as long as bump matches the min update
             if (bump >= min) {
@@ -58,6 +58,9 @@ export default function Updater(): null {
                 `List at url ${listUrl} could not automatically update because the version bump was only PATCH/MINOR while the update had breaking changes and should have been MAJOR`,
               )
             }
+            break
+          }
+          default:
             break
         }
       }

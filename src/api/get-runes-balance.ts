@@ -1,6 +1,5 @@
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
-import { omit } from 'lodash-es'
+import fetcher from '@/utils/fetcher'
 
 export interface GetRunesBalanceParams {
   btcAddress: string
@@ -38,11 +37,12 @@ function getRunesBalance(params: GetRunesBalanceParams) {
 }
 
 export function useRunesBalance(params: GetRunesBalanceParams & { enabled?: boolean }) {
+  const { enabled, ...otherParams } = params
   return useQuery({
-    queryKey: ['get-runes-balance'],
-    enabled: params.enabled ?? true,
+    queryKey: ['get-runes-balance', otherParams],
+    enabled: enabled ?? true,
     queryFn: () => {
-      return getRunesBalance(omit(params, 'enabled'))
+      return getRunesBalance(otherParams)
     },
   })
 }

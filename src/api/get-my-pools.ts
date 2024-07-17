@@ -1,5 +1,5 @@
-import fetcher from '@/utils/fetcher'
 import { useQuery } from '@tanstack/react-query'
+import fetcher from '@/utils/fetcher'
 
 export interface PoolMyItem {
   id: number
@@ -23,7 +23,7 @@ export interface PoolMyItem {
   lpTokenAmount: number | null
 }
 
-export type MyPoolListData = {
+export interface MyPoolListData {
   myPools: PoolMyItem[]
 }
 

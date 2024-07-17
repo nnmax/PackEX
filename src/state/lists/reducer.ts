@@ -1,19 +1,17 @@
 import { createReducer } from '@reduxjs/toolkit'
 import { getVersionUpgrade, VersionUpgrade } from '@uniswap/token-lists'
-import { TokenList } from '@uniswap/token-lists/dist/types'
 import { DEFAULT_LIST_OF_LISTS, DEFAULT_TOKEN_LIST_URL } from '../../constants/lists'
 import { updateVersion } from '../global/actions'
 import { acceptListUpdate, addList, fetchTokenList, removeList, selectList } from './actions'
+import type { TokenList } from '@uniswap/token-lists/dist/types'
 
 export interface ListsState {
-  readonly byUrl: {
-    readonly [url: string]: {
+  readonly byUrl: Readonly<Record<string, {
       readonly current: TokenList | null
       readonly pendingUpdate: TokenList | null
       readonly loadingRequestId: string | null
       readonly error: string | null
-    }
-  }
+    }>>
   // this contains the default list of lists from the last time the updateVersion was called, i.e. the app was reloaded
   readonly lastInitializedDefaultListOfLists?: string[]
   readonly selectedListUrl: string | undefined
@@ -26,7 +24,7 @@ const NEW_LIST_STATE: ListsState['byUrl'][string] = {
   pendingUpdate: null,
 }
 
-type Mutable<T> = { -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer U> ? U[] : T[P] }
+type Mutable<T> = { -readonly [P in keyof T]: T[P] extends readonly (infer U)[] ? U[] : T[P] }
 
 const initialState: ListsState = {
   lastInitializedDefaultListOfLists: DEFAULT_LIST_OF_LISTS,

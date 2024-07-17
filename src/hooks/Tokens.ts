@@ -1,13 +1,15 @@
 import { decodeBytes32String } from 'ethers'
-import { ChainId, ETHER, Token } from '@nnmax/uniswap-sdk-v2'
+import { ETHER, Token } from '@nnmax/uniswap-sdk-v2'
 import { useMemo } from 'react'
-import { WrappedTokenInfo, useSelectedTokenList } from '../state/lists/hooks'
+import { useChainId } from 'wagmi'
+import { useSelectedTokenList } from '../state/lists/hooks'
 import { NEVER_RELOAD, useSingleCallResult } from '../state/multicall/hooks'
 import { isAddress } from '../utils'
 import { useBytes32TokenContract, useTokenContract } from './useContract'
-import { useChainId } from 'wagmi'
+import type { WrappedTokenInfo} from '../state/lists/hooks';
+import type { ChainId} from '@nnmax/uniswap-sdk-v2';
 
-export function useAllTokens(): { [address: string]: WrappedTokenInfo } {
+export function useAllTokens(): Record<string, WrappedTokenInfo> {
   const chainId: ChainId = useChainId()
   const allTokens = useSelectedTokenList()
 

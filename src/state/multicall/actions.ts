@@ -50,7 +50,5 @@ export const errorFetchingMulticallResults = createAction<{
 export const updateMulticallResults = createAction<{
   chainId: number
   blockNumber: number
-  results: {
-    [callKey: string]: string | null
-  }
+  results: Record<string, string | null>
 }>('multicall/updateMulticallResults')

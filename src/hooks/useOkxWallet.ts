@@ -1,7 +1,7 @@
-import { IS_PROD } from '@/constants'
-import { BTCNetwork } from '@/hooks/useBTCWallet'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
+import { IS_PROD } from '@/constants'
+import type { BTCNetwork } from '@/hooks/useBTCWallet'
 
 export default function useOkxWallet() {
   const [address, setAddress] = useState<string>()
