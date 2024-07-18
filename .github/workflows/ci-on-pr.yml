@@ -9,6 +9,12 @@ on:
 
   workflow_dispatch:
 
+env:
+  HUSKY: 0
+  YARN_ENABLE_GLOBAL_CACHE: false
+  YARN_ENABLE_MIRROR: false
+  YARN_NM_MODE: hardlinks-local
+
 jobs:
   check_ci:
     name: Check CI
@@ -16,14 +22,14 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Node.js
-        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3.8.1
+        uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: lts/*
           cache: 'yarn'
 
       - name: Install dependencies
