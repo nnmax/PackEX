@@ -7,12 +7,8 @@ import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { useBTCWalletModalToggle } from '@/state/application/hooks'
+import { FormField } from '../constant'
 import type { Asset } from '@/api'
-
-export enum FormField {
-  Amount = 'amount',
-  Address = 'address',
-}
 
 const WIDTH = 404
 const WIDTH1 = 200

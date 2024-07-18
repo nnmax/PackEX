@@ -11,7 +11,7 @@ import { isAddress } from '@/utils'
 import ToggleButtonGroup from '@/components/ToggleButtonGroup'
 import ToggleButton from '@/components/ToggleButton'
 import Modal from '@/components/Modal'
-import NumberInput from '@/components/NumberInput'
+import InternalNumberInput from '@/components/NumberInput'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import CurrencyLogo from '../CurrencyLogo'
 import { useCurrencyBalance } from '../../state/wallet/hooks'
@@ -86,7 +86,7 @@ export default function CurrencyInputPanel({
         />
       )}
       <div className={'flex justify-between gap-1'}>
-        <NumberInput
+        <InternalNumberInput
           value={value}
           disabled={!currency}
           onUserInput={onUserInput}
