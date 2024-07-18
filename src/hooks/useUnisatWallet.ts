@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
-import type { BTCNetwork } from '@/hooks/useBTCWallet'
+import type { BTCNetwork } from '@/providers/BTCWalletProvider'
 
 export default function useUnisatWallet() {
   const [address, setAddress] = useState<string>()

@@ -18,7 +18,7 @@ import {
   useWalletModalToggle,
 } from '../../state/application/hooks'
 import type { Connector } from 'wagmi'
-import type { BTCWallet } from '@/hooks/useBTCWallet'
+import type { BTCWallet } from '@/providers/BTCWalletProvider'
 import type { ConnectWalletData, GetUserData } from '@/api'
 
 export default function WalletModal() {

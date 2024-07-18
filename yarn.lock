@@ -6278,6 +6278,7 @@ __metadata:
     eslint-plugin-react: "npm:^7.34.3"
     eslint-plugin-react-compiler: "npm:0.0.0-experimental-0998c1e-20240625"
     eslint-plugin-react-hooks: "npm:^4.6.2"
+    eslint-plugin-react-refresh: "npm:^0.4.8"
     ethers: "npm:^6.13.1"
     http-proxy-middleware: "npm:^3.0.0"
     husky: "npm:^9.0.11"
@@ -8954,6 +8955,15 @@ __metadata:
   peerDependencies:
     eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0 || ^9.0.0
   checksum: 10c0/e314a1a2d2a11325d4c7a289b7893177f8c22b4f1f035994974efb73f3584461af866098adb553b4ee0c52a34e38b3244539d899894788a97b97bbdf14e8d202
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-react-refresh@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "eslint-plugin-react-refresh@npm:0.4.8"
+  peerDependencies:
+    eslint: ">=7"
+  checksum: 10c0/5ed0c1a59c09baf072fb6db4eb18cb72977f0d0f32f77f78fb82f6cca5385e236a3c19a7ef4821cacbc9f7ae19ecb9f5e7b064d7b11f690c1bfcd8fe20288a5c
   languageName: node
   linkType: hard
 

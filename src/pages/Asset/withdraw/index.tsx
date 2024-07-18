@@ -13,7 +13,8 @@ import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLef
 import ConfirmImg from '@/assets/images/confirm.png'
 import { DEFAULT_GAS } from '@/constants'
 import Modal from '@/components/Modal'
-import FormCard, { type FormField } from '../components/FormCard'
+import FormCard from '../components/FormCard'
+import { type FormField } from '../constant'
 import type { WithdrawRunesParams } from '@/api/withdraw-runes'
 import type { Asset } from '@/api'
 

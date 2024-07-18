@@ -12,7 +12,7 @@ import PoolRemove from '@/pages/Pool/remove'
 import Swap from '@/pages/Swap'
 import Root from '@/root'
 
-export default createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
@@ -68,3 +68,5 @@ export default createBrowserRouter([
     ],
   },
 ])
+
+export default router

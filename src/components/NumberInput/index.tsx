@@ -18,8 +18,8 @@ function isInputGreaterThanDecimals(value: string, maxDecimals?: number): boolea
   return !!maxDecimals && decimalGroups.length > 1 && decimalGroups[1].length > maxDecimals
 }
 
-const NumberInput = forwardRef<HTMLInputElement, InputProps>(
-  ({ value, onUserInput, placeholder, maxDecimals, disabled, label, loading }: InputProps, ref) => {
+const InternalNumberInput = forwardRef<HTMLInputElement, InputProps>(
+  ({ value, onUserInput, placeholder, maxDecimals, disabled, label, loading }, ref) => {
     const enforcer = (nextUserInput: string) => {
       if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
         if (isInputGreaterThanDecimals(nextUserInput, maxDecimals)) {
@@ -62,6 +62,8 @@ const NumberInput = forwardRef<HTMLInputElement, InputProps>(
   },
 )
 
-NumberInput.displayName = 'NumberInput'
+InternalNumberInput.displayName = 'NumberInput'
 
-export default React.memo(NumberInput)
+const NumberInput = React.memo(InternalNumberInput)
+
+export default NumberInput
