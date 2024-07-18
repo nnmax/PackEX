@@ -10,3 +10,4 @@ yarn.lock
 .eslintcache
 /public
 .eslintrc.cjs
+vite.config.ts

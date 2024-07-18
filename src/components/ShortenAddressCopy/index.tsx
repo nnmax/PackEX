@@ -6,7 +6,7 @@ import Tooltip from '@/components/Tooltip'
 
 export default function ShortenAddressCopy({ address, isBtcAddress }: { address: string; isBtcAddress?: boolean }) {
   return (
-    <Tooltip title={address}>
+    <Tooltip title={address} className={'!max-w-max'}>
       <Button
         className={'cursor-copy'}
         onPress={() => {

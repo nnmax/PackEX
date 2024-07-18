@@ -107,7 +107,7 @@
   },
   "packageManager": "yarn@4.3.1",
   "lint-staged": {
-    "*.{js,ts,tsx,cjs,mjs}": "eslint --fix --max-warnings 0",
+    "*.{js,ts,tsx,cjs,mjs}": "eslint --cache --fix --max-warnings 0",
     "**/*": "prettier --write --ignore-unknown"
   }
 }

@@ -26,7 +26,7 @@ export const ButtonBase = forwardRef<HTMLButtonElement, ButtonBaseProps>(functio
       className={clsx(
         className,
         isLoading && 'text-transparent',
-        'flex h-9 px-2 relative items-center justify-center self-center rounded-md text-xs',
+        'flex h-9 px-2 relative items-center transition-all justify-center self-center rounded-md text-xs',
       )}
     >
       {isLoading && (
