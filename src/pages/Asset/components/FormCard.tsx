@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
-import { Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
+import { FieldError, Form, Input, Label, NumberField, TextArea, TextField } from 'react-aria-components'
 import { useAccount } from 'wagmi'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '@/components/Button'
 import CurrencyLogo from '@/components/CurrencyLogo'
@@ -55,8 +55,21 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
   const { address: btcAddress } = useBTCWallet()
   const { address: ethAddress } = useAccount()
   const isSupportedChainId = useIsSupportedChainId()
-
+  const maxValue = Number(runesBalance?.amount ?? 99999999)
   const amountReceived = amount ? amount - (withdrawFee ?? 0) : '-'
+  const [error, setError] = useState('')
+  const isAmountInvalid = error === '' ? undefined : true
+  const confirmButtonDisabled = isAmountInvalid
+
+  const handleAmountChange = (value: number) => {
+    setAmount(value)
+    let err: typeof error = ''
+    if (Number.isNaN(value)) err = ''
+    if (value < minValue) err = `Min ${minValue}`
+    else if (value > maxValue) err = `Insufficient Balance`
+    else err = ''
+    setError(err)
+  }
 
   const handleMax = () => {
     if (runesBalance?.amount) {
@@ -110,15 +123,15 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
         >
           <div className={'flex flex-col justify-between h-full'}>
             <NumberField
+              isInvalid={isAmountInvalid}
               value={amount}
               name={FormField.Amount}
-              maxValue={Number(runesBalance?.amount ?? 99999999)}
-              minValue={minValue}
+              minValue={0}
               formatOptions={{
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 18,
               }}
-              onChange={setAmount}
+              onChange={handleAmountChange}
               isRequired
             >
               <Label className={'text-[#9E9E9E] text-xs'}>{'Amount'}</Label>
@@ -136,6 +149,9 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
                   {'MAX'}
                 </button>
               </div>
+              <FieldError className={'text-[#FF2323] text-sm'}>
+                {({ defaultChildren }) => defaultChildren || error}
+              </FieldError>
             </NumberField>
 
             <p className={'flex items-center text-xs'}>
@@ -160,6 +176,7 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
                     }
                   />
                 </div>
+                <FieldError className={'text-[#FF2323] text-sm'} />
               </TextField>
             </div>
             <div
@@ -189,7 +206,12 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
 
       {type === 'deposit' ? (
         btcAddress ? (
-          <ButtonPrimary isLoading={loading} type={'submit'} className={clsx('mt-14 w-full max-w-60')}>
+          <ButtonPrimary
+            isLoading={loading}
+            isDisabled={confirmButtonDisabled}
+            type={'submit'}
+            className={clsx('mt-14 w-full max-w-60')}
+          >
             {'Confirm'}
           </ButtonPrimary>
         ) : (
@@ -200,7 +222,7 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
           <ButtonPrimary
             isLoading={loading}
             type={'submit'}
-            isDisabled={loading}
+            isDisabled={confirmButtonDisabled}
             className={clsx('mt-14 w-full max-w-60')}
           >
             {'Confirm'}

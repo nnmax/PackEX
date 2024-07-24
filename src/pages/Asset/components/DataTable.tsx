@@ -52,7 +52,7 @@ const DataTable = (props: DataTableProps) => {
               <PnL value={item.changeToday} />
             </Cell>
             <Cell>
-              <div className={'flex items-center justify-start gap-10'}>
+              <div className={'flex items-center justify-start gap-x-4 gap-y-2 flex-wrap'}>
                 {item.swapFlag === 1 ? (
                   <Link
                     to={`/?inputCurrency=${item.symbol.toUpperCase() === 'ETH' ? 'ETH' : item.tokenContract}`}

@@ -24,7 +24,7 @@ const PoolMy = () => {
             <Column width={100} className={'text-start'} isRowHeader>
               {'POOL NAME'}
             </Column>
-            <Column>{'AMOUNT'}</Column>
+            <Column minWidth={260}>{'AMOUNT'}</Column>
             <Column width={148}>{'POOL SHARE'}</Column>
             <Column width={180} className={'pt-[15px]'}>
               {'PAX EARNED'}
@@ -32,7 +32,9 @@ const PoolMy = () => {
               {'(TODAY)'}
             </Column>
             <Column width={160}>{'MY LP TOKEN'}</Column>
-            <Column width={180}>{''}</Column>
+            <Column maxWidth={180} minWidth={100}>
+              {''}
+            </Column>
           </TableHeader>
           <TableBody
             renderEmptyState={
@@ -69,7 +71,7 @@ const PoolMy = () => {
                   <Cell>{item.paxEarnedToday}</Cell>
                   <Cell>{formatLpToken(item.lpTokenAmount)}</Cell>
                   <Cell>
-                    <div className={'flex items-center justify-center gap-6'}>
+                    <div className={'flex items-center justify-center gap-x-4 gap-y-2 flex-wrap'}>
                       <Link
                         to={getLinkPathname(item, 'add')}
                         state={{
