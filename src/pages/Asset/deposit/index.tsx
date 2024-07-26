@@ -7,6 +7,7 @@ import useBTCWallet from '@/hooks/useBTCWallet'
 import PixelarticonsChevronLeft from '@/components/Icons/PixelarticonsChevronLeft'
 import { useRunesBalance } from '@/api/get-runes-balance'
 import useDocumentTitle from '@/hooks/useDocumentTitle'
+import useDepositConfirm from '@/api/deposit-confirm'
 import FormCard from '../components/FormCard'
 import type { Asset } from '@/api'
 
@@ -17,19 +18,20 @@ export default function Deposit() {
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
   }) as unknown as Record<keyof Asset, string>
-  const { address, currentWallet, signPsbt, pushPsbt, publicKey, connectedAndSigned } = useBTCWallet()
+  const { address: btcAddress, currentWallet, signPsbt, pushPsbt, publicKey, connectedAndSigned } = useBTCWallet()
   const formCardRef = useRef<{ reset: () => void }>(null)
+  const { mutateAsync: depositConfirm } = useDepositConfirm()
   const { data: runesBalance } = useRunesBalance({
-    btcAddress: address!,
+    btcAddress: btcAddress!,
     runesId: data.runesId,
-    enabled: !!address && !!data.runesId && connectedAndSigned,
+    enabled: !!btcAddress && !!data.runesId && connectedAndSigned,
   })
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!address) {
-      toast.error('address is required')
-      throw new Error('address is required')
+    if (!btcAddress) {
+      toast.error('btcAddress is required')
+      throw new Error('btcAddress is required')
     }
     if (!publicKey) {
       toast.error('publicKey is required')
@@ -40,14 +42,20 @@ export default function Deposit() {
 
     try {
       const { messageToBeSigned } = await depositRunes({
-        btcAddress: address,
+        btcAddress: btcAddress,
         amount: formData.amount as string,
         decimals: Number(data.decimals),
         runesId: data.runesId,
         publicKey,
       })
       const signature = await signPsbt(currentWallet!, messageToBeSigned)
-      await pushPsbt(currentWallet!, signature)
+      const txHash = await pushPsbt(currentWallet!, signature)
+      await depositConfirm({
+        txHash,
+        btcAddress,
+        runesId: data.runesId,
+        amount: formData.amount as string,
+      })
       toast.success('Deposit successfully')
       if (formCardRef.current) formCardRef.current.reset()
     } catch (error) {
