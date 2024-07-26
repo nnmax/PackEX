@@ -138,11 +138,7 @@ export default function useOkxWallet() {
     }
   }
 
-  const disconnect = useCallback(async () => {
-    const okxwallet = (window as any).okxwallet
-    if (okxwallet) {
-      await okxwallet.bitcoin.disconnect()
-    }
+  const disconnect = useCallback(() => {
     setAddress(undefined)
     setPublicKey(undefined)
   }, [])

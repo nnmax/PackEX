@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useCallback, useState } from 'react'
 import { CURRENT_BTC_WALLET, IS_PROD } from '@/constants'
 import useOkxWallet from '@/hooks/useOkxWallet'
 import useUnisatWallet from '@/hooks/useUnisatWallet'
@@ -13,6 +13,8 @@ interface BTCWalletContextValue {
     network: BTCNetwork | undefined
     publicKey: string | undefined
   }>
+  connectedAndSigned: boolean
+  setConnectedAndSigned: React.Dispatch<React.SetStateAction<boolean>>
   verifyNetwork: (wallet: BTCWallet, network: BTCNetwork | undefined) => Promise<void>
   currentWallet?: BTCWallet
   signMessage: (wallet: BTCWallet, message: string) => Promise<string>
@@ -21,7 +23,7 @@ interface BTCWalletContextValue {
   address: string | undefined
   network: BTCNetwork | undefined
   publicKey: string | undefined
-  disconnect: (wallet: BTCWallet) => void
+  disconnect: () => void
   getBasicInfo: (wallet: BTCWallet) => Promise<{
     address: string | undefined
     network: BTCNetwork | undefined
@@ -31,6 +33,8 @@ interface BTCWalletContextValue {
 
 export const BTCWalletContext = createContext<BTCWalletContextValue>({
   address: undefined,
+  connectedAndSigned: false,
+  setConnectedAndSigned: () => {},
   connect: () => {
     throw new Error('BTCWalletContext provider is not found')
   },
@@ -67,6 +71,7 @@ export default function BTCWalletProvider({ children }: { children: React.ReactN
   const unisat = useUnisatWallet()
   const okx = useOkxWallet()
   const [currentWallet, setCurrentWallet] = useState<BTCWallet>()
+  const [connectedAndSigned, setConnectedAndSigned] = useState(false)
 
   const connect = (wallet: BTCWallet) => {
     setCurrentWallet(wallet)
@@ -77,14 +82,13 @@ export default function BTCWalletProvider({ children }: { children: React.ReactN
     }
   }
 
-  const disconnect = (wallet: BTCWallet) => {
+  const disconnect = useCallback(() => {
+    setCurrentWallet(undefined)
     window.localStorage.removeItem(CURRENT_BTC_WALLET)
-    if (wallet === 'unisat') {
-      return unisat.disconnect()
-    } else {
-      return okx.disconnect()
-    }
-  }
+    unisat.disconnect()
+    okx.disconnect()
+    setConnectedAndSigned(false)
+  }, [okx, unisat])
 
   const verifyNetwork = async (wallet: BTCWallet, network: BTCNetwork | undefined) => {
     if (wallet === 'okx') return
@@ -136,6 +140,8 @@ export default function BTCWalletProvider({ children }: { children: React.ReactN
   // eslint-disable-next-line react/jsx-no-constructed-context-values
   const value: BTCWalletContextValue = {
     connect,
+    connectedAndSigned,
+    setConnectedAndSigned,
     verifyNetwork,
     currentWallet,
     signMessage,

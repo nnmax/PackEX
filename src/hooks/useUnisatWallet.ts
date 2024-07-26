@@ -38,20 +38,6 @@ export default function useUnisatWallet() {
     }
   }, [])
 
-  const handleAccountsChanged = useCallback(
-    (accounts: string[]) => {
-      if (accounts.length) {
-        if (accounts[0] !== address) {
-          setAddress(accounts[0])
-          getBasicInfo()
-        }
-      } else {
-        setAddress(undefined)
-      }
-    },
-    [address, getBasicInfo],
-  )
-
   const getWallet = () => {
     const unisat = (window as any).unisat
     if (!unisat) {
@@ -132,13 +118,9 @@ export default function useUnisatWallet() {
   }
 
   const disconnect = useCallback(() => {
-    const unisat = (window as any).unisat
     setAddress(undefined)
-    if (unisat) {
-      unisat.removeListener('accountsChanged', handleAccountsChanged)
-      unisat.removeListener('networkChanged', getBasicInfo)
-    }
-  }, [getBasicInfo, handleAccountsChanged])
+    setPublicKey(undefined)
+  }, [])
 
   return {
     address,

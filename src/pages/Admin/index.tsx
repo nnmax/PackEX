@@ -24,6 +24,7 @@ import { ButtonSecondary } from '@/components/Button'
 import useRunesBatch from '@/api/get-runes-batch'
 import useUpdateRunesBatch from '@/api/update-runes-batch'
 import useBTCWallet from '@/hooks/useBTCWallet'
+import useDisconnectBtcOnUnmounted from '@/hooks/useDisconnectBtcOnUnmounted'
 import type { Id } from 'react-toastify'
 import type { CheckboxProps, ColumnProps, RowProps, TableHeaderProps } from 'react-aria-components'
 
@@ -105,6 +106,8 @@ export default function Admin() {
     if (count <= 0) return null
     return `Selected ${count} item${count > 1 ? 's' : ''}`
   }
+
+  useDisconnectBtcOnUnmounted()
 
   if (!isAdmin(userInfo?.ethAddress)) return null
 

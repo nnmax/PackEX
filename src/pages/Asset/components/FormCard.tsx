@@ -7,6 +7,7 @@ import CurrencyLogo from '@/components/CurrencyLogo'
 import useBTCWallet from '@/hooks/useBTCWallet'
 import useIsSupportedChainId from '@/hooks/useIsSupportedChainId'
 import { useBTCWalletModalToggle } from '@/state/application/hooks'
+import useDisconnectBtcOnUnmounted from '@/hooks/useDisconnectBtcOnUnmounted'
 import { FormField } from '../constant'
 import type { Asset } from '@/api'
 
@@ -52,9 +53,10 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
   const formRef = useRef<HTMLFormElement>(null)
   const [amount, setAmount] = useState(NaN)
   const toggleBTCWalletModal = useBTCWalletModalToggle()
-  const { address: btcAddress } = useBTCWallet()
+  const { address: btcAddress, connectedAndSigned } = useBTCWallet()
   const { address: ethAddress } = useAccount()
   const isSupportedChainId = useIsSupportedChainId()
+  useDisconnectBtcOnUnmounted()
   const maxValue = Number(runesBalance?.amount ?? 99999999)
   const amountReceived = amount ? amount - (withdrawFee ?? 0) : '-'
   const [error, setError] = useState('')
@@ -205,7 +207,7 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
       </div>
 
       {type === 'deposit' ? (
-        btcAddress ? (
+        btcAddress && connectedAndSigned ? (
           <ButtonPrimary
             isLoading={loading}
             isDisabled={confirmButtonDisabled}

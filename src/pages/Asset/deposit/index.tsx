@@ -17,12 +17,12 @@ export default function Deposit() {
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
   }) as unknown as Record<keyof Asset, string>
-  const { address, currentWallet, signPsbt, pushPsbt, publicKey } = useBTCWallet()
+  const { address, currentWallet, signPsbt, pushPsbt, publicKey, connectedAndSigned } = useBTCWallet()
   const formCardRef = useRef<{ reset: () => void }>(null)
   const { data: runesBalance } = useRunesBalance({
     btcAddress: address!,
     runesId: data.runesId,
-    enabled: !!address && !!data.runesId,
+    enabled: !!address && !!data.runesId && connectedAndSigned,
   })
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

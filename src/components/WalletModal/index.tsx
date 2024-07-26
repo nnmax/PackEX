@@ -130,7 +130,7 @@ export default function WalletModal() {
 export function BTCWalletModal() {
   const walletModalOpen = useBTCWalletModalOpen()
   const toggleWalletModal = useBTCWalletModalToggle()
-  const { connect, verifyNetwork, signMessage, disconnect, getBasicInfo } = useBTCWallet()
+  const { connect, verifyNetwork, signMessage, disconnect, getBasicInfo, setConnectedAndSigned } = useBTCWallet()
   const [loadingWallet, setLoadingWallet] = useState<BTCWallet>()
 
   const handleClick = async (wallet: BTCWallet) => {
@@ -157,9 +157,10 @@ export function BTCWalletModal() {
       setLoadingWallet(undefined)
       toggleWalletModal()
       window.localStorage.setItem(CURRENT_BTC_WALLET, wallet)
+      setConnectedAndSigned(true)
     } catch (error) {
       console.error(error)
-      disconnect(wallet)
+      disconnect()
       setLoadingWallet(undefined)
     }
   }
