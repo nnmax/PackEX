@@ -9,7 +9,7 @@ export interface PoolAllItem {
   tvl: number
   volume24h: number
   volume7d: number
-  apr: number
+  apy: number
   createTime: string
   token0Name: string
   token0Contract: string

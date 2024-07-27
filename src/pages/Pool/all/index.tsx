@@ -23,7 +23,7 @@ const PoolAll = () => {
           </Column>
           <Column>{'VOLUME (24H)'}</Column>
           <Column>{'VOLUME (7D)'}</Column>
-          <Column>{'APR'}</Column>
+          <Column>{'APY'}</Column>
           <Column className={'text-end'}>{'ACTION'}</Column>
         </TableHeader>
         <TableBody
@@ -50,7 +50,7 @@ const PoolAll = () => {
               <Cell>{item.tvl}</Cell>
               <Cell>{item.volume24h}</Cell>
               <Cell>{item.volume7d}</Cell>
-              <Cell>{`${item.apr}%`}</Cell>
+              <Cell>{`${item.apy}%`}</Cell>
               <Cell className={'text-end'}>
                 <Link
                   to={getLinkPathname(item, 'add')}
