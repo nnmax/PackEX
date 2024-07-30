@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Button, Heading } from 'react-aria-components'
 import QueryString from 'qs'
 import { toast } from 'react-toastify'
@@ -31,7 +31,7 @@ export default function Withdraw() {
   })
   const { mutateAsync: withdrawRunesConfirmAsync, isPending: withdrawingRunesConfirm } = useWithdrawRunesConfirm()
   const minValue = Math.max(DOG_MIN_AMOUNT, withdrawFee?.networkFeeInDog ?? 0)
-
+  const navigate = useNavigate()
   const data = QueryString.parse(search, {
     ignoreQueryPrefix: true,
   }) as unknown as Record<keyof Asset, string>
@@ -85,6 +85,11 @@ export default function Withdraw() {
     setOpen(true)
   }
 
+  const handleClose = () => {
+    setOpen(false)
+    navigate('/asset')
+  }
+
   return (
     <div className={'py-4'}>
       <Link to={'/asset'} className={'inline-flex h-8 items-center gap-2 text-sm'}>
@@ -110,7 +115,7 @@ export default function Withdraw() {
       <Modal
         contentClassName={'w-full px-10'}
         isOpen={isOpen}
-        onClose={() => setOpen(false)}
+        onClose={handleClose}
         showCloseButton={false}
         showRhombus={false}
         isDismissable={false}
@@ -130,9 +135,7 @@ export default function Withdraw() {
         <div className={'flex justify-center mt-10'}>
           <Button
             type={'button'}
-            onPress={() => {
-              setOpen(false)
-            }}
+            onPress={handleClose}
             className={
               'flex h-9 w-[160px] items-center justify-center rounded border border-lemonYellow text-xs text-[#020202] bg-[#FFC300]'
             }
