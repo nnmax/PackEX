@@ -429,16 +429,16 @@ export default function PoolAdd() {
             {
               'When you add liquidity, you will receive pool tokens representing your position. These tokens automatically'
             }
-            {'earn '}
+            {' earn '}
             <span>{'$PAX'}</span> {'proportional to your share of the pool, and can be redeemed at any time.'}
           </p>
           <p className={'text-[12px] leading-6 [&>span]:text-lemonYellow'}>
             {'By adding liquidity, you will earn '}
             <span>{'$PAX'}</span> {'from all trades on this pair, proportional to your'}
             {
-              'share of the pool. And the 0.3% reward from the trades will be used to gift the users who provide liquidity'
+              ' share of the pool. And the 0.3% reward from the trades will be used to gift the users who provide liquidity'
             }
-            {'for '}
+            {' for '}
             <span>{'$PAX'}</span>
             {'.'}
           </p>
