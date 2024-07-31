@@ -60,9 +60,9 @@ function Web3StatusInner() {
               <div className={'text-xs flex justify-between items-center'}>
                 <div className={'text-[#FCFE03] flex items-center gap-3'}>
                   <TokenBlast color={'#FCFE03'} className={'text-[24px]'} />
-                  <span>{'BLAST POINTS'}</span>
+                  <span>{'BLAST POINTS (100%)'}</span>
                 </div>
-                <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.pointAmount}</span>
+                <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.pointAmount ?? '-'}</span>
               </div>
 
               <hr className={'border-white/30 h-px w-full my-[18px]'} />
@@ -70,9 +70,12 @@ function Web3StatusInner() {
               <div className={'text-xs flex justify-between items-center'}>
                 <div className={'text-[#FCFE03] flex items-center gap-3'}>
                   <GoldIcon className={'text-[24px]'} />
-                  <span>{'BLAST GOLD'}</span>
+                  <span className={'flex items-center gap-[23px]'}>
+                    <span>{'BLAST GOLD'}</span>
+                    <span>{'(100%)'}</span>
+                  </span>
                 </div>
-                <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.goldAmount}</span>
+                <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.goldAmount ?? '-'}</span>
               </div>
               <p className={'text-[#9E9E9E] text-xs leading-5 mt-[14px] ml-9'}>
                 {'BLAST GOLD will be distributed in proportion to the amount of $PAX'}

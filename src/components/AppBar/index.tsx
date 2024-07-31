@@ -44,7 +44,7 @@ export default function AppBar() {
             tabIndex={-1}
             className={clsx(
               'pointer-events-none flex justify-center',
-              'before:absolute before:top-4 before:w-max before:content-["Comeing_Soon"] before:text-[8px] before:text-[#9E9E9E]',
+              'before:absolute before:top-4 before:w-max before:content-["Coming_Soon"] before:text-[8px] before:text-[#9E9E9E]',
             )}
             onClick={(e) => {
               e.preventDefault()

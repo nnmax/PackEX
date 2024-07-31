@@ -106,9 +106,8 @@ export default function PaxPage() {
         <H2>{'WHAT IS $PAX?'}</H2>
         <p className={'leading-8 mb-10'}>
           {
-            "$PAX is the only token of PackEX Protocol, it's non- transferable and it's the only proof of profit-sharing"
+            "$PAX is the only token of PackEX Protocol, it's non- transferable and it's the only proof of profit-sharing from PackEX Protocol. It has no pre-sale, no solid maximum supply, 100 $PAX will be launched every day."
           }
-          {'from PackEX Protocol. It has no pre-sale, no solid maximum supply, 100 $PAX will be launched every day.'}
         </p>
         <div className={'flex border border-lemonYellow rounded p-8 items-center self-start'}>
           <span className={'text-lemonYellow mr-2'}>{'Contract: '}</span>
@@ -131,9 +130,8 @@ export default function PaxPage() {
         <H2>{'HOW TO MINT $PAX?'}</H2>
         <p className={'leading-8 mb-6'}>
           {
-            "There're 4 different ways to mint $PAX (as there are more features on PackEX Protocol in the future, you will"
+            "There're 4 different ways to mint $PAX (as there are more features on PackEX Protocol in the future, you will have more ways to mint $PAX):"
           }
-          {'have more ways to mint $PAX):'}
         </p>
         <ul className={'leading-8'}>
           <li>{'1. Swap higher value on PackEX'}</li>
@@ -153,12 +151,8 @@ export default function PaxPage() {
         </ul>
         <p className={'leading-8 mt-6'}>
           {
-            'Since the team has distributed all the profits from PackEX Protocol to the $PAX holders and has not reserved'
+            'Since the team has distributed all the profits from PackEX Protocol to the $PAX holders and has not reserved or sold any tokens in advance, 5% of $PAX mined from each block will be allocated to the team in order to keep it on track.'
           }
-          {
-            'or sold any tokens in advance, 5% of $PAX mined from each block will be allocated to the team in order to keep'
-          }
-          {'it on track.'}
         </p>
       </Section>
 
@@ -443,9 +437,8 @@ const SocialBox = forwardRef<
           <div className={'flex items-center flex-1'}>
             <p className={'text-xs leading-8'}>
               {
-                "You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint,"
+                "You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint, the more you mint."
               }
-              {'the more you mint.'}
             </p>
           </div>
         </>
