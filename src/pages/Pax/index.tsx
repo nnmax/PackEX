@@ -249,9 +249,8 @@ export default function PaxPage() {
               <div className={'border border-lemonYellow rounded flex-auto px-10 flex items-center'}>
                 <p className={'text-xs leading-8'}>
                   {
-                    "You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they"
+                    "You can mint $PAX whenever your invites mint $PAX, or your invite's invites mint $PAX. The more they mint, the more you mint."
                   }
-                  {'mint, the more you mint.'}
                 </p>
               </div>
             )}
