@@ -20,6 +20,7 @@ export default function useIntervalTxAndHandle(
     },
   })
   const handleRef = useRef(handle)
+  // eslint-disable-next-line react-compiler/react-compiler
   handleRef.current = handle
   const queryClient = useQueryClient()
 

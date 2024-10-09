@@ -173,12 +173,15 @@ function ChooseModal(props: {
   const allTokens = useAllTokens()
 
   const customFilterRef = useRef(customFilter)
+  // eslint-disable-next-line react-compiler/react-compiler
   customFilterRef.current = customFilter
   const filteredTokens: Token[] = useMemo(() => {
     if (isAddressSearch) return searchToken ? [searchToken] : []
     return filterTokens(
+      // eslint-disable-next-line react-compiler/react-compiler
       isFunction(customFilterRef.current)
-        ? Object.values(allTokens).filter((t) => customFilterRef.current!(t))
+        ? // eslint-disable-next-line react-compiler/react-compiler
+          Object.values(allTokens).filter((t) => customFilterRef.current!(t))
         : Object.values(allTokens),
       searchQuery,
     )
@@ -251,7 +254,7 @@ function ChooseModal(props: {
         onSelect={handleCurrencySelect}
         selectedCurrency={selectedCurrency}
         showETH={showETH}
-        customFilter={customFilterRef.current}
+        customFilterRef={customFilterRef}
       />
       <hr className={'mb-2 mt-4 h-0.5 w-full border-none bg-[#494949]'} />
 
@@ -270,14 +273,14 @@ function SuggestedTokens(props: {
   selectedCurrency?: Token | null
   onSelect: (currency: Token) => void
   showETH?: boolean
-  customFilter?: (token: Token) => boolean
+  customFilterRef: React.RefObject<((token: Token) => boolean) | undefined>
 }) {
-  const { onSelect, selectedCurrency, showETH, customFilter } = props
+  const { onSelect, selectedCurrency, showETH, customFilterRef } = props
   const value = selectedCurrency instanceof Token ? selectedCurrency.address : ''
   const allTokens = useAllTokens()
   const options = Object.values(allTokens).filter((token) => {
     if (!token.commonFlag) return false
-    return isFunction(customFilter) ? customFilter(token) : true
+    return isFunction(customFilterRef.current) ? customFilterRef.current(token) : true
   })
 
   return (
