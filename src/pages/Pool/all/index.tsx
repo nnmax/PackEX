@@ -50,7 +50,7 @@ const PoolAll = () => {
               <Cell>{item.tvl}</Cell>
               <Cell>{item.volume24h}</Cell>
               <Cell>{item.volume7d}</Cell>
-              <Cell>{`${item.apy}%`}</Cell>
+              <Cell>{`${(typeof item.apy === 'number' ? item.apy : 0).toFixed(1)}%`}</Cell>
               <Cell className={'text-end'}>
                 <Link
                   to={getLinkPathname(item, 'add')}
