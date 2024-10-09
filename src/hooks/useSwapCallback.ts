@@ -1,12 +1,13 @@
 import { JSBI, Percent, Router, TradeType } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAccount, useChainId } from 'wagmi'
+import { useAccount, useChainId, useSendTransaction } from 'wagmi'
+import { toast } from 'react-toastify'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
+import { useKyberswapRouteApprove, useKyberswapRouteBuild } from '@/api'
 import { BIPS_BASE } from '../constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
-import { calculateGasMargin, getRouterContract, isAddress, shortenAddress } from '../utils'
+import { calculateGasMargin, getRouterContract } from '../utils'
 import isZero from '../utils/isZero'
-import useENS from './useENS'
 import type { SwapParameters, Trade } from '@nnmax/uniswap-sdk-v2'
 import type { Contract } from 'ethers'
 
@@ -38,23 +39,18 @@ type EstimatedSwapCall = SuccessfulCall | FailedCall
  * @param trade trade to execute
  * @param allowedSlippage user allowed slippage
  * @param deadline the deadline for the trade
- * @param recipientAddressOrName
  */
 function useGetSwapCallArguments(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number, // in bips
   deadline: number, // in seconds from now
-  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): () => Promise<SwapCall[]> {
   const provider = useEthersProvider()
   const { address: account } = useAccount()
   const chainId = useChainId()
 
-  const { address: recipientAddress } = useENS(recipientAddressOrName)
-  const recipient = recipientAddressOrName === null ? account : recipientAddress
-
   return useCallback(async () => {
-    if (!trade || !recipient || !provider || !account || !chainId) return []
+    if (!trade || !provider || !account || !chainId) return []
 
     const contract = await getRouterContract(chainId, provider, account)
     if (!contract) {
@@ -67,7 +63,7 @@ function useGetSwapCallArguments(
       Router.swapCallParameters(trade, {
         feeOnTransfer: false,
         allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
-        recipient,
+        recipient: account,
         ttl: deadline,
       }),
     )
@@ -77,14 +73,14 @@ function useGetSwapCallArguments(
         Router.swapCallParameters(trade, {
           feeOnTransfer: true,
           allowedSlippage: new Percent(JSBI.BigInt(allowedSlippage), BIPS_BASE),
-          recipient,
+          recipient: account,
           ttl: deadline,
         }),
       )
     }
 
     return swapMethods.map((parameters) => ({ parameters, contract }))
-  }, [account, allowedSlippage, chainId, deadline, provider, recipient, trade])
+  }, [account, allowedSlippage, chainId, deadline, provider, trade])
 }
 
 // returns a function that will execute a swap, if the parameters are all valid
@@ -93,7 +89,6 @@ export function useSwapCallback(
   trade: Trade | undefined, // trade to execute, required
   allowedSlippage: number, // in bips
   deadline: number, // in seconds from now
-  recipientAddressOrName: string | null, // the ENS name or address of the recipient of the trade, or null if swap should be returned to sender
 ): {
   state: SwapCallbackState
   callback: null | (() => Promise<string>)
@@ -104,12 +99,12 @@ export function useSwapCallback(
   const { address: account } = useAccount()
   const chainId = useChainId()
 
-  const getSwapCallArguments = useGetSwapCallArguments(trade, allowedSlippage, deadline, recipientAddressOrName)
+  const getSwapCallArguments = useGetSwapCallArguments(trade, allowedSlippage, deadline)
   const [gasLimit, setGasLimit] = useState<bigint>()
   const addTransaction = useTransactionAdder()
-
-  const { address: recipientAddress } = useENS(recipientAddressOrName)
-  const recipient = recipientAddressOrName === null ? account : recipientAddress
+  const { sendTransactionAsync } = useSendTransaction()
+  const { mutateAsync: buildRoute } = useKyberswapRouteBuild()
+  const { mutateAsync: approveRoute } = useKyberswapRouteApprove()
 
   const getSuccessfulEstimation = useCallback(async () => {
     const swapCallArguments = await getSwapCallArguments()
@@ -178,76 +173,99 @@ export function useSwapCallback(
     if (!trade || !provider || !account || !chainId) {
       return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Missing dependencies' }
     }
-    if (!recipient) {
-      if (recipientAddressOrName === null) {
-        return { state: SwapCallbackState.LOADING, gasLimit, callback: null, error: null }
-      } else {
-        return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Invalid recipient' }
+
+    const onSwap = async (): Promise<string> => {
+      if (trade.kyberswapRoutesData) {
+        const approveResponse = await approveRoute({
+          amountIn: trade.kyberswapRoutesData.amountIn,
+          tokenIn: trade.kyberswapRoutesData.tokenIn,
+        })
+        if (approveResponse.approve) {
+          await sendTransactionAsync({
+            data: approveResponse.callData,
+            chainId: approveResponse.chainId,
+            to: approveResponse.destination,
+            value: BigInt(approveResponse.value),
+            account,
+            maxFeePerGas: 1000000000000n,
+            maxPriorityFeePerGas: 1000000000000n,
+          })
+        }
+        const buildResponse = await buildRoute({
+          routeSummary: trade.kyberswapRoutesData,
+          slippageTolerance: allowedSlippage,
+          amountIn: trade.kyberswapRoutesData.amountIn,
+        }).catch((error) => {
+          toast.error('Failed to build route: ' + error.message)
+          throw error
+        })
+        return await sendTransactionAsync({
+          data: buildResponse.callData,
+          account,
+          to: buildResponse.destination,
+          value: BigInt(buildResponse.value),
+          maxFeePerGas: 1000000000000n,
+          maxPriorityFeePerGas: 1000000000000n,
+        })
       }
+
+      const _successfulEstimation = await getSuccessfulEstimation()
+
+      const {
+        call: {
+          contract,
+          parameters: { methodName, args, value },
+        },
+        gasEstimate,
+      } = _successfulEstimation
+
+      return contract[methodName](...args, {
+        gasLimit: calculateGasMargin(gasEstimate),
+        ...(value && !isZero(value) ? { value, from: account } : { from: account }),
+      })
+        .then((response: any) => {
+          const inputSymbol = trade.inputAmount.currency.symbol
+          const outputSymbol = trade.outputAmount.currency.symbol
+          const inputAmount = trade.inputAmount.toSignificant(3)
+          const outputAmount = trade.outputAmount.toSignificant(3)
+
+          const summary = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`
+
+          addTransaction(response, {
+            summary,
+          })
+
+          return response.hash as string
+        })
+        .catch((error: any) => {
+          // if the user rejected the tx, pass this along
+          if (error?.code === 4001) {
+            throw new Error('Transaction rejected.')
+          } else {
+            // otherwise, the error was unexpected and we need to convey that
+            console.error(`Swap failed`, error, methodName, args, value)
+            throw new Error(`Swap failed: ${error.message}`)
+          }
+        })
     }
 
     return {
       state: SwapCallbackState.VALID,
       error: null,
       gasLimit,
-      callback: async function onSwap(): Promise<string> {
-        const _successfulEstimation = await getSuccessfulEstimation()
-
-        const {
-          call: {
-            contract,
-            parameters: { methodName, args, value },
-          },
-          gasEstimate,
-        } = _successfulEstimation
-
-        return contract[methodName](...args, {
-          gasLimit: calculateGasMargin(gasEstimate),
-          ...(value && !isZero(value) ? { value, from: account } : { from: account }),
-        })
-          .then((response: any) => {
-            const inputSymbol = trade.inputAmount.currency.symbol
-            const outputSymbol = trade.outputAmount.currency.symbol
-            const inputAmount = trade.inputAmount.toSignificant(3)
-            const outputAmount = trade.outputAmount.toSignificant(3)
-
-            const base = `Swap ${inputAmount} ${inputSymbol} for ${outputAmount} ${outputSymbol}`
-            const withRecipient =
-              recipient === account
-                ? base
-                : `${base} to ${
-                    recipientAddressOrName && isAddress(recipientAddressOrName)
-                      ? shortenAddress(recipientAddressOrName)
-                      : recipientAddressOrName
-                  }`
-
-            addTransaction(response, {
-              summary: withRecipient,
-            })
-
-            return response.hash
-          })
-          .catch((error: any) => {
-            // if the user rejected the tx, pass this along
-            if (error?.code === 4001) {
-              throw new Error('Transaction rejected.')
-            } else {
-              // otherwise, the error was unexpected and we need to convey that
-              console.error(`Swap failed`, error, methodName, args, value)
-              throw new Error(`Swap failed: ${error.message}`)
-            }
-          })
-      },
+      callback: onSwap,
     }
   }, [
-    account,
-    addTransaction,
-    chainId,
-    getSuccessfulEstimation,
-    provider,
-    recipient,
-    recipientAddressOrName,
     trade,
+    provider,
+    account,
+    chainId,
     gasLimit,
+    getSuccessfulEstimation,
+    approveRoute,
+    buildRoute,
+    allowedSlippage,
+    sendTransactionAsync,
+    addTransaction,
   ])
 }

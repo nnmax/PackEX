@@ -4,6 +4,7 @@ import { formatUnits } from 'ethers'
 import { Button } from 'react-aria-components'
 import { useGasPrice } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'react-toastify'
 import SlippageSetting from '@/components/SlippageSetting'
 import SwapDetailAccordion from '@/components/swap/SwapDetailAccordion'
 import { calculateGasMargin } from '@/utils'
@@ -16,6 +17,7 @@ import useDocumentTitle from '@/hooks/useDocumentTitle'
 import useIntervalTxAndHandle from '@/hooks/useIntervalTxAndHandle'
 import { useTransactionInProgressModalOpen } from '@/state/transactions/hooks'
 import { TransactionSuccessModal } from '@/components/TransactionModal'
+import { type AssetListData, type GetUserData } from '@/api'
 import { ButtonPrimary, ConnectWalletButton, SwitchChainButton } from '../../components/Button'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
@@ -33,7 +35,6 @@ import {
 import { useUserDeadline, useUserSlippageTolerance } from '../../state/user/hooks'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown } from '../../utils/prices'
-import type { AssetListData, GetUserData } from '@/api'
 import type { Currency, CurrencyAmount } from '@nnmax/uniswap-sdk-v2'
 
 export default function Swap() {
@@ -47,7 +48,7 @@ export default function Swap() {
   const isSupportedChainId = useIsSupportedChainId()
 
   // swap state
-  const { independentField, typedValue, recipient } = useSwapState()
+  const { independentField, typedValue } = useSwapState()
   const {
     v2Trade,
     currencyBalances,
@@ -66,15 +67,17 @@ export default function Swap() {
   const showWrap = wrapType !== WrapType.NOT_APPLICABLE
   const trade = showWrap ? undefined : v2Trade
 
-  const parsedAmounts = showWrap
-    ? {
-        [Field.INPUT]: parsedAmount,
-        [Field.OUTPUT]: parsedAmount,
-      }
-    : {
-        [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
-        [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
-      }
+  const parsedAmounts = useMemo(() => {
+    return showWrap
+      ? {
+          [Field.INPUT]: parsedAmount,
+          [Field.OUTPUT]: parsedAmount,
+        }
+      : {
+          [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
+          [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount,
+        }
+  }, [independentField, parsedAmount, showWrap, trade?.inputAmount, trade?.outputAmount])
 
   const { onSwitchTokens, onCurrencySelection, onCleanSelectedCurrencies, onUserInput } = useSwapActionHandlers()
 
@@ -100,12 +103,15 @@ export default function Swap() {
     successModalOpen: false,
   })
 
-  const formattedAmounts = {
-    [independentField]: typedValue,
-    [dependentField]: showWrap
-      ? (parsedAmounts[independentField]?.toExact() ?? '')
-      : (parsedAmounts[dependentField]?.toSignificant(6) ?? ''),
-  }
+  const formattedAmounts = useMemo(
+    () => ({
+      [independentField]: typedValue,
+      [dependentField]: showWrap
+        ? (parsedAmounts[independentField]?.toExact() ?? '')
+        : (parsedAmounts[dependentField]?.toSignificant(6) ?? ''),
+    }),
+    [dependentField, independentField, parsedAmounts, showWrap, typedValue],
+  )
 
   const route = trade?.route
   const userHasSpecifiedInputOutput = Boolean(
@@ -126,7 +132,7 @@ export default function Swap() {
     callback: swapCallback,
     error: swapCallbackError,
     gasLimit: swapGasLimit,
-  } = useSwapCallback(trade, allowedSlippage, deadline, recipient)
+  } = useSwapCallback(trade, allowedSlippage, deadline)
 
   const { data: price } = usePrice({
     refetchInterval: 1000 * 30 /* 30 seconds */,
@@ -136,6 +142,14 @@ export default function Swap() {
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
 
   const transactionFeeInUSD = useMemo(() => {
+    if (trade?.kyberswapRoutesData) {
+      const { gasUsd } = trade.kyberswapRoutesData
+      if (gasUsd) {
+        const result = Math.round(Number(gasUsd) * 1e8) / 1e8
+        return result === 0 ? '< 0.00000001' : result.toString()
+      }
+      return '-'
+    }
     if (!swapGasLimit || !gasPrice || !price) return '-'
     let value: bigint
     if (approveGas) {
@@ -143,9 +157,9 @@ export default function Swap() {
     } else {
       value = calculateGasMargin(swapGasLimit) * gasPrice
     }
-    const result = Math.round(Number(formatUnits(value, 18)) * Number(price) * Math.pow(10, 8)) / Math.pow(10, 8)
+    const result = Math.round(Number(formatUnits(value, 18)) * Number(price) * 1e8) / 1e8
     return result === 0 ? '< 0.00000001' : result.toString()
-  }, [swapGasLimit, gasPrice, price, approveGas])
+  }, [swapGasLimit, gasPrice, price, approveGas, trade])
 
   const [, updateInProgressModalOpen] = useTransactionInProgressModalOpen()
 
@@ -170,7 +184,16 @@ export default function Swap() {
   }
 
   const handleConfirm = () => {
-    if (!swapCallback || !isSupportedChainId || !priceImpactWithoutFee) {
+    if (!swapCallback) {
+      toast.error('Swap callback is not defined')
+      return
+    }
+    if (!isSupportedChainId) {
+      toast.error('Unsupported chain')
+      return
+    }
+    if (!priceImpactWithoutFee) {
+      toast.error('Price impact is not defined')
       return
     }
 
