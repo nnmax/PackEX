@@ -103,8 +103,8 @@ export default function Swap() {
   const formattedAmounts = {
     [independentField]: typedValue,
     [dependentField]: showWrap
-      ? parsedAmounts[independentField]?.toExact() ?? ''
-      : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+      ? (parsedAmounts[independentField]?.toExact() ?? '')
+      : (parsedAmounts[dependentField]?.toSignificant(6) ?? ''),
   }
 
   const route = trade?.route

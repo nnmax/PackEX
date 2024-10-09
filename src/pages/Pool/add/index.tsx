@@ -71,7 +71,7 @@ export default function PoolAdd() {
   // get formatted amounts
   const formattedAmounts = {
     [independentField]: typedValue,
-    [dependentField]: noLiquidity ? otherTypedValue : parsedAmounts[dependentField]?.toSignificant(6) ?? '',
+    [dependentField]: noLiquidity ? otherTypedValue : (parsedAmounts[dependentField]?.toSignificant(6) ?? ''),
   }
 
   // get the max amounts user can add
@@ -369,7 +369,7 @@ export default function PoolAdd() {
                         {pairState === PairState.LOADING ? (
                           <span className={'loading'} />
                         ) : (
-                          price?.invert().toSignificant(4) ?? '-'
+                          (price?.invert().toSignificant(4) ?? '-')
                         )}
                       </span>
                     </p>
@@ -383,7 +383,7 @@ export default function PoolAdd() {
                         {pairState === PairState.LOADING ? (
                           <span className={'loading'} />
                         ) : (
-                          price?.toSignificant(4) ?? '-'
+                          (price?.toSignificant(4) ?? '-')
                         )}
                       </span>
                     </p>

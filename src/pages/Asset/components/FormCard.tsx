@@ -191,7 +191,7 @@ export default forwardRef<FormCardRef, FormCardProps>(function FormCard(props, r
               <p className={'flex justify-between items-center mb-4'}>
                 <span>{'Network fee'}</span>
                 <span className={'text-[#9E9E9E]'}>
-                  {isLoadingWithdrawFee ? <span className={'loading'} /> : withdrawFee ?? '-'} {'DOG'}
+                  {isLoadingWithdrawFee ? <span className={'loading'} /> : (withdrawFee ?? '-')} {'DOG'}
                 </span>
               </p>
               <p className={'flex justify-between items-center'}>
