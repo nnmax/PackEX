@@ -1,3 +1,7 @@
+ARG NGINX_VERSION=1.27.2
+ARG GEOIP2_VERSION=3.4
+ARG NODE_VERSION=20.18.0
+
 # Build the GeoIP2 module and Nginx from source
 FROM alpine as geoip_builder
 
@@ -14,8 +18,8 @@ RUN apk add --no-cache \
 
 WORKDIR /tmp
 
-ARG NGINX_VERSION=1.27.0
-ARG GEOIP2_VERSION=3.4
+ARG NGINX_VERSION
+ARG GEOIP2_VERSION
 
 # Download sources
 RUN curl -LO http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz \
@@ -30,7 +34,7 @@ RUN cd nginx-$NGINX_VERSION \
     && ./configure --with-compat --add-dynamic-module=../ngx_http_geoip2_module-$GEOIP2_VERSION \
     && make modules
 
-FROM node:lts-alpine as base
+FROM node:$NODE_VERSION-alpine as base
 
 RUN apk add --no-cache libc6-compat g++ make py3-pip python3
 
@@ -65,7 +69,7 @@ COPY index.html yarn.lock .env .env.prod vite.config.ts package.json .yarnrc.yml
 
 RUN yarn build:$MODE_ENV
 
-FROM nginx:alpine
+FROM nginx:$NGINX_VERSION-alpine
 
 RUN apk add --no-cache libmaxminddb curl
 

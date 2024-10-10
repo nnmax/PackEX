@@ -1,0 +1,16 @@
+*
+!.yarn
+!lib
+!public
+!src
+!index.html
+!nginx.conf*
+!package.json
+!.yarnrc.yml
+!tsconfig.json
+!yarn.lock
+!vite.config.ts
+!.env
+!.env.prod
+!postcss.config.mjs
+!tailwind.config.ts
