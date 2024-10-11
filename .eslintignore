@@ -11,3 +11,4 @@ yarn.lock
 /public
 .eslintrc.cjs
 vite.config.ts
+lint-staged.config.mjs

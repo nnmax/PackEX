@@ -13,8 +13,6 @@ export interface GetPaxInviteData {
   inviteCode: string
   inviteList: PaxTableData[]
   userPax?: PaxTableData
-  unclaimed: number
-  totalMinted: number
   unclaimedBonusList: Bonus[]
   dailyBonusList: Bonus[]
   totalBonusList: Bonus[]

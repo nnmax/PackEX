@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import clsx from 'clsx'
 import XLogo from '@/assets/images/X-logo.svg'
 import { useWalletModalToggle } from '@/state/application/hooks'
 import { useUserInfo } from '@/api/get-user'
@@ -38,21 +37,7 @@ export default function AppBar() {
           <LinkTab to={'/asset'} onClick={handleClick}>
             {'Assets'}
           </LinkTab>
-          <LinkTab
-            to={'#'}
-            aria-hidden
-            tabIndex={-1}
-            className={clsx(
-              'pointer-events-none flex justify-center',
-              'before:absolute before:top-4 before:w-max before:content-["Coming_Soon"] before:text-[8px] before:text-[#9E9E9E]',
-            )}
-            onClick={(e) => {
-              e.preventDefault()
-            }}
-          >
-            {'Earn'}
-          </LinkTab>
-          <LinkTab to={'/pax'}>{'$PAX'}</LinkTab>
+          <LinkTab to={'/earn'}>{'Earn'}</LinkTab>
           {isAdmin(userInfo?.ethAddress) && <LinkTab to={'/__admin'}>{'Admin'}</LinkTab>}
         </NavTabs>
 

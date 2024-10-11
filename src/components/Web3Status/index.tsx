@@ -78,7 +78,7 @@ function Web3StatusInner() {
                 <span className={clsx(isLoadingPointGoldInfo && 'loading')}>{pointGoldInfo?.goldAmount ?? '-'}</span>
               </div>
               <p className={'text-[#9E9E9E] text-xs leading-5 mt-[14px] ml-9'}>
-                {'BLAST GOLD will be distributed in proportion to the amount of $PAX'}
+                {'Blast Gold will be distributed in proportion to the contribution made on the day before distribution'}
               </p>
             </Dialog>
           </Popover>

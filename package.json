@@ -106,9 +106,5 @@
     "viem": "^2.21.10",
     "wagmi": "^2.12.12"
   },
-  "packageManager": "yarn@4.5.0",
-  "lint-staged": {
-    "*.{js,ts,tsx,cjs,mjs}": "eslint --cache --fix --max-warnings 0",
-    "**/*": "prettier --write --ignore-unknown"
-  }
+  "packageManager": "yarn@4.5.0"
 }
