@@ -4,7 +4,7 @@ import Admin from '@/pages/Admin'
 import Asset from '@/pages/Asset'
 import Deposit from '@/pages/Asset/deposit'
 import Withdraw from '@/pages/Asset/withdraw'
-import Pax from '@/pages/Pax'
+import Earn from '@/pages/Earn'
 import PoolAdd from '@/pages/Pool/add'
 import PoolAll from '@/pages/Pool/all'
 import PoolMy from '@/pages/Pool/my'
@@ -54,8 +54,8 @@ const router = createBrowserRouter([
         element: <Deposit />,
       },
       {
-        path: '/pax',
-        element: <Pax />,
+        path: '/earn',
+        element: <Earn />,
       },
       {
         path: '/__admin',
