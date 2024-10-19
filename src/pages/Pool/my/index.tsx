@@ -26,11 +26,11 @@ const PoolMy = () => {
             </Column>
             <Column minWidth={260}>{'AMOUNT'}</Column>
             <Column width={148}>{'POOL SHARE'}</Column>
-            <Column width={180} className={'pt-[15px]'}>
+            {/* <Column width={180} className={'pt-[15px]'}>
               {'CONTRIBUTION '}
               <br />
               {'( TODAY )'}
-            </Column>
+            </Column> */}
             <Column width={160}>{'LP TOKEN'}</Column>
             <Column maxWidth={180} minWidth={100}>
               {''}
@@ -68,7 +68,7 @@ const PoolMy = () => {
                     </div>
                   </Cell>
                   <Cell>{`${item.poolShare?.toFixed(2)} %`}</Cell>
-                  <Cell>{`${item.paxEarnedToday?.toFixed(1)} $`}</Cell>
+                  {/* <Cell>{`${item.paxEarnedToday?.toFixed(1)} $`}</Cell> */}
                   <Cell>{formatLpToken(item.lpTokenAmount)}</Cell>
                   <Cell>
                     <div className={'flex items-center justify-center gap-x-4 gap-y-2 flex-wrap'}>
