@@ -26,7 +26,7 @@ export default function SlippageSetting(props: { className?: string }) {
   )
 }
 
-const MAX = 50
+const MAX = 19.99
 
 function SettingPanel() {
   const [slippage, setSlippage] = useUserSlippageTolerance()
@@ -36,11 +36,12 @@ function SettingPanel() {
     setSlippageInput(value)
 
     try {
-      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString(), 10)
+      const valueAsIntFromRoundedFloat = Number.parseInt(Math.round(Number.parseFloat(value) * 100).toString(), 10)
       if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < MAX * 100) {
         setSlippage(valueAsIntFromRoundedFloat)
       }
-    } catch {
+    } catch (e) {
+      console.error(e)
       /* empty */
     }
   }
@@ -83,6 +84,7 @@ function SettingPanel() {
             value={slippageInput}
             onChange={(e) => parseCustomSlippage(e.target.value)}
             min={0}
+            step={0.01}
             max={MAX}
           />
         </div>
