@@ -251,7 +251,7 @@ export default function Swap() {
   }
 
   return (
-    <div className={'flex flex-col items-center'}>
+    <div className={'flex w-full justify-center'}>
       {trade && (
         <ConfirmSwapModal
           activeStep={activeStep}
@@ -267,71 +267,80 @@ export default function Swap() {
         onClose={() => setPriceImpactWarningModalOpen(false)}
         onContinue={handleSwap}
       />
-      <div
-        className={'flex w-full relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
-        style={{
-          '--rhombus-bg-color': 'var(--body-bg)',
-        }}
-      >
-        <SlippageSetting className={'self-end mb-6'} />
-
-        <CurrencyInputPanel
-          label={independentField === Field.OUTPUT && !showWrap && trade ? 'From (estimated)' : 'From'}
-          value={formattedAmounts[Field.INPUT]}
-          showMaxButton={!atMaxAmountInput}
-          currency={currencies[Field.INPUT]}
-          onUserInput={handleTypeInput}
-          onMax={handleMaxInput}
-          onCurrencySelect={handleInputSelect}
-          otherCurrency={currencies[Field.OUTPUT]}
-          rhombus={'top'}
-          error={inputErrorType === InputErrorType.InsufficientBalance ? swapInputError : undefined}
-          disableCurrencySelect={!isSupportedChainId}
-          inputLoading={!trade && !showWrap && !parsedAmounts[Field.INPUT] && !!parsedAmounts[Field.OUTPUT]}
-        />
-
-        <Button
-          aria-label={'Switch'}
-          onPress={onSwitchTokens}
-          className={
-            'absolute top-[148px] left-1/2 z-[1] flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-md border-4 border-[#0f0f0f] bg-[#242424]'
-          }
+      <div className={'px-16 py-8'}>
+        <div
+          className={'flex w-full relative max-w-[400px] flex-col text-[#9E9E9E] mt-9'}
+          style={{
+            '--rhombus-bg-color': 'var(--body-bg)',
+          }}
         >
-          <span className={'icon-[pixelarticons--arrow-down] text-2xl text-white'} aria-hidden />
-        </Button>
+          <SlippageSetting className={'self-end mb-6'} />
 
-        <CurrencyInputPanel
-          value={formattedAmounts[Field.OUTPUT]}
-          onUserInput={handleTypeOutput}
-          label={independentField === Field.INPUT && !showWrap && trade ? 'To (estimated)' : 'To'}
-          showMaxButton={false}
-          currency={currencies[Field.OUTPUT]}
-          onCurrencySelect={handleOutputSelect}
-          otherCurrency={currencies[Field.INPUT]}
-          rhombus={'bottom'}
-          className={'mt-1'}
-          disableCurrencySelect={!isSupportedChainId}
-          inputLoading={!trade && !showWrap && !parsedAmounts[Field.OUTPUT] && !!parsedAmounts[Field.INPUT]}
-        />
-
-        <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInUSD} />
-
-        <div className={'flex justify-center mt-8'}>
-          <Footer
-            userInfo={userInfo}
-            isSupportedChainId={isSupportedChainId}
-            showWrap={showWrap}
-            wrapInputError={wrapInputError}
-            handleWrap={handleWrap}
-            wraping={wraping}
-            wrapType={wrapType}
-            noRoute={noRoute}
-            userHasSpecifiedInputOutput={userHasSpecifiedInputOutput}
-            swapInputError={swapInputError}
-            swapCallbackError={swapCallbackError}
-            handleConfirm={handleConfirm}
+          <CurrencyInputPanel
+            label={independentField === Field.OUTPUT && !showWrap && trade ? 'From (estimated)' : 'From'}
+            value={formattedAmounts[Field.INPUT]}
+            showMaxButton={!atMaxAmountInput}
+            currency={currencies[Field.INPUT]}
+            onUserInput={handleTypeInput}
+            onMax={handleMaxInput}
+            onCurrencySelect={handleInputSelect}
+            otherCurrency={currencies[Field.OUTPUT]}
+            rhombus={'top'}
+            error={inputErrorType === InputErrorType.InsufficientBalance ? swapInputError : undefined}
+            disableCurrencySelect={!isSupportedChainId}
+            inputLoading={!trade && !showWrap && !parsedAmounts[Field.INPUT] && !!parsedAmounts[Field.OUTPUT]}
           />
+
+          <Button
+            aria-label={'Switch'}
+            onPress={onSwitchTokens}
+            className={
+              'absolute top-[148px] left-1/2 z-[1] flex h-10 w-10 -translate-x-1/2 items-center justify-center rounded-md border-4 border-[#0f0f0f] bg-[#242424]'
+            }
+          >
+            <span className={'icon-[pixelarticons--arrow-down] text-2xl text-white'} aria-hidden />
+          </Button>
+
+          <CurrencyInputPanel
+            value={formattedAmounts[Field.OUTPUT]}
+            onUserInput={handleTypeOutput}
+            label={independentField === Field.INPUT && !showWrap && trade ? 'To (estimated)' : 'To'}
+            showMaxButton={false}
+            currency={currencies[Field.OUTPUT]}
+            onCurrencySelect={handleOutputSelect}
+            otherCurrency={currencies[Field.INPUT]}
+            rhombus={'bottom'}
+            className={'mt-1'}
+            disableCurrencySelect={!isSupportedChainId}
+            inputLoading={!trade && !showWrap && !parsedAmounts[Field.OUTPUT] && !!parsedAmounts[Field.INPUT]}
+          />
+
+          <SwapDetailAccordion trade={trade} price={trade?.executionPrice} transactionFee={transactionFeeInUSD} />
+
+          <div className={'flex justify-center mt-8'}>
+            <Footer
+              userInfo={userInfo}
+              isSupportedChainId={isSupportedChainId}
+              showWrap={showWrap}
+              wrapInputError={wrapInputError}
+              handleWrap={handleWrap}
+              wraping={wraping}
+              wrapType={wrapType}
+              noRoute={noRoute}
+              userHasSpecifiedInputOutput={userHasSpecifiedInputOutput}
+              swapInputError={swapInputError}
+              swapCallbackError={swapCallbackError}
+              handleConfirm={handleConfirm}
+            />
+          </div>
         </div>
+      </div>
+      <div className={'w-[455px] pt-[70px]'}>
+        <p className={'text-xs/6 text-white'}>
+          {
+            'We will provide you with the deepest market depth for your transactions. Your transaction requests will be matched in the pool of PackEX first, but if the amount of your transaction request is too large resulting in a high price impact, we will automatically put your transaction request in other pools on the blockchain to ensure that you get the best price.'
+          }
+        </p>
       </div>
     </div>
   )

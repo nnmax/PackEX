@@ -432,7 +432,7 @@ export default function PoolAdd() {
           </p>
           <p className={'text-[12px] leading-6'}>
             {
-              'By adding liquidity, you will earn PackEX contribution from all trades on this pair, proportional to your share of the pool, which can be rewarded by PackEX every day. The 0.3% reward from trades will be distributed to all contributors as part of the total revenue of PackEX.'
+              'By adding liquidity, you will earn PackEX contribution from all trades on this pair, proportional to your share of the pool, which can be rewarded by PackEX everyday. And the reward from trades will be distributed to all contributors as part of the total revenue of PackEX.'
             }
           </p>
         </div>
