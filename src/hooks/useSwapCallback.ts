@@ -1,9 +1,10 @@
 import { JSBI, Percent, Router, TradeType } from '@nnmax/uniswap-sdk-v2'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccount, useChainId, useSendTransaction } from 'wagmi'
 import { toast } from 'react-toastify'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import { useKyberswapRouteApprove, useKyberswapRouteBuild } from '@/api'
+import { useSwapState } from '@/state/swap/hooks'
 import { BIPS_BASE } from '../constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, getRouterContract } from '../utils'
@@ -105,6 +106,11 @@ export function useSwapCallback(
   const { sendTransactionAsync } = useSendTransaction()
   const { mutateAsync: buildRoute } = useKyberswapRouteBuild()
   const { mutateAsync: approveRoute } = useKyberswapRouteApprove()
+  const { typedValue } = useSwapState()
+  const typedValueRef = useRef(typedValue)
+  useEffect(() => {
+    typedValueRef.current = typedValue
+  }, [typedValue])
 
   const getSuccessfulEstimation = useCallback(async () => {
     const swapCallArguments = await getSwapCallArguments()
@@ -194,7 +200,7 @@ export function useSwapCallback(
         const buildResponse = await buildRoute({
           routeSummary: trade.kyberswapRoutesData,
           slippageTolerance: allowedSlippage,
-          amountIn: trade.kyberswapRoutesData.amountIn,
+          amountIn: typedValueRef.current,
         }).catch((error) => {
           toast.error('Failed to build route: ' + error.message)
           throw error
