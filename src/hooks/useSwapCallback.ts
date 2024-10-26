@@ -2,6 +2,7 @@ import { JSBI, Percent, Router, TradeType } from '@nnmax/uniswap-sdk-v2'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccount, useChainId, useSendTransaction } from 'wagmi'
 import { toast } from 'react-toastify'
+import { parseEther, type Contract } from 'ethers'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import { useKyberswapRouteApprove, useKyberswapRouteBuild } from '@/api'
 import { useSwapState } from '@/state/swap/hooks'
@@ -10,7 +11,6 @@ import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, getRouterContract } from '../utils'
 import isZero from '../utils/isZero'
 import type { SwapParameters, Trade } from '@nnmax/uniswap-sdk-v2'
-import type { Contract } from 'ethers'
 
 export enum SwapCallbackState {
   INVALID,
@@ -200,7 +200,7 @@ export function useSwapCallback(
         const buildResponse = await buildRoute({
           routeSummary: trade.kyberswapRoutesData,
           slippageTolerance: allowedSlippage,
-          amountIn: typedValueRef.current,
+          amountIn: parseEther(typedValueRef.current).toString(),
         }).catch((error) => {
           toast.error('Failed to build route: ' + error.message)
           throw error

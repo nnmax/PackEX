@@ -39,6 +39,7 @@ function shouldBeEnabled(
     !!inputCurrency &&
     !!outputCurrency &&
     !!typedValue &&
+    typedValue !== '0' &&
     !isDOG(inputCurrency) &&
     !isDOG(outputCurrency) &&
     !isWrapToken
