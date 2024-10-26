@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from 'react-aria-components'
 import ArrowDown from '@/components/Icons/ArrowDown'
 import { computeTradePriceBreakdown } from '@/utils/prices'
@@ -21,6 +21,10 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
+
+  useEffect(() => {
+    console.log(priceImpactWithoutFee?.toFixed(2))
+  }, [priceImpactWithoutFee])
 
   return (
     <div

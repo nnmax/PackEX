@@ -1,4 +1,4 @@
-import { Trade } from '@nnmax/uniswap-sdk-v2'
+import { ETHER, Trade } from '@nnmax/uniswap-sdk-v2'
 import { flatMap, get } from 'lodash-es'
 import { useMemo } from 'react'
 import { useAccount, useChainId } from 'wagmi'
@@ -105,6 +105,17 @@ export function usePrefetchAllCommonPairs() {
   useAllCommonPairs(get(tokenPairs, [0, 0]), get(tokenPairs, [0, 1]))
 }
 
+function shouldUseKyber(trade: Trade) {
+  const inputIsDog = trade.inputAmount.currency.symbol?.toUpperCase() === 'DOG'
+  const outputIsDog = trade.outputAmount.currency.symbol?.toUpperCase() === 'DOG'
+  return (
+    !inputIsDog &&
+    !outputIsDog &&
+    !(trade.inputAmount.currency === ETHER && trade.outputAmount.currency.symbol?.toUpperCase() === 'WETH') &&
+    !(trade.outputAmount.currency === ETHER && trade.inputAmount.currency.symbol?.toUpperCase() === 'WETH')
+  )
+}
+
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
@@ -120,15 +131,15 @@ export function useTradeExactIn(options: {
       const trade =
         Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, { maxHops: 3, maxNumResults: 1 })[0] ?? null
       const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-      if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT) && kyberswapRoutesData) {
-        const t =
+      if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT)) {
+        if (shouldUseKyber(trade) && !kyberswapRoutesData) return null
+        return (
           Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, {
             maxHops: 3,
             maxNumResults: 1,
             kyberswapRoutesData,
           })[0] ?? null
-        console.log('ttt', t)
-        return t
+        )
       }
       return trade
     }
@@ -153,7 +164,8 @@ export function useTradeExactOut(options: {
         Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, { maxHops: 3, maxNumResults: 1 })[0] ??
         null
       const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
-      if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT) && kyberswapRoutesData) {
+      if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT)) {
+        if (shouldUseKyber(trade) && !kyberswapRoutesData) return null
         return (
           Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, {
             maxHops: 3,
