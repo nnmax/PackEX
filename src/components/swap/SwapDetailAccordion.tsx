@@ -86,12 +86,14 @@ export default function SwapDetailAccordion(props: { price?: Price; trade?: Trad
             {'%'}
           </span>
         </p>
-        <p className={'flex items-center justify-between'}>
-          <span>{'LP FEE'}</span>
-          <span>
-            {realizedLPFee && trade ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
-          </span>
-        </p>
+        {trade?.useKyber ? null : (
+          <p className={'flex items-center justify-between'}>
+            <span>{'LP FEE'}</span>
+            <span>
+              {realizedLPFee && trade ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
+            </span>
+          </p>
+        )}
         <p className={'-mt-1 flex items-center justify-between'}>
           <span>{'NETWORK COST'}</span>
           <span className={'flex items-center gap-2'}>

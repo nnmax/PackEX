@@ -39,7 +39,10 @@ export function computeTradePriceBreakdown(trade?: Trade): {
       ? new TokenAmount(trade.inputAmount.token, realizedLPFee.multiply(trade.inputAmount.raw).quotient)
       : CurrencyAmount.ether(realizedLPFee.multiply(trade.inputAmount.raw).quotient))
 
-  return { priceImpactWithoutFee: priceImpactWithoutFeePercent, realizedLPFee: realizedLPFeeAmount }
+  return {
+    priceImpactWithoutFee: trade?.useKyber ? trade.kyberPriceImpact : priceImpactWithoutFeePercent,
+    realizedLPFee: realizedLPFeeAmount,
+  }
 }
 
 // computes the minimum amount out and maximum amount in for a trade given a user specified allowed slippage in bips

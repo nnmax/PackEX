@@ -12,3 +12,4 @@ export {
 } from './connect-btc-wallet'
 export { type GetPaxInviteData } from './get-pax-invite'
 export { default as getWithdrawFee, type WithdrawFeeData, useWithdrawFee } from './get-runes-withdraw-fee'
+export { useKyberswapRoutes, useKyberswapRouteBuild, useKyberswapRouteApprove } from './kyberswap'

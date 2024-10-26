@@ -8,7 +8,6 @@ import MaterialSymbolsLogout from '@/components/Icons/MaterialSymbolsLogout'
 import { disconnectWallet } from '@/api'
 import { ButtonBase } from '@/components/Button'
 import { useUserInfo } from '@/api/get-user'
-import verify451Pathname from '@/utils/verify451Pathname'
 import { TokenEth } from '@/components/Icons/TokenEth'
 import TokenBlast from '@/components/Icons/TokenBlast'
 import GoldIcon from '@/components/Icons/GoldIcon'
@@ -36,16 +35,9 @@ function Web3StatusInner() {
     disconnectWallet()
   }
 
-  let hasError = false
-  try {
-    verify451Pathname()
-  } catch (error) {
-    hasError = true
-  }
-
   const ChainLogo = useMemo(() => (chainId ? chainLogos.get(chainId) : undefined), [chainId])
 
-  if (!hasError && userInfo) {
+  if (userInfo) {
     return (
       <>
         <MenuTrigger>
@@ -114,7 +106,7 @@ function Web3StatusInner() {
       onPress={toggleWalletModal}
       className={'border border-aaa/50 gap-2'}
       loadingClassName={'!text-aaa/50'}
-      isLoading={hasError ? false : isConnecting}
+      isLoading={isConnecting}
     >
       <Wallet className={'text-xl'} />
       <span>{'Connect Wallet'}</span>

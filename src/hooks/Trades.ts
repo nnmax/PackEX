@@ -4,10 +4,11 @@ import { useMemo } from 'react'
 import { useAccount, useChainId } from 'wagmi'
 import { useAllTokens } from '@/hooks/Tokens'
 import { useETHBalances } from '@/state/wallet/hooks'
-import { BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
+import { computeTradePriceBreakdown } from '@/utils/prices'
+import { ALLOWED_PRICE_IMPACT, BASES_TO_CHECK_TRADES_AGAINST, CUSTOM_BASES } from '../constants'
 import { PairState, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
-import type { ChainId, Currency, CurrencyAmount, Pair, Token } from '@nnmax/uniswap-sdk-v2'
+import type { ChainId, Currency, CurrencyAmount, KyberswapRoutesData, Pair, Token } from '@nnmax/uniswap-sdk-v2'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const chainId: ChainId = useChainId()
@@ -107,31 +108,62 @@ export function usePrefetchAllCommonPairs() {
 /**
  * Returns the best trade for the exact amount of tokens in to the given token out
  */
-export function useTradeExactIn(currencyAmountIn?: CurrencyAmount, currencyOut?: Currency): Trade | null {
+export function useTradeExactIn(options: {
+  currencyOut?: Currency
+  currencyAmountIn?: CurrencyAmount
+  kyberswapRoutesData?: KyberswapRoutesData
+}): Trade | null {
+  const { currencyAmountIn, currencyOut, kyberswapRoutesData } = options
   const allowedPairs = useAllCommonPairs(currencyAmountIn?.currency, currencyOut)
   return useMemo(() => {
     if (currencyAmountIn && currencyOut && allowedPairs.length > 0) {
-      return (
+      const trade =
         Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, { maxHops: 3, maxNumResults: 1 })[0] ?? null
-      )
+      const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
+      if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT) && kyberswapRoutesData) {
+        const t =
+          Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, {
+            maxHops: 3,
+            maxNumResults: 1,
+            kyberswapRoutesData,
+          })[0] ?? null
+        console.log('ttt', t)
+        return t
+      }
+      return trade
     }
     return null
-  }, [allowedPairs, currencyAmountIn, currencyOut])
+  }, [allowedPairs, currencyAmountIn, currencyOut, kyberswapRoutesData])
 }
 
 /**
  * Returns the best trade for the token in to the exact amount of token out
  */
-export function useTradeExactOut(currencyIn?: Currency, currencyAmountOut?: CurrencyAmount): Trade | null {
+export function useTradeExactOut(options: {
+  currencyIn?: Currency
+  currencyAmountOut?: CurrencyAmount
+  kyberswapRoutesData?: KyberswapRoutesData
+}): Trade | null {
+  const { currencyAmountOut, currencyIn, kyberswapRoutesData } = options
   const allowedPairs = useAllCommonPairs(currencyIn, currencyAmountOut?.currency)
 
   return useMemo(() => {
     if (currencyIn && currencyAmountOut && allowedPairs.length > 0) {
-      return (
+      const trade =
         Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, { maxHops: 3, maxNumResults: 1 })[0] ??
         null
-      )
+      const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
+      if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT) && kyberswapRoutesData) {
+        return (
+          Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, {
+            maxHops: 3,
+            maxNumResults: 1,
+            kyberswapRoutesData,
+          })[0] ?? null
+        )
+      }
+      return trade
     }
     return null
-  }, [allowedPairs, currencyIn, currencyAmountOut])
+  }, [allowedPairs, currencyIn, currencyAmountOut, kyberswapRoutesData])
 }

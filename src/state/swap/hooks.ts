@@ -3,6 +3,7 @@ import { CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@nnmax/uniswap-
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useAccount, useChainId } from 'wagmi'
+import { useKyberswapRoutes } from '@/api'
 import { useCurrency } from '../../hooks/Tokens'
 import { usePrefetchAllCommonPairs, useTradeExactIn, useTradeExactOut } from '../../hooks/Trades'
 import useParsedQueryString from '../../hooks/useParsedQueryString'
@@ -10,19 +11,17 @@ import { isAddress } from '../../utils'
 import { useCurrencyBalances } from '../wallet/hooks'
 import { useUserSlippageTolerance } from '../user/hooks'
 import { computeSlippageAdjustedAmounts } from '../../utils/prices'
-import useENS from '../../hooks/useENS'
 import {
   Field,
   cleanSelectedCurrencies,
   replaceSwapState,
   selectCurrency,
-  setRecipient,
   switchCurrencies,
   typeInput,
 } from './actions'
+import type { Currency, Trade } from '@nnmax/uniswap-sdk-v2'
 import type { SwapState } from './reducer'
 import type { AppDispatch, AppState } from '../index'
-import type { Currency, Trade } from '@nnmax/uniswap-sdk-v2'
 import type { ParsedQs } from 'qs'
 
 export function useSwapState(): AppState['swap'] {
@@ -33,7 +32,6 @@ export function useSwapActionHandlers(): {
   onCurrencySelection: (field: Field, currency: Currency | null) => void
   onSwitchTokens: () => void
   onUserInput: (field: Field, typedValue: string) => void
-  onChangeRecipient: (recipient: string | null) => void
   onCleanSelectedCurrencies: () => void
 } {
   const dispatch = useDispatch<AppDispatch>()
@@ -60,13 +58,6 @@ export function useSwapActionHandlers(): {
     [dispatch],
   )
 
-  const onChangeRecipient = useCallback(
-    (recipient: string | null) => {
-      dispatch(setRecipient({ recipient }))
-    },
-    [dispatch],
-  )
-
   const onCleanSelectedCurrencies = () => {
     dispatch(cleanSelectedCurrencies())
   }
@@ -75,7 +66,6 @@ export function useSwapActionHandlers(): {
     onSwitchTokens,
     onCurrencySelection,
     onUserInput,
-    onChangeRecipient,
     onCleanSelectedCurrencies,
   }
 }
@@ -140,18 +130,18 @@ export function useDerivedSwapInfo(): {
 
   usePrefetchAllCommonPairs()
 
+  const swapState = useSwapState()
   const {
     independentField,
     typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
-    recipient,
-  } = useSwapState()
+  } = swapState
+  const { data: kyberswapRoutesData } = useKyberswapRoutes(swapState)
 
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
-  const recipientLookup = useENS(recipient ?? undefined)
-  const to: string | null = (recipient === null ? account : recipientLookup.address) ?? null
+  const to = account || null
 
   const relevantTokenBalances = useCurrencyBalances(account ?? undefined, [
     inputCurrency ?? undefined,
@@ -164,8 +154,16 @@ export function useDerivedSwapInfo(): {
     [inputCurrency, isExactIn, outputCurrency, typedValue],
   )
 
-  const bestTradeExactIn = useTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined)
-  const bestTradeExactOut = useTradeExactOut(inputCurrency ?? undefined, isExactIn ? undefined : parsedAmount)
+  const bestTradeExactIn = useTradeExactIn({
+    currencyOut: outputCurrency ?? undefined,
+    currencyAmountIn: isExactIn ? parsedAmount : undefined,
+    kyberswapRoutesData: kyberswapRoutesData?.routeSummary,
+  })
+  const bestTradeExactOut = useTradeExactOut({
+    currencyIn: inputCurrency ?? undefined,
+    currencyAmountOut: isExactIn ? undefined : parsedAmount,
+    kyberswapRoutesData: kyberswapRoutesData?.routeSummary,
+  })
 
   const v2Trade = isExactIn ? bestTradeExactIn : bestTradeExactOut
 
@@ -252,17 +250,6 @@ function parseIndependentFieldURLParameter(urlParam: any): Field {
   return typeof urlParam === 'string' && urlParam.toLowerCase() === 'output' ? Field.OUTPUT : Field.INPUT
 }
 
-const ENS_NAME_REGEX = /^[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)?$/
-const ADDRESS_REGEX = /^0x[a-fA-F0-9]{40}$/
-function validatedRecipient(recipient: any): string | null {
-  if (typeof recipient !== 'string') return null
-  const address = isAddress(recipient)
-  if (address) return address
-  if (ENS_NAME_REGEX.test(recipient)) return recipient
-  if (ADDRESS_REGEX.test(recipient)) return recipient
-  return null
-}
-
 export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
   let inputCurrency = parseCurrencyFromURLParameter(parsedQs.inputCurrency)
   let outputCurrency = parseCurrencyFromURLParameter(parsedQs.outputCurrency)
@@ -274,8 +261,6 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     }
   }
 
-  const recipient = validatedRecipient(parsedQs.recipient)
-
   return {
     [Field.INPUT]: {
       currencyId: inputCurrency,
@@ -285,7 +270,6 @@ export function queryParametersToSwapState(parsedQs: ParsedQs): SwapState {
     },
     typedValue: parseTokenAmountURLParameter(parsedQs.exactAmount),
     independentField: parseIndependentFieldURLParameter(parsedQs.exactField),
-    recipient,
   }
 }
 
@@ -305,7 +289,6 @@ export function useDefaultsFromURLSearch() {
         field: parsed.independentField,
         inputCurrencyId: parsed[Field.INPUT].currencyId,
         outputCurrencyId: parsed[Field.OUTPUT].currencyId,
-        recipient: parsed.recipient,
       }),
     )
   }, [dispatch, chainId, parsedQs])
