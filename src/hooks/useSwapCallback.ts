@@ -6,7 +6,7 @@ import { parseEther, type Contract } from 'ethers'
 import { useEthersProvider } from '@/hooks/useEthersProvider'
 import { useKyberswapRouteApprove, useKyberswapRouteBuild } from '@/api'
 import { useSwapState } from '@/state/swap/hooks'
-import { BIPS_BASE } from '../constants'
+import { BIPS_BASE, DEFAULT_GAS } from '../constants'
 import { useTransactionAdder } from '../state/transactions/hooks'
 import { calculateGasMargin, getRouterContract } from '../utils'
 import isZero from '../utils/isZero'
@@ -196,8 +196,7 @@ export function useSwapCallback(
             to: approveResponse.destination,
             value: BigInt(approveResponse.value),
             account,
-            maxFeePerGas: 1000000000000n,
-            maxPriorityFeePerGas: 1000000000000n,
+            gas: DEFAULT_GAS,
           })
         }
         const buildResponse = await buildRoute({
@@ -213,8 +212,7 @@ export function useSwapCallback(
           account,
           to: buildResponse.destination,
           value: BigInt(buildResponse.value),
-          maxFeePerGas: 1000000000000n,
-          maxPriorityFeePerGas: 1000000000000n,
+          gas: DEFAULT_GAS,
         })
       }
 
