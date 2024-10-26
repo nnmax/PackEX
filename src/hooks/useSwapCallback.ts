@@ -176,8 +176,11 @@ export function useSwapCallback(
   }, [getSuccessfulEstimation])
 
   return useMemo(() => {
-    if (!trade || !provider || !account || !chainId) {
+    if (!provider || !account || !chainId) {
       return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: 'Missing dependencies' }
+    }
+    if (!trade) {
+      return { state: SwapCallbackState.INVALID, gasLimit, callback: null, error: '' }
     }
 
     const onSwap = async (): Promise<string> => {

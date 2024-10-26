@@ -354,6 +354,7 @@ export default function Swap() {
               swapInputError={swapInputError}
               swapCallbackError={swapCallbackError}
               handleConfirm={handleConfirm}
+              disabledConfirmButton={!trade && !swapCallbackError}
             />
           </div>
         </div>
@@ -382,6 +383,7 @@ interface FooterProps {
   swapInputError: string | undefined
   swapCallbackError: string | null
   handleConfirm: () => void
+  disabledConfirmButton?: boolean
 }
 
 function Footer(props: FooterProps) {
@@ -398,6 +400,7 @@ function Footer(props: FooterProps) {
     wrapInputError,
     wrapType,
     wraping,
+    disabledConfirmButton,
   } = props
 
   if (!userInfo) return <ConnectWalletButton />
@@ -425,7 +428,7 @@ function Footer(props: FooterProps) {
   return (
     <ButtonPrimary
       isError={!!swapInputError || !!swapCallbackError}
-      isDisabled={!!swapInputError || !!swapCallbackError}
+      isDisabled={disabledConfirmButton || !!swapInputError || !!swapCallbackError}
       className={'w-full max-w-[240px]'}
       onPress={handleConfirm}
     >
