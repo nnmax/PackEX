@@ -35,11 +35,12 @@ function shouldBeEnabled(
   typedValue: string,
   isWrapToken: boolean,
 ) {
+  const typedValueNumber = Number.parseFloat(typedValue)
   return (
     !!inputCurrency &&
     !!outputCurrency &&
     !!typedValue &&
-    typedValue !== '0' &&
+    typedValueNumber !== 0 &&
     !isDOG(inputCurrency) &&
     !isDOG(outputCurrency) &&
     !isWrapToken
