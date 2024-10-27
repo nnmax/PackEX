@@ -359,7 +359,7 @@ export default function Swap() {
           </div>
         </div>
       </div>
-      <div className={'w-[455px] pt-[70px]'}>
+      <div className={'w-[410px] pt-[110px]'}>
         <p className={'text-xs/6 text-white'}>
           {
             'We will provide you with the deepest market depth for your transactions. Your transaction requests will be matched in the pool of PackEX first, but if the amount of your transaction request is too large resulting in a high price impact, we will automatically put your transaction request in other pools on the blockchain to ensure that you get the best price.'
