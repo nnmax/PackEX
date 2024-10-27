@@ -64,6 +64,16 @@ export function useKyberswapRoutes(swapState: AppState['swap']) {
     queryKey: ['get-route-summary-and-price-impact', inputCurrencyId, outputCurrencyId, typedValue, independentField],
     refetchInterval: ({ state: { status } }) => (status === 'error' ? false : 10 * 1000),
     gcTime: 0,
+    select(data) {
+      if (!data) return data
+      return {
+        ...data,
+        routeSummary: {
+          ...data.routeSummary,
+          priceImpact: data.priceImpact,
+        },
+      }
+    },
     queryFn: () => {
       invariant(!!inputCurrencyId, 'inputCurrencyId is required')
       invariant(!!outputCurrencyId, 'outputCurrencyId is required')

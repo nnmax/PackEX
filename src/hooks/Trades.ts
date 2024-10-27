@@ -133,6 +133,7 @@ export function useTradeExactIn(options: {
       const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
       if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT)) {
         if (shouldUseKyber(trade) && !kyberswapRoutesData) return null
+        console.log('%c Kyberswap is being used...', 'font-size:13px; background:pink; color:#bf2c9f;')
         return (
           Trade.bestTradeExactIn(allowedPairs, currencyAmountIn, currencyOut, {
             maxHops: 3,
@@ -166,6 +167,7 @@ export function useTradeExactOut(options: {
       const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade)
       if (priceImpactWithoutFee?.greaterThan(ALLOWED_PRICE_IMPACT)) {
         if (shouldUseKyber(trade) && !kyberswapRoutesData) return null
+        console.log('%c Kyberswap is being used...', 'font-size:13px; background:pink; color:#bf2c9f;')
         return (
           Trade.bestTradeExactOut(allowedPairs, currencyIn, currencyAmountOut, {
             maxHops: 3,

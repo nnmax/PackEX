@@ -75,7 +75,7 @@
     "@floating-ui/react": "^0.26.24",
     "@iconify/json": "^2.2.250",
     "@iconify/tailwind": "^1.1.3",
-    "@nnmax/uniswap-sdk-v2": "2.0.0",
+    "@nnmax/uniswap-sdk-v2": "2.0.2",
     "@reduxjs/toolkit": "^2.2.7",
     "@tanstack/react-query": "^5.56.2",
     "@uniswap/token-lists": "^1.0.0-beta.34",
