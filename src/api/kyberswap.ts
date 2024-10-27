@@ -7,6 +7,7 @@ import { Field } from '@/state/swap/actions'
 import { isAddress } from '@/utils'
 import { useCurrency } from '@/hooks/Tokens'
 import fetcher from '@/utils/fetcher'
+import useDebounce from '@/hooks/useDebounce'
 import type { AppState } from '@/state'
 import type { ChainId, KyberswapRoutesData, Token } from '@nnmax/uniswap-sdk-v2'
 
@@ -50,7 +51,7 @@ function shouldBeEnabled(
 export function useKyberswapRoutes(swapState: AppState['swap']) {
   const {
     independentField,
-    typedValue,
+    typedValue: _typedValue,
     [Field.INPUT]: { currencyId: inputCurrencyId },
     [Field.OUTPUT]: { currencyId: outputCurrencyId },
   } = swapState
@@ -58,6 +59,7 @@ export function useKyberswapRoutes(swapState: AppState['swap']) {
   const isWrapToken = equalsWrapToken(inputCurrencyId, outputCurrencyId, chainId)
   const inputCurrency = useCurrency(inputCurrencyId)
   const outputCurrency = useCurrency(outputCurrencyId)
+  const typedValue = useDebounce(_typedValue, 500)
 
   return useQuery({
     enabled: shouldBeEnabled(inputCurrency, outputCurrency, typedValue, isWrapToken),
